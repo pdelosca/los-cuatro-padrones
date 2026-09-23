@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <!--
 DIRECTION CONTRACT
 
@@ -18,6 +19,8 @@ sus ríos verdaderos y los cuatro padrones señalados.
 
 FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <title>Los cuatro padrones — de los Campos, Acosta, Nin y Márquez</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +99,7 @@ FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
     letter-spacing:.14em; text-transform:uppercase; color:var(--tinta-3);
     margin:0 0 .35rem;
   }
-  .campo dd{margin:0; font-family:var(--didona); font-size:1.3rem; line-height:1.2}
+  .campo dd{margin:0; font-family:var(--didona); font-size:1.3rem; line-height:1.3}
 
   /* ---------- mapa ---------- */
   .territorio{margin:4rem 0 0; display:grid; grid-template-columns:minmax(0,1fr); gap:2rem}
@@ -129,10 +132,14 @@ FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
        y se ocultan los sitios secundarios para que el mapa respire. */
     .territorio{margin-top:3rem}
     .mapa{margin:0 -.75rem; width:calc(100% + 1.5rem)}
-    .mapa text{font-size:22px}
-    .mapa .rotulo-agua{font-size:17px}
+    .mapa text{font-size:16px}
+    .mapa .rotulo-agua{font-size:13px}
     .mapa .sitio.menor{display:none}
     .mapa .sitio circle{r:7}
+  }
+  @media (max-width:40rem){
+    .mapa text{font-size:22px}
+    .mapa .rotulo-agua{font-size:17px}
   }
   .leyenda-mapa h2{
     font-family:var(--didona); font-weight:500; font-size:1.65rem;
@@ -468,7 +475,7 @@ FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
   .abanico-zoom{position:relative}
   .zoom-ctl{position:absolute; top:.2rem; right:.2rem; z-index:2; display:flex; gap:.4rem}
   .zoom-ctl button{
-    font-family:var(--rotulo); font-size:1rem; min-width:2.5rem; height:2.5rem; padding:0 .8rem;
+    font-family:var(--rotulo); font-size:1rem; min-width:2.75rem; height:2.75rem; padding:0 .8rem;
     background:var(--panel); color:var(--tinta); border:1px solid var(--linea-fuerte); cursor:pointer;
   }
   .zoom-ctl button:hover{border-color:var(--laton); color:var(--laton)}
@@ -481,7 +488,29 @@ FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
   .abanico .r7{font-size:6px; fill:var(--tinta-3); opacity:0; transition:opacity .2s}
   .abanico .r8{font-size:4.6px; fill:var(--tinta-3); opacity:0; transition:opacity .2s}
   .abanico.detalle .r7,.abanico.detalle .r8{opacity:1}
+  .zoom-ayuda .tactil{display:none}
+  @media (hover:none) and (pointer:coarse){
+    .zoom-ayuda .raton{display:none}
+    .zoom-ayuda .tactil{display:inline}
+  }
   @media print{ .zoom-ctl,.zoom-ayuda{display:none} }
+
+  /* ---------- telefono ---------- */
+  @media (max-width:40rem){
+    .hoja{padding:0 1rem}
+    .relato{padding:1.6rem 1.15rem 1.8rem}
+    .cartela-alto{padding:2.2rem 1.2rem 2rem}
+    .cartela-pie{grid-template-columns:1fr 1fr}
+    .campo{border-right:none; border-bottom:1px solid var(--linea-fuerte)}
+    .campo:nth-child(odd):not(:last-child){border-right:1px solid var(--linea-fuerte)}
+    .campo:last-child{grid-column:1/-1; border-bottom:none}
+    .abanico-zoom{margin:0 -1rem}
+    .zoom-ctl{position:static; justify-content:flex-end; margin:0 1rem .5rem}
+  }
+  @media (max-width:30rem){
+    .hermanos li{flex-wrap:wrap; gap:.1rem .9rem}
+    .hermanos .hd{flex-basis:100%; max-width:none; text-align:left}
+  }
 </style>
 
 <div class="plano">
@@ -2798,7 +2827,7 @@ FORM: Plano de mensura. Dirección fijada por el usuario, sin tirada.
       <text class="anillo" x="523.0" y="63.0">7</text>
       <text class="anillo" x="523.0" y="22.0">8</text>
     </svg>
-      <p class="zoom-ayuda">Ctrl y rueda para acercar · arrastrar para mover · doble clic para ampliar</p>
+      <p class="zoom-ayuda"><span class="raton">Ctrl y rueda para acercar · arrastrar para mover · doble clic para ampliar</span><span class="tactil">Tocá + para acercar; ya ampliado, arrastrá o pellizcá para moverte</span></p>
     </div>
       <ul class="leyenda-abanico">
         <li><svg width="20" height="20" aria-hidden="true"><rect width="20" height="20" fill="url(#fq4)" stroke="var(--linea-fuerte)" stroke-width=".8"/></svg><span>de los Campos, por Eloy</span></li>
