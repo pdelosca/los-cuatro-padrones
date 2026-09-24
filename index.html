@@ -52,8 +52,24 @@ document.addEventListener('DOMContentLoaded', function(){
   document.documentElement.classList.add('js-mov');
   document.addEventListener('DOMContentLoaded', function(){
     // el titulo se entinta cuando la Bodoni está lista; a los 2,5 s arranca igual
+    // el mapa no compite con el titulo: en el telefono espera al primer scroll;
+    // en pantallas grandes, a que el titulo termine (3 s) o al primer scroll
+    var mapaLibre = false, mapaVisto = false, mapa = document.querySelector('.mapa');
+    function soltarMapa(){
+      if (mapaLibre) return;
+      mapaLibre = true;
+      if (mapaVisto && mapa) mapa.classList.add('dibujar');
+    }
+    addEventListener('scroll', function alBajar(){
+      if (window.scrollY < 8) return;
+      removeEventListener('scroll', alBajar);
+      soltarMapa();
+    }, {passive: true});
     var h1 = document.querySelector('h1'), hecho = false;
-    function entintar(){ if (!hecho && h1){ hecho = true; h1.classList.add('entintar'); } }
+    function entintar(){
+      if (!hecho && h1){ hecho = true; h1.classList.add('entintar'); }
+      if (!matchMedia('(max-width: 40rem)').matches) setTimeout(soltarMapa, 3000);
+    }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(entintar);
     else entintar();
     setTimeout(entintar, 2500);
@@ -68,7 +84,10 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     var io = new IntersectionObserver(function(entradas){
       entradas.forEach(function(e){
-        if (e.isIntersecting){ e.target.classList.add('dibujar'); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        if (e.target === mapa){ mapaVisto = true; if (!mapaLibre) return; }
+        e.target.classList.add('dibujar');
       });
     }, {threshold: 0.3});
     document.querySelectorAll('.mapa, .abanico').forEach(function(el){ io.observe(el); });
