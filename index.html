@@ -45,14 +45,6 @@ document.addEventListener('DOMContentLoaded', function(){
     r.setAttribute('width', b.width + 2 * m); r.setAttribute('height', b.height + 2 * m);
     a.insertBefore(r, a.firstChild);
   });
-  // boton "Mapa": visible solo cuando el mapa ya quedo arriba, fuera de la pantalla
-  var caja = document.getElementById('mapa'), boton = document.querySelector('.al-mapa');
-  if (caja && boton && 'IntersectionObserver' in window){
-    new IntersectionObserver(function(es){
-      var e = es[0];
-      boton.classList.toggle('visible', !e.isIntersecting && e.boundingClientRect.top < 0);
-    }).observe(caja);
-  }
 });
 (function(){
   if (!('IntersectionObserver' in window)) return;
@@ -619,25 +611,174 @@ document.addEventListener('DOMContentLoaded', function(){
     .hermanos li{flex-wrap:wrap; gap:.1rem .9rem}
     .hermanos .hd{flex-basis:100%; max-width:none; text-align:left}
   }
-  /* ---------- volver al mapa ----------
-     Aparece cuando el lector ya paso el mapa; lo muestra el script del head. */
   .mapa-caja{scroll-margin-top:1rem}
-  .al-mapa{
-    position:fixed; z-index:5;
-    right:max(1rem, env(safe-area-inset-right)); bottom:max(1rem, env(safe-area-inset-bottom));
-    display:inline-flex; align-items:center; gap:.45rem; min-height:2.75rem; padding:0 1rem;
-    font-family:var(--rotulo); font-size:.9rem; letter-spacing:.06em; text-decoration:none;
-    background:var(--panel); color:var(--tinta); border:1px solid var(--linea-fuerte);
-    box-shadow:0 .4rem 1.2rem rgba(4,14,26,.55);
-    opacity:0; visibility:hidden; transform:translateY(.5rem);
-    transition:opacity .2s ease-out, transform .2s ease-out, visibility 0s linear .2s;
+
+  /* ---------- nombres, asteriscos y casillas enlazados ----------
+     Cada nombre destacado abre su ficha; cada asterisco, su nota. Sin script,
+     los mismos enlaces llevan a la casilla del padrón o a la nota. */
+  a.nombre{
+    color:inherit; text-decoration:underline; text-decoration-thickness:1px;
+    text-underline-offset:.28em; text-decoration-color:rgba(138,168,192,.45);
+    transition:text-decoration-color .15s ease-out, color .15s ease-out;
+    scroll-margin-top:30vh;
   }
-  .al-mapa.visible{opacity:1; visibility:visible; transform:none; transition-delay:0s}
-  .al-mapa:hover,.al-mapa:focus-visible{border-color:var(--laton); color:var(--laton)}
-  .al-mapa:focus-visible{outline:2px solid var(--laton); outline-offset:2px}
-  .al-mapa svg{width:.8rem; height:.8rem; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
-  @media (prefers-reduced-motion:reduce){ .al-mapa{transform:none; transition:none} }
-  @media print{ .al-mapa{display:none} }
+  a.nombre:hover{text-decoration-color:var(--laton)}
+  a.nombre[aria-expanded="true"]{color:var(--laton); text-decoration-color:var(--laton)}
+  a.ast{position:relative; text-decoration:none; scroll-margin-top:30vh}
+  a.ast::after{content:""; position:absolute; inset:-.55em -.45em}
+  a.ast:hover,a.ast[aria-expanded="true"]{color:var(--tinta)}
+  .pc-nom a{color:inherit; text-decoration:underline; text-decoration-thickness:1px;
+    text-underline-offset:.26em; text-decoration-color:rgba(138,168,192,.2)}
+  .pc-nom a:hover{text-decoration-color:var(--laton)}
+  .pc-lista li{scroll-margin-top:30vh}
+  .notas-fuente p{scroll-margin-top:30vh}
+  a.volver{
+    display:inline-flex; align-items:center; gap:.35rem; white-space:nowrap;
+    min-height:2.75rem; padding:0 .15rem; margin-left:.2rem; vertical-align:middle;
+    font-family:var(--rotulo); font-size:.84rem; letter-spacing:.03em; text-decoration:none;
+  }
+  a.volver svg{width:.72rem; height:.72rem; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+  a.volver:hover{color:var(--laton)}
+  /* al llegar por un enlace, la casilla, la nota o el nombre se marcan un momento */
+  .pc-lista li:target,.notas-fuente p:target,a.nombre:target,a.ast:target{animation:llegada 2.6s cubic-bezier(.16,1,.3,1)}
+  @keyframes llegada{
+    0%,35%{background-color:rgba(224,177,88,.2); box-shadow:0 0 0 .35rem rgba(224,177,88,.2)}
+    100%{background-color:transparent; box-shadow:0 0 0 .35rem transparent}
+  }
+
+  /* ---------- índice ----------
+     Regleta abajo; en el teléfono ocupa el ancho y se esconde al bajar; en
+     pantallas anchas pasa a un riel vertical en el margen. */
+  .indice{
+    position:fixed; z-index:6; left:50%; bottom:max(.9rem, env(safe-area-inset-bottom));
+    transform:translateX(-50%);
+    display:flex; align-items:stretch;
+    background:var(--panel); border:1px solid var(--linea-fuerte);
+    box-shadow:0 .6rem 1.6rem rgba(4,14,26,.6), 0 .1rem .3rem rgba(4,14,26,.4);
+    font-family:var(--rotulo);
+    transition:transform .32s cubic-bezier(.16,1,.3,1), opacity .2s ease-out, visibility 0s linear 0s;
+  }
+  .js-indice .indice:not(.visible){opacity:0; visibility:hidden; transform:translate(-50%, 1rem);
+    transition:transform .2s ease-in, opacity .2s ease-in, visibility 0s linear .2s}
+  .indice a{
+    position:relative; display:flex; align-items:center; justify-content:center; gap:.5rem;
+    min-width:2.75rem; height:2.75rem; padding:0 .55rem;
+    color:var(--tinta-2); text-decoration:none;
+  }
+  .indice a:hover{color:var(--tinta)}
+  .indice a:focus-visible{outline:2px solid var(--laton); outline-offset:-4px}
+  .indice a[aria-current]{color:var(--laton)}
+  .indice a[aria-current]::after{
+    content:""; position:absolute; left:.7rem; right:.7rem; bottom:.4rem; height:1px; background:var(--laton);
+  }
+  .ind-sig{font-family:var(--didona); font-size:1.08rem; line-height:1; font-variant-numeric:lining-nums}
+  .ind-ico{width:1rem; height:1rem; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linejoin:round}
+  .ind-nom{display:none; font-size:.86rem; letter-spacing:.03em; white-space:nowrap}
+  .indice a[aria-current] .ind-nom{display:inline}
+  .indice a[aria-current]::after{right:auto; width:1.4rem}
+  .ind-sep{width:1px; margin:.7rem .15rem; background:var(--linea-fuerte)}
+
+  @media (max-width:40rem){
+    .indice{
+      left:0; right:0; bottom:0; transform:none; justify-content:space-around;
+      border-width:1px 0 0; padding-bottom:env(safe-area-inset-bottom);
+      box-shadow:0 -.5rem 1.4rem rgba(4,14,26,.5);
+    }
+    .js-indice .indice:not(.visible),.indice.escondido{transform:translateY(100%)}
+    .indice a{padding:0; flex:1 1 0; max-width:3.6rem}
+    .indice a[aria-current] .ind-nom{display:none}
+    .indice a[aria-current]::after{left:30%; right:30%; width:auto}
+    .ind-sep{margin:.8rem 0}
+    .plano{padding-bottom:9rem}
+  }
+  @media (min-width:90rem){
+    .indice{
+      left:max(1rem, calc((100vw - 78rem) / 2 - 3.9rem)); bottom:auto; top:50%;
+      transform:translateY(-50%); flex-direction:column;
+      background:none; border:none; box-shadow:none;
+    }
+    .indice::before{content:""; position:absolute; top:.4rem; bottom:.4rem; right:0; width:1px; background:var(--linea-fuerte)}
+    .js-indice .indice:not(.visible){transform:translate(-.6rem, -50%)}
+    .indice a{justify-content:flex-start; padding:0 .8rem 0 0; min-width:2.9rem}
+    .ind-sep{width:1.4rem; height:1px; margin:.35rem 0}
+    .indice a[aria-current]::after{left:auto; right:-3px; top:50%; bottom:auto; width:7px; height:7px;
+      transform:translateY(-50%) rotate(45deg); background:var(--laton)}
+    .indice a[aria-current] .ind-nom{display:none}
+    .indice a .ind-nom{
+      position:absolute; left:calc(100% + .9rem); top:50%; transform:translateY(-50%);
+      padding:.3rem .6rem; background:var(--panel); border:1px solid var(--linea-fuerte); color:var(--tinta);
+    }
+    .indice a:is(:hover,:focus-visible) .ind-nom{display:block}
+  }
+
+  /* ---------- ficha y nota emergentes ----------
+     Una sola caja: al lado del nombre en pantallas con mouse, hoja desde abajo en el teléfono. */
+  .emerge{
+    position:fixed; inset:auto; margin:0; padding:0;
+    width:min(23.5rem, calc(100vw - 2rem)); max-height:min(72vh, 34rem); overflow:auto;
+    background:var(--panel); color:var(--tinta); border:1px solid var(--linea-fuerte);
+    box-shadow:0 1.2rem 2.8rem rgba(4,14,26,.65), 0 .2rem .5rem rgba(4,14,26,.4);
+    font-family:var(--grot); font-size:1rem; line-height:1.55; overscroll-behavior:contain;
+    scrollbar-color:var(--linea-fuerte) var(--panel);
+  }
+  .emerge:popover-open{animation:emerge-a .2s cubic-bezier(.16,1,.3,1)}
+  @keyframes emerge-a{from{opacity:0; transform:translateY(.35rem)}}
+  .emerge::backdrop{background:transparent}
+  .emerge.hojita{
+    left:0; right:0; bottom:0; top:auto; width:100%; max-height:78vh;
+    border-width:1px 0 0; padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -1rem 2.6rem rgba(4,14,26,.7);
+  }
+  .emerge.hojita:popover-open{animation:emerge-b .32s cubic-bezier(.16,1,.3,1)}
+  @keyframes emerge-b{from{transform:translateY(100%)}}
+  .emerge.hojita::backdrop{background:rgba(4,14,26,.55)}
+  .emerge.hojita::before{
+    content:""; display:block; width:2.6rem; height:3px; margin:.6rem auto 0; background:var(--linea-fuerte);
+  }
+  .em-cerrar{
+    position:absolute; top:.15rem; right:.15rem; width:2.75rem; height:2.75rem;
+    display:grid; place-items:center; padding:0; border:0; background:none; color:var(--tinta-3); cursor:pointer;
+  }
+  .emerge.hojita .em-cerrar{top:.5rem}
+  .em-cerrar:hover{color:var(--tinta)}
+  .em-cerrar:focus-visible{outline:2px solid var(--laton); outline-offset:-4px}
+  .em-cerrar svg{width:1rem; height:1rem; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round}
+  .em-cuerpo{padding:1.15rem 1.3rem 1.1rem}
+  .emerge.hojita .em-cuerpo{padding:1rem 1.25rem 1.25rem}
+  .ef-cab{display:flex; gap:1rem; align-items:flex-start; padding-right:2.2rem}
+  .ef-sello{
+    flex:0 0 auto; display:grid; justify-items:center; min-width:3.1rem; padding:.35rem .5rem .3rem;
+    border:1px solid var(--linea-fuerte);
+  }
+  .ef-sello b{font-family:var(--didona); font-weight:500; font-size:1.65rem; line-height:1; color:var(--laton); font-variant-numeric:lining-nums tabular-nums}
+  .ef-sello small{font-family:var(--rotulo); font-size:.6875rem; letter-spacing:.06em; color:var(--tinta-3); margin-top:.2rem}
+  .ef-nom{margin:0; font-family:var(--didona); font-weight:500; font-size:1.36rem; line-height:1.2; text-wrap:balance}
+  .ef-nom:focus{outline:none}
+  .ef-rol{margin:.3rem 0 0; color:var(--tinta-2); font-size:.95rem; line-height:1.4; max-width:none}
+  .ef-rol.vivo{color:var(--laton)}
+  .ef-dat{margin:.9rem 0 0; font-family:var(--rotulo); font-size:.95rem; color:var(--tinta); font-variant-numeric:tabular-nums; max-width:none}
+  .ef-meta{margin:.3rem 0 0; font-family:var(--rotulo); font-size:.8rem; letter-spacing:.03em; color:var(--tinta-3); max-width:none}
+  .en-tit{margin:0; padding-right:2.2rem; font-family:var(--didona); font-weight:500; font-size:1.18rem; line-height:1.25; text-wrap:balance}
+  .en-texto{margin:.6rem 0 0; font-size:.95rem; color:var(--tinta-2); max-width:none}
+  .en-texto em{color:var(--tinta)}
+  .ef-ir{
+    display:flex; align-items:center; gap:.5rem; margin-top:1rem; padding-top:.2rem;
+    min-height:2.75rem; border-top:1px solid var(--linea);
+    font-family:var(--rotulo); font-size:.92rem; letter-spacing:.02em; color:var(--agua); text-decoration:none;
+  }
+  .ef-ir svg{width:.8rem; height:.8rem; flex:0 0 auto; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+  .ef-ir:hover{color:var(--laton)}
+  .ef-ir:focus-visible{outline:2px solid var(--laton); outline-offset:2px}
+
+  @media (prefers-reduced-motion:reduce){
+    .indice,.js-indice .indice:not(.visible){transition:none}
+    .emerge:popover-open,.emerge.hojita:popover-open{animation:none}
+    .pc-lista li:target,.notas-fuente p:target,a.nombre:target,a.ast:target{animation:none; background-color:rgba(224,177,88,.16)}
+  }
+  @media print{
+    .indice,.emerge,a.volver{display:none}
+    a.nombre,.pc-nom a{text-decoration:none; color:inherit}
+  }
 </style>
 
 <div class="plano">
@@ -798,11 +939,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           La rama empieza con dos matrimonios de los que casi no queda más que el nombre. Uno es el
-          de <span class="nombre">Juan José de los Campos</span> y <span class="nombre">Felipa
-          Escopal</span>. El otro, el de <span class="nombre">Juan Chavarría</span> y <span
-          class="nombre">Teresa Muñoz</span>. Un hijo del primero, <span class="nombre">Miguel de
-          los Campos</span>, se casó con una hija del segundo, <span class="nombre">Clara
-          Chavarría</span>, y por ellos sigue la línea.
+          de <a class="nombre" href="#pc-128" id="h-128" data-f="128">Juan José de los Campos</a> y <a class="nombre" href="#pc-129" id="h-129" data-f="129">Felipa
+          Escopal</a>. El otro, el de <a class="nombre" href="#pc-130" id="h-130" data-f="130">Juan Chavarría</a> y <a class="nombre" href="#pc-131" id="h-131" data-f="131">Teresa Muñoz</a>. Un hijo del primero, <a class="nombre" href="#pc-64" id="h-64" data-f="64">Miguel de
+          los Campos</a>, se casó con una hija del segundo, <a class="nombre" href="#pc-65" id="h-65" data-f="65">Clara
+          Chavarría</a>, y por ellos sigue la línea.
         </p>
 
         <p>
@@ -844,8 +984,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          De los hijos de Miguel y Clara, dos aparecen en los papeles: <span
-          class="nombre">Pedro</span> y <span class="nombre">Felipe Pascual</span>. Pedro fue alcalde
+          De los hijos de Miguel y Clara, dos aparecen en los papeles: <a class="nombre" href="#pc-32" id="h-c6" data-f="c6">Pedro</a> y <a class="nombre" href="#pc-32" data-f="32">Felipe Pascual</a>. Pedro fue alcalde
           de la villa de la Santísima Trinidad, que es el nombre entero de Trinidad, en <span
           class="anio">1821</span>, con el territorio ocupado por Portugal. Ese año viajó a San José
           como secretario a la sesión que eligió al representante de la zona ante el Congreso
@@ -854,9 +993,9 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Su hermano <span class="nombre">Felipe Pascual de los Campos</span> es el que dejó más
+          Su hermano <a class="nombre" href="#pc-32" id="h-32" data-f="32">Felipe Pascual de los Campos</a> es el que dejó más
           rastro, y es por donde sigue la línea hasta Pablo. Nació en Las Piedras el <span
-          class="anio">19 de mayo de 1796</span><span class="ast">*</span>. En <span class="anio">1825</span> se alistó como soldado en
+          class="anio">19 de mayo de 1796</span><a class="ast" id="ra-1" href="#nota-1-4" aria-label="Nota: Felipe Pascual de los Campos, 19 de mayo de 1796">*</a>. En <span class="anio">1825</span> se alistó como soldado en
           el ejército de Juan Antonio Lavalleja, poco después de que los Treinta y Tres desembarcaran
           en la playa de la Agraciada para levantar la Banda Oriental contra el Brasil. De
           vuelta en Trinidad lo eligieron juez de paz por voto popular, y en <span
@@ -944,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Se casó con <span class="nombre">Margarita García Martínez</span> y tuvieron por lo menos
+          Se casó con <a class="nombre" href="#pc-33" id="h-33" data-f="33">Margarita García Martínez</a> y tuvieron por lo menos
           nueve hijos. En
           julio de <span class="anio">1879</span>, para el aniversario de la Jura, la banda de música
           del pueblo lo felicitó: era el hombre que había hecho jurar la Constitución en la plaza. Ese
@@ -971,15 +1110,14 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Sandalio de los Campos</span> nació hacia <span
+          <a class="nombre" href="#pc-16" id="h-16" data-f="16">Sandalio de los Campos</a> nació hacia <span
           class="anio">1836</span> en una campaña que entonces era de San José, y fue militar de
           profesión. Cuando
           la ley 1854, del 30 de diciembre de <span
           class="anio">1885</span>, separó de San José esas tierras y creó con ellas el Departamento
           de Flores, un decreto
           nombró a los seis hombres de la comisión provisoria que debía administrarlo hasta que
-          hubiera autoridades electas. Sandalio fue uno de los seis. Se había casado con <span
-          class="nombre">Felicia Guerrero</span>, hija de Juan Guerrero y María Pena, y tuvieron al menos tres hijos, Eloy, Delmiro y Felicia; por Delmiro sigue la línea. Murió el primero de febrero de <span
+          hubiera autoridades electas. Sandalio fue uno de los seis. Se había casado con <a class="nombre" href="#pc-17" id="h-17" data-f="17">Felicia Guerrero</a>, hija de Juan Guerrero y María Pena, y tuvieron al menos tres hijos, Eloy, Delmiro y Felicia; por Delmiro sigue la línea. Murió el primero de febrero de <span
           class="anio">1908</span>, a los setenta y dos años. Su acta de defunción nombra a sus
           abuelos paternos con nombre y apellido, y donde deberían ir los maternos el escribiente
           anotó dos palabras: se ignoran.
@@ -987,9 +1125,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Sandalio fue también tío y padrino. Las actas de bautismo de Trinidad lo muestran en <span
-          class="anio">1871</span> sosteniendo a un sobrino, hijo de su hermano <span
-          class="nombre">Felipe Robustiano de los Campos</span> y de <span
-          class="nombre">Isabel Falcón</span>. Cuando esa pareja bautizó a su hija Margarita Rosa, en
+          class="anio">1871</span> sosteniendo a un sobrino, hijo de su hermano <a class="nombre" href="#pc-16" id="h-c12" data-f="c12">Felipe Robustiano de los Campos</a> y de <a class="nombre" href="#pc-32" id="h-c13" data-f="c13">Isabel Falcón</a>. Cuando esa pareja bautizó a su hija Margarita Rosa, en
           <span class="anio">1879</span>, los padrinos fueron los abuelos, Felipe Pascual y Margarita
           García.
         </p>
@@ -1021,16 +1157,16 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          De Eduardo, Manuel y Juan quedan sobre todo actas. <span class="nombre">Eduardo de los
-          Campos</span> nació hacia <span class="anio">1841</span>, era empleado en Las Piedras y
-          estaba casado con <span class="nombre">Paula Luz</span>, hija de Juan Luz y María Batlle.
+          De Eduardo, Manuel y Juan quedan sobre todo actas. <a class="nombre" href="#pc-16" id="h-c14" data-f="c14">Eduardo de los
+          Campos</a> nació hacia <span class="anio">1841</span>, era empleado en Las Piedras y
+          estaba casado con <a class="nombre" href="#pc-32" id="h-c15" data-f="c15">Paula Luz</a>, hija de Juan Luz y María Batlle.
           El 31 de enero de <span class="anio">1883</span> les nació María Mercedes, y él la
           inscribió con los nombres de los abuelos paternos, Felipe de los Campos y Margarita
           García.
         </p>
 
         <p>
-          <span class="nombre">Manuel</span> nació hacia <span class="anio">1842</span> en la Villa
+          <a class="nombre" href="#pc-16" id="h-c16" data-f="c16">Manuel</a> nació hacia <span class="anio">1842</span> en la Villa
           de San José y se casó en Las Piedras el 21 de octubre de <span class="anio">1867</span> con
           Carmen Catulo, menor de edad. Murió el 23 de noviembre de <span class="anio">1887</span>, a
           los cuarenta y cinco años, casado con otra mujer, Emiliana Pérez; qué pasó con el primer
@@ -1038,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Juan</span> nació el 8 de marzo de <span
+          <a class="nombre" href="#pc-16" id="h-c17" data-f="c17">Juan</a> nació el 8 de marzo de <span
           class="anio">1846</span> en la Aguada de Montevideo, en plena Guerra Grande. Tenía
           cuarenta y cuatro años cuando se casó por civil en Las Piedras, el 2 de agosto de <span
           class="anio">1890</span>, con Juana María Cardeillac, de veintiséis, hija de un francés.
@@ -1046,8 +1182,8 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Rolando de los Campos</span> dejó más papel que cualquiera de sus
-          hermanos. Nació hacia <span class="anio">1843</span><span class="ast">*</span> en Porongos.
+          <a class="nombre" href="#pc-16" id="h-c18" data-f="c18">Rolando de los Campos</a> dejó más papel que cualquiera de sus
+          hermanos. Nació hacia <span class="anio">1843</span><a class="ast" id="ra-2" href="#nota-1-5" aria-label="Nota: Rolando de los Campos, hacia 1843">*</a> en Porongos.
           De joven fue voluntario en la revolución que Venancio Flores levantó en <span
           class="anio">1863</span>, y después oficial en la Guerra del
           Paraguay y en la revolución de Aparicio, y llegó a coronel. Desde <span
@@ -1077,7 +1213,7 @@ document.addEventListener('DOMContentLoaded', function(){
           presidente a Santos, el pueblo fue a felicitar a Rolando a su despacho y a su casa. Al día siguiente
           él invitó a los vecinos a un asado con cuero en la plaza, frente a la Subdelegación. A fines
           de mayo hubo baile en su casa, con la Banda
-          Popular, por el bautismo de <span class="nombre">Luis Carlos</span>, nacido en agosto de
+          Popular, por el bautismo de <a class="nombre" href="#pc-32" id="h-c19" data-f="c19">Luis Carlos</a>, nacido en agosto de
           <span class="anio">1881</span> de su unión con Juana Rechini. El acta
           anota como abuelos a Felipe Pascual y Margarita García.
         </p>
@@ -1150,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Margarita</span> y <span class="nombre">Gertrudis de los Campos</span>
+          <a class="nombre" href="#pc-16" id="h-c20" data-f="c20">Margarita</a> y <a class="nombre" href="#pc-16" id="h-c21" data-f="c21">Gertrudis de los Campos</a>
           nunca se casaron. Ya habían pedido una pensión en <span class="anio">1899</span> y en <span
           class="anio">1902</span>, y en mayo de <span class="anio">1913</span> lo hicieron otra vez,
           al Parlamento, por gracia especial. Escribieron que eran "descendientes inmediatas" de don
@@ -1173,11 +1309,11 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          El que volvió al campo fue un nieto de Felipe Pascual. <span class="nombre">Delmiro Conrado
-          de los Campos</span> (<span class="anio">1867–1948</span><span class="ast">*</span>), hijo de Sandalio, el de la comisión de 1885, fue hacendado
+          El que volvió al campo fue un nieto de Felipe Pascual. <a class="nombre" href="#pc-8" id="h-8" data-f="8">Delmiro Conrado
+          de los Campos</a> (<span class="anio">1867–1948</span><a class="ast" id="ra-3" href="#nota-1-3" aria-label="Nota: Delmiro de los Campos, 1867–1948">*</a>), hijo de Sandalio, el de la comisión de 1885, fue hacendado
           en el paraje del Sarandí, el mismo río que aparece en la escritura de su bisabuelo. El 20 de
-          agosto de <span class="anio">1896</span> se casó en Flores con <span class="nombre">Luisa
-          María Soma Peraza</span>, nacida el 31 de enero de <span class="anio">1877</span> en
+          agosto de <span class="anio">1896</span> se casó en Flores con <a class="nombre" href="#pc-9" id="h-9" data-f="9">Luisa
+          María Soma Peraza</a>, nacida el 31 de enero de <span class="anio">1877</span> en
           Trinidad, y tuvieron doce hijos. Alguna vez probó también con el comercio en Montevideo: el
           6 de febrero de <span class="anio">1912</span> el Diario Oficial publicó la disolución de
           una sociedad y dejó "completamente separado y desligado de toda obligación al ex socio señor
@@ -1192,20 +1328,18 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Luisa era hija de <span class="nombre">Juan Soma</span> y <span class="nombre">Joaquina
-          Peraza</span>. Ese bautismo nombra también a los abuelos: José y María Antonia Mármol por
+          Luisa era hija de <a class="nombre" href="#pc-18" id="h-18" data-f="18">Juan Soma</a> y <a class="nombre" href="#pc-19" id="h-19" data-f="19">Joaquina
+          Peraza</a>. Ese bautismo nombra también a los abuelos: José y María Antonia Mármol por
           el lado de Juan, Francisco y Luisa Díaz por el de Joaquina. De ninguno de los cuatro dice de
           dónde era. Lo que sí puede deducirse es cuándo llegaron: como la hermana mayor, María,
-          nació entre <span class="anio">1871</span> y <span class="anio">1873</span><span
-          class="ast">*</span> y ya en el Uruguay, la pareja cruzó antes de <span
+          nació entre <span class="anio">1871</span> y <span class="anio">1873</span><a class="ast" id="ra-4" href="#nota-1-8" aria-label="Nota: María Soma, entre 1871 y 1873">*</a> y ya en el Uruguay, la pareja cruzó antes de <span
           class="anio">1873</span>.
         </p>
 
         <p>
           Juan murió en Trinidad el <strong>2 de mayo de <span class="anio">1887</span></strong>,
           cuando Luisa tenía diez años. El acta lo anota italiano, de cincuenta años, casado con doña
-          Joaquina Peraza (el escribiente puso "Gerazza"), también italiana<span
-          class="ast">*</span>, de cuarenta y cinco, y da como hijos a José, Rufino, María y Luisa.
+          Joaquina Peraza (el escribiente puso "Gerazza"), también italiana<a class="ast" id="ra-5" href="#nota-1-7" aria-label="Nota: Joaquina Peraza, italiana">*</a>, de cuarenta y cinco, y da como hijos a José, Rufino, María y Luisa.
         </p>
 
         <p>
@@ -1223,7 +1357,7 @@ document.addEventListener('DOMContentLoaded', function(){
           Luisa. Rufino era jornalero y no sabía firmar. Se casó por civil con Carmen Andrade el 27
           de abril de <span class="anio">1910</span>, en Ombúes de Lavalle, en Colonia. El acta anota
           a sus padres, Juan Soma y Joaquina Peraza, como fallecidos, y lo da nacido el 16 de
-          noviembre de <span class="anio">1874</span><span class="ast">*</span>.
+          noviembre de <span class="anio">1874</span><a class="ast" id="ra-6" href="#nota-1-6" aria-label="Nota: Rufino Soma, 16 de noviembre de 1874">*</a>.
         </p>
 
         <p>
@@ -1238,7 +1372,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Eloy de los Campos Somma</span> nació el <span class="anio">9 de enero
+          <a class="nombre" href="#pc-4" id="h-4" data-f="4">Eloy de los Campos Somma</a> nació el <span class="anio">9 de enero
           de 1920</span> en Trinidad y fue bautizado dos meses después en la parroquia de La Santísima
           Trinidad. Es el <strong>abuelo paterno</strong> de Pablo, y uno de los doce hijos de
           Delmiro y Luisa. Murió el 9 de enero de <span class="anio">2000</span>, el día que
@@ -1276,9 +1410,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Según se cuenta en la familia, Eloy dejó la escuela y empezó a trabajar a los ocho años en un hotel de la plaza de Trinidad, llevando comida a otras casas; tenía ocho en <span class="anio">1928</span>, cuando la familia vivía todavía allí. Sobre esa plaza estaba el Hotel Central, el que recomendaba a los viajeros la guía de turismo de <span class="anio">1931</span>. De grande fue chofer. También trabajó en <span
-          class="nombre">Mosaicos Rivas y Cía</span><span class="ast">*</span>, una fábrica de baldosas y pisos de imitación
+          class="nombre">Mosaicos Rivas y Cía</span><a class="ast" id="ra-7" href="#nota-1-1" aria-label="Nota: Mosaicos Rivas y Cía">*</a>, una fábrica de baldosas y pisos de imitación
           mármol que proveía obras en Montevideo. Corrió en bicicleta para el <span
-          class="nombre">Club Olimpia</span><span class="ast">*</span> de Colón, el barrio adonde se había mudado la familia; el club
+          class="nombre">Club Olimpia</span><a class="ast" id="ra-8" href="#nota-1-2" aria-label="Nota: Eloy y el Club Olimpia">*</a> de Colón, el barrio adonde se había mudado la familia; el club
           ganaba por esos años carreras y campeonatos de ciclismo en todo el país.
         </p>
 
@@ -1300,47 +1434,47 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <div class="notas-fuente">
           <h3>Lo que lleva asterisco</h3>
-          <p>
+          <p id="nota-1-1">
             <strong>Mosaicos Rivas y Cía.</strong> Dato de familia. La fábrica existió: un aviso en
             <em>El Progreso Arquitectónico en el Uruguay</em> la anuncia especializada en pisos
             finos e imitación mármol, y dice que puso las baldosas y los pisos monolíticos de un
-            edificio de la Avenida General Garzón.
+            edificio de la Avenida General Garzón. <a class="volver" href="#ra-7">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-2">
             <strong>Eloy y el Club Olimpia.</strong> Dato de familia. El club existió y tuvo una
             sección de ciclismo activa por décadas, con corredores propios y carreras organizadas
-            desde por lo menos 1922; no se encontró el nombre de Eloy en las crónicas de la época.
+            desde por lo menos 1922; no se encontró el nombre de Eloy en las crónicas de la época. <a class="volver" href="#ra-8">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
-            <strong>Delmiro de los Campos, 1867–1948.</strong> Su acta de casamiento, de 1896, lo hace nacer en Trinidad el 3 de febrero de 1867, y las edades que declaró al anotar a sus hijos cierran con ese año. Antes este libro decía 1869–1944, tomado de un árbol de FamilySearch hecho por usuarios, que no citaba de dónde sacaba la muerte. La de 1948 es la de un Delmiro de los Campos de ochenta y dos años, viudo, que murió en el Hospital Maciel de Montevideo: la edad y la viudez cuadran con él, pero el acta no nombra a nadie de la familia, así que es probable y no seguro.
+          <p id="nota-1-3">
+            <strong>Delmiro de los Campos, 1867–1948.</strong> Su acta de casamiento, de 1896, lo hace nacer en Trinidad el 3 de febrero de 1867, y las edades que declaró al anotar a sus hijos cierran con ese año. Antes este libro decía 1869–1944, tomado de un árbol de FamilySearch hecho por usuarios, que no citaba de dónde sacaba la muerte. La de 1948 es la de un Delmiro de los Campos de ochenta y dos años, viudo, que murió en el Hospital Maciel de Montevideo: la edad y la viudez cuadran con él, pero el acta no nombra a nadie de la familia, así que es probable y no seguro. <a class="volver" href="#ra-3">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-4">
             <strong>Felipe Pascual de los Campos, 19 de mayo de 1796.</strong> La reseña de la
             familia da esa fecha; el libro sobre Trinidad lo hace nacer el 25 de mayo de 1798. Se
             eligió 1796 porque es el único año que cuadra con los noventa y tres que le pone su acta
-            de defunción.
+            de defunción. <a class="volver" href="#ra-1">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-5">
             <strong>Rolando de los Campos, hacia 1843.</strong> Su acta de defunción le da cincuenta
             y ocho años, lo que da 1843; su obituario dice cincuenta y cinco, que daría 1846. Se
             eligió el acta, que es el documento levantado en el momento. El mismo par de fuentes
-            discrepa sobre dónde nació: el obituario dice Porongos y el acta, Montevideo. Para el lugar se siguió el obituario, porque el acta la declararon dos conocidos, no parientes.
+            discrepa sobre dónde nació: el obituario dice Porongos y el acta, Montevideo. Para el lugar se siguió el obituario, porque el acta la declararon dos conocidos, no parientes. <a class="volver" href="#ra-2">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-6">
             <strong>Rufino Soma, 16 de noviembre de 1874.</strong> Es la fecha de su bautismo. En su
             acta de matrimonio de 1910 él declaró haber nacido el mismo día de 1879, cinco años más
-            tarde. Se eligió el bautismo, que se registró a los pocos días de nacer.
+            tarde. Se eligió el bautismo, que se registró a los pocos días de nacer. <a class="volver" href="#ra-6">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-7">
             <strong>Joaquina Peraza, italiana.</strong> Así la anota el acta de defunción de su
             marido, en 1887. El bautismo de su hija Luisa, diez años antes, la había anotado
-            española, y no hay un tercer documento que desempate.
+            española, y no hay un tercer documento que desempate. <a class="volver" href="#ra-5">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-1-8">
             <strong>María Soma, entre 1871 y 1873.</strong> Su bautismo no apareció; el acta de
             su casamiento, en 1895, le da veinticuatro años, que la harían nacer hacia 1871; otra
             acta de 1918 le da cuarenta y cinco, que darían 1873. Las dos edades la hacen nacer antes
-            que Rufino, y por eso alcanzan para fechar la llegada de los padres.
+            que Rufino, y por eso alcanzan para fechar la llegada de los padres. <a class="volver" href="#ra-4">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
         </div>
       </div>
@@ -1377,21 +1511,21 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Félix Brito</span> era paraguayo y vivía en Treinta y Tres, jornalero,
-          casado con <span class="nombre">Amara Burgos</span>. El apellido pasa a los hijos como
+          <a class="nombre" href="#pc-44" id="h-44" data-f="44">Félix Brito</a> era paraguayo y vivía en Treinta y Tres, jornalero,
+          casado con <a class="nombre" href="#pc-45" id="h-45" data-f="45">Amara Burgos</a>. El apellido pasa a los hijos como
           Britos, con ese. Un paraguayo nacido hacia <span
           class="anio">1848</span> pudo haber cruzado a este lado durante la guerra de la Triple
           Alianza o poco después. Del otro lado del río Tacuarí, en la primera sección de Cerro Largo, vivían
-          <span class="nombre">Antonio Duarte</span> y <span class="nombre">Antonia González</span>,
-          los dos brasileros, él también jornalero. Un hijo de Félix, <span class="nombre">Tomás Britos</span>, se casó con una hija de Antonio y Antonia, <span class="nombre">Rufina Duarte</span>. En <span class="anio">1914</span>, cuando nació Antonio, un hijo de esa pareja, el acta todavía encontró vivos a dos de los abuelos: Félix, paraguayo, viudo, de sesenta y siete años, que vivía en Tacuarembó, y Antonia González, de setenta. Antonio Duarte ya había muerto.
+          <a class="nombre" href="#pc-46" id="h-46" data-f="46">Antonio Duarte</a> y <a class="nombre" href="#pc-47" id="h-47" data-f="47">Antonia González</a>,
+          los dos brasileros, él también jornalero. Un hijo de Félix, <a class="nombre" href="#pc-22" id="h-22" data-f="22">Tomás Britos</a>, se casó con una hija de Antonio y Antonia, <a class="nombre" href="#pc-23" id="h-23" data-f="23">Rufina Duarte</a>. En <span class="anio">1914</span>, cuando nació Antonio, un hijo de esa pareja, el acta todavía encontró vivos a dos de los abuelos: Félix, paraguayo, viudo, de sesenta y siete años, que vivía en Tacuarembó, y Antonia González, de setenta. Antonio Duarte ya había muerto.
         </p>
 
         <p>
-          Tomás nació hacia <span class="anio">1871</span><span class="ast">*</span>. Tuvo un hermano con casi el mismo nombre, Tomás Villanueva Britos, nacido el 22 de septiembre de <span class="anio">1874</span> en la Costa de la Yeguada, que en <span class="anio">1901</span> se casó con Avelina Silvera en Los Laureles, en Treinta y Tres. En esa acta declaró a los mismos padres, Félix Brito, paraguayo, y Amara Burgos. Los dos anduvieron por los mismos pagos, y los papeles los confunden más de una vez. Rufina murió en Treinta y Tres en <span class="anio">1944</span>, y Tomás, el 5 de junio de <span class="anio">1956</span>, en San Bautista, en Canelones, adonde había ido a parar buena parte de la familia.
+          Tomás nació hacia <span class="anio">1871</span><a class="ast" id="ra-9" href="#nota-2-2" aria-label="Nota: Tomás Britos, hacia 1871">*</a>. Tuvo un hermano con casi el mismo nombre, Tomás Villanueva Britos, nacido el 22 de septiembre de <span class="anio">1874</span> en la Costa de la Yeguada, que en <span class="anio">1901</span> se casó con Avelina Silvera en Los Laureles, en Treinta y Tres. En esa acta declaró a los mismos padres, Félix Brito, paraguayo, y Amara Burgos. Los dos anduvieron por los mismos pagos, y los papeles los confunden más de una vez. Rufina murió en Treinta y Tres en <span class="anio">1944</span>, y Tomás, el 5 de junio de <span class="anio">1956</span>, en San Bautista, en Canelones, adonde había ido a parar buena parte de la familia.
         </p>
 
         <p>
-          La hija de Tomás y Rufina, <span class="nombre">Percilia Britos</span>, nació el 26 de agosto de <span
+          La hija de Tomás y Rufina, <a class="nombre" href="#pc-11" id="h-11" data-f="11">Percilia Britos</a>, nació el 26 de agosto de <span
           class="anio">1898</span>, a las seis de la mañana, en la casa de sus padres. Dos semanas
           después Tomás fue a inscribirla ante el juez de paz Domingo Lauz y le dictó de memoria los
           nombres, las edades y las nacionalidades de los cuatro abuelos de la criatura. De esa memoria sale todo lo que este árbol sabe del Paraguay y del Brasil. Percilia es la primera que se conoce de por lo menos once hijos que Tomás y Rufina tuvieron en veintiséis años, mientras la familia se movía entre Tacuarí, Arbolito y Fraile Muerto.
@@ -1403,9 +1537,8 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          Percilia se juntaría más adelante con <span class="nombre">Lidoro Acosta</span>, y de esa
-          pareja sale Reina. Del lado de Lidoro la familia se movió más todavía. Sus padres, <span
-          class="nombre">Justiniano Acosta</span> y <span class="nombre">Petrona Jiménez</span>,
+          Percilia se juntaría más adelante con <a class="nombre" href="#pc-10" data-f="10">Lidoro Acosta</a>, y de esa
+          pareja sale Reina. Del lado de Lidoro la familia se movió más todavía. Sus padres, <a class="nombre" href="#pc-20" id="h-20" data-f="20">Justiniano Acosta</a> y <a class="nombre" href="#pc-21" id="h-21" data-f="21">Petrona Jiménez</a>,
           aparecen primero en Florida: fueron padrinos en la capilla del Sauce en octubre de <span
           class="anio">1878</span> y allí nació su hijo Pedro, en junio de <span
           class="anio">1879</span>. Después vivieron en Treinta y Tres.
@@ -1416,9 +1549,8 @@ document.addEventListener('DOMContentLoaded', function(){
           Justiniano compareció ante el juez de paz a declarar la muerte de otro hijo, también
           Justiniano, de tres años, "hijo del exponente y su legítima esposa Petrona Jiménez". Como en
           la inscripción de Percilia, el acta le pidió los nombres de los abuelos. Así se sabe que
-          Justiniano era hijo de <span class="nombre">Basilio Acosta</span> y de <span
-          class="nombre">Leonarda Acosta</span>, que entonces vivía viuda en Tacuarembó, y que Petrona era hija de
-          <span class="nombre">Simón Jiménez</span> y de <span class="nombre">Josefa Vecerje</span>.
+          Justiniano era hijo de <a class="nombre" href="#pc-40" id="h-40" data-f="40">Basilio Acosta</a> y de <a class="nombre" href="#pc-41" id="h-41" data-f="41">Leonarda Acosta</a>, que entonces vivía viuda en Tacuarembó, y que Petrona era hija de
+          <a class="nombre" href="#pc-42" id="h-42" data-f="42">Simón Jiménez</a> y de <a class="nombre" href="#pc-43" id="h-43" data-f="43">Josefa Vecerje</a>.
         </p>
 
         <p>
@@ -1435,10 +1567,10 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Lidoro Acosta</span> nació el 28 de febrero de <span
+          <a class="nombre" href="#pc-10" id="h-10" data-f="10">Lidoro Acosta</a> nació el 28 de febrero de <span
           class="anio">1885</span> en Treinta y Tres y de grande se estableció en Fraile Muerto como
           jornalero. El 14 de septiembre de <span class="anio">1911</span>, a las nueve de la noche,
-          se casó allí con <span class="nombre">Margarita Malvina Menchaca</span>, nacida en Bañado de
+          se casó allí con <a class="nombre" href="#pc-10" id="h-c44" data-f="c44">Margarita Malvina Menchaca</a>, nacida en Bañado de
           Medina el 25 de octubre de <span class="anio">1895</span>. Ella tenía quince años y él
           veintiséis. La madre de la novia ya había muerto: el acta anota viudo al padre, Natividad
           Menchaca. Ninguno de los dos sabía escribir.
@@ -1494,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Reina Verderina Acosta Britos</span> nació el <span class="anio">6 de
+          <a class="nombre" href="#pc-5" id="h-5" data-f="5">Reina Verderina Acosta Britos</a> nació el <span class="anio">6 de
           enero de 1922</span> en Fraile Muerto, y en su partida lleva el apellido de la madre, como sus hermanos. Le pusieron Reina porque había nacido justo el día de Reyes, y Reina le dijeron siempre.
         </p>
 
@@ -1548,11 +1680,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <div class="notas-fuente">
           <h3>Lo que lleva asterisco</h3>
-          <p>
+          <p id="nota-2-1">
             <strong>Antonio Duarte y Antonia González, brasileros.</strong> Así los declaró Tomás en 1898, al anotar a Percilia. El acta de nacimiento de su nieto Antonio, en 1914, anota a Antonia como oriental. Se dejó lo que dijo Tomás, que era su yerno y los conocía.
           </p>
-          <p>
-            <strong>Tomás Britos, hacia 1871.</strong> Su acta de defunción, de 1956, lo hace nacer el 7 de marzo de 1871 en la sexta sección de Treinta y Tres, hijo de Félix Britos y Amara Burgos. Las edades que le anotaron en los nacimientos de sus hijos van de veinticinco años en 1898 a cincuenta y tres en 1924, y caen entre 1871 y 1873. Antes este libro le daba el 22 de septiembre de 1874, pero esa fecha es la de su hermano Tomás Villanueva Britos, que la declaró al casarse con Avelina Silvera en 1901 y murió en 1928. Se eligió el año del acta de defunción; no hay partida de bautismo que desempate.
+          <p id="nota-2-2">
+            <strong>Tomás Britos, hacia 1871.</strong> Su acta de defunción, de 1956, lo hace nacer el 7 de marzo de 1871 en la sexta sección de Treinta y Tres, hijo de Félix Britos y Amara Burgos. Las edades que le anotaron en los nacimientos de sus hijos van de veinticinco años en 1898 a cincuenta y tres en 1924, y caen entre 1871 y 1873. Antes este libro le daba el 22 de septiembre de 1874, pero esa fecha es la de su hermano Tomás Villanueva Britos, que la declaró al casarse con Avelina Silvera en 1901 y murió en 1928. Se eligió el año del acta de defunción; no hay partida de bautismo que desempate. <a class="volver" href="#ra-9">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
         </div>
       </div>
@@ -1599,12 +1731,12 @@ document.addEventListener('DOMContentLoaded', function(){
           cuatro hermanos Nin y Soler, José Pablo, Antonio, Juan y Esteban, se dedicaron al comercio
           y a la industria en Montevideo y en Colonia. Los hace llegar a fines del siglo XVIII y los
           pone entre los miñones catalanes, los voluntarios que en <span class="anio">1806</span>
-          pelearon para recuperar Buenos Aires de manos de los ingleses. Pero <span class="nombre">Esteban Nin y
-          Soler</span> nació hacia <span class="anio">1791</span> en El Vendrell, así
-          que su viaje fue posterior. Era hijo de <span class="nombre">Antonio Nin y
-          Estalella</span>, de Lliurona de Albañá, en Gerona, y de <span class="nombre">María
-          Soler</span>, de El Vendrell. El 4 de abril de <span class="anio">1821</span> se casó en
-          Colonia del Sacramento con <span class="nombre">Juana Eusebia Alagón Crosa</span>,
+          pelearon para recuperar Buenos Aires de manos de los ingleses. Pero <a class="nombre" href="#pc-96" id="h-96" data-f="96">Esteban Nin y
+          Soler</a> nació hacia <span class="anio">1791</span> en El Vendrell, así
+          que su viaje fue posterior. Era hijo de <a class="nombre" href="#pc-192" id="h-192" data-f="192">Antonio Nin y
+          Estalella</a>, de Lliurona de Albañá, en Gerona, y de <a class="nombre" href="#pc-193" id="h-193" data-f="193">María
+          Soler</a>, de El Vendrell. El 4 de abril de <span class="anio">1821</span> se casó en
+          Colonia del Sacramento con <a class="nombre" href="#pc-97" id="h-97" data-f="97">Juana Eusebia Alagón Crosa</a>,
           colonense, y entre sus hijos estuvieron Silveria, Alejandrina y Federico. Ese mismo año el Cabildo de Colonia
           designó a un José Alagón, casi seguro el padre de Juana, para representar a la ciudad en el
           Congreso Cisplatino. Era el mismo congreso para el que ese año, en San José, Pedro de los
@@ -1619,7 +1751,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Esteban es el antepasado directo, pero el hermano que dejó más rastro público fue otro.
-          <span class="nombre">Antonio Nin y Soler</span> se
+          <a class="nombre" href="#pc-96" id="h-c50" data-f="c50">Antonio Nin y Soler</a> se
           casó en la Matriz de Montevideo en <span class="anio">1813</span> con Benita Reyes. La
           memoria de la familia lo cuenta como comerciante y
           navegante que llegó en su propio barco hasta Madagascar, y que estuvo preso en la fortaleza
@@ -1630,7 +1762,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Dos hijos de Antonio Nin y Soler dejaron nombre, y son primos hermanos del hijo de Esteban, no
-          abuelos de nadie de esta casa. <span class="nombre">Federico Nin Reyes</span> nació en
+          abuelos de nadie de esta casa. <a class="nombre" href="#pc-96" id="h-c51" data-f="c51">Federico Nin Reyes</a> nació en
           Montevideo el 31 de diciembre de <span class="anio">1819</span>. Fue ministro de Hacienda
           de Pereira desde <span class="anio">1857</span> y ministro de Gobierno de Berro, con la
           cartera de Guerra a su cargo en <span class="anio">1863</span>. Hacia <span
@@ -1640,7 +1772,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Su hermano <span class="nombre">Antonio Nin y Reyes</span> fue cónsul del Uruguay en el
+          Su hermano <a class="nombre" href="#pc-96" id="h-c52" data-f="c52">Antonio Nin y Reyes</a> fue cónsul del Uruguay en el
           Paraguay de López, y su nombre figura entre los muertos en las cárceles del Mariscal.
         </p>
 
@@ -1657,10 +1789,10 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Federico Nin Alagón</span>, hijo de Esteban y Juana, hizo
+          <a class="nombre" href="#pc-48" id="h-48" data-f="48">Federico Nin Alagón</a>, hijo de Esteban y Juana, hizo
           la carrera del empleado público: durante muchos años fue contador principal de la Aduana de
-          Montevideo. En <span class="anio">1857</span> se casó con <span class="nombre">Matilde
-          Aguilar Pareja</span>, hija de Francisco Aguilar y Javiera Pareja, y murió el 14 de
+          Montevideo. En <span class="anio">1857</span> se casó con <a class="nombre" href="#pc-49" id="h-49" data-f="49">Matilde
+          Aguilar Pareja</a>, hija de Francisco Aguilar y Javiera Pareja, y murió el 14 de
           septiembre de <span class="anio">1898</span> en los altos de la calle Mercedes 217, a los
           setenta y cinco años. Su acta de defunción lo anota empleado, nacido en el departamento de
           la Colonia e hijo de Esteban Nin y Juana Alagón, y nombra a sus tres hijos: Federico, María
@@ -1678,7 +1810,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Ese Alberto, primo de la línea directa y no antepasado, es casi con seguridad el doctor
-          <span class="nombre">Alberto Nin</span> (<span class="anio">1853–1919</span>), catedrático
+          <a class="nombre" href="#pc-48" id="h-c55" data-f="c55">Alberto Nin</a> (<span class="anio">1853–1919</span>), catedrático
           de Derecho Penal y ministro del Uruguay en Londres entre <span class="anio">1887</span> y
           <span class="anio">1896</span>. Se casó en <span class="anio">1877</span> con Matilde
           Frías, y al año siguiente les nació el escritor Alberto Nin Frías.
@@ -1691,11 +1823,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Los Aberastury vienen del otro lado del río.
-          <span class="nombre">Eugenio Aberastury</span> nació en Buenos Aires en
-          <span class="anio">1796</span>, hijo de <span class="nombre">José Aberastury</span> y de
-          <span class="nombre">Jacinta Salas</span>. El 11 de febrero de <span
-          class="anio">1824</span> se casó en San José de Flores, en las afueras de Buenos Aires, con <span class="nombre">Juana
-          González</span>, porteña, hija de Manuel González e Isidora Sigarra, y se fueron a Paysandú.
+          <a class="nombre" href="#pc-106" id="h-106" data-f="106">Eugenio Aberastury</a> nació en Buenos Aires en
+          <span class="anio">1796</span>, hijo de <a class="nombre" href="#pc-212" id="h-212" data-f="212">José Aberastury</a> y de
+          <a class="nombre" href="#pc-213" id="h-213" data-f="213">Jacinta Salas</a>. El 11 de febrero de <span
+          class="anio">1824</span> se casó en San José de Flores, en las afueras de Buenos Aires, con <a class="nombre" href="#pc-107" id="h-107" data-f="107">Juana
+          González</a>, porteña, hija de Manuel González e Isidora Sigarra, y se fueron a Paysandú.
           En noviembre de <span class="anio">1825</span>, ya comandante, tenía sus fuerzas
           acantonadas en Salto. En <span class="anio">1827</span> organizó la Receptoría de Aduana y desde el 8 de julio de
           <span class="anio">1830</span> fue jefe político y de policía, por cinco meses. Le tocó
@@ -1705,7 +1837,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Murió el 26 de diciembre de <span class="anio">1846</span><span class="ast">*</span>, cuando cayó Paysandú en la campaña
+          Murió el 26 de diciembre de <span class="anio">1846</span><a class="ast" id="ra-10" href="#nota-3-2" aria-label="Nota: Eugenio Aberastury, 26 de diciembre de 1846">*</a>, cuando cayó Paysandú en la campaña
           de Rivera contra el litoral: lo mataron con la ciudad ya rendida, a los cincuenta años. Las
           versiones no coinciden. Una carta de Urquiza de enero de <span class="anio">1847</span> dice que fue asesinado a
           sangre fría "á vista de su hijo". Augusto Schulkin, que reunió las vidas de Paysandú en un diccionario biográfico, cuenta que fue a puñaladas en la puerta de su casa. Y el periódico del Cerrito, el campo de Oribe durante el Sitio, dice que lo degollaron en la casa de una vecina.
@@ -1728,7 +1860,7 @@ document.addEventListener('DOMContentLoaded', function(){
           class="anio">1864</span> no quiso dejar la ciudad y se quedó hasta el final. Otras crónicas
           del sitio la nombran entre las señoras que cocinaban para los enfermos del hospital de
           sangre. Cobró una pensión del Estado hasta su muerte, en agosto de <span
-          class="anio">1878</span>, en la misma Paysandú<span class="ast">*</span>.
+          class="anio">1878</span>, en la misma Paysandú<a class="ast" id="ra-11" href="#nota-3-3" aria-label="Nota: Juana González, Paysandú, agosto de 1878">*</a>.
         </p>
 
         <div class="mojon">
@@ -1739,15 +1871,15 @@ document.addEventListener('DOMContentLoaded', function(){
         <p>
           Los Sacarello llegaban por esos mismos años y de más lejos. En Montevideo había una
           pequeña colonia genovesa que bajaba al puerto, y de ahí salen.
-          <span class="nombre">Juan Bautista Sacarello</span> y <span class="nombre">Magdalena
-          Parodi</span> se casaron en Génova en <span class="anio">1826</span>. Él figura desde <span
+          <a class="nombre" href="#pc-104" id="h-104" data-f="104">Juan Bautista Sacarello</a> y <a class="nombre" href="#pc-105" id="h-105" data-f="105">Magdalena
+          Parodi</a> se casaron en Génova en <span class="anio">1826</span>. Él figura desde <span
           class="anio">1834</span> en la prensa de Montevideo como patrón de goletas de cabotaje
           fluvial. Mandó la <em>Esperanza Oriental</em>, de sesenta toneladas, que iba de Paysandú a las
           Higueritas y a Colonia con cueros y frutos del país; la <em>Palma del Uruguay</em>, en <span
           class="anio">1836</span>; la <em>Paloma</em>, en <span class="anio">1839</span>, a la carga
           para la Colonia. En <span class="anio">1847</span> un Juan Bautista Sacarello aparece con el
           grado de capitán en el rol de la Legión Italiana de Garibaldi durante el Sitio de
-          Montevideo<span class="ast">*</span>. Murió, según Schulkin, en <span
+          Montevideo<a class="ast" id="ra-12" href="#nota-3-1" aria-label="Nota: Juan Bautista Sacarello, capitán en 1847">*</a>. Murió, según Schulkin, en <span
           class="anio">1877</span>.
         </p>
 
@@ -1766,12 +1898,11 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Antonio Bartolomeo Sacarello Parodi</span>, hijo de Juan Bautista y
-          Magdalena, nació en Génova hacia <span class="anio">1827</span><span class="ast">*</span>. Los dos apellidos que trajo son ligures: Parodi es del entorno de Génova, y Sacarello
+          <a class="nombre" href="#pc-52" id="h-52" data-f="52">Antonio Bartolomeo Sacarello Parodi</a>, hijo de Juan Bautista y
+          Magdalena, nació en Génova hacia <span class="anio">1827</span><a class="ast" id="ra-13" href="#nota-3-4" aria-label="Nota: Antonio Bartolomeo Sacarello, hacia 1827">*</a>. Los dos apellidos que trajo son ligures: Parodi es del entorno de Génova, y Sacarello
           recuerda al Monte Saccarello, la cumbre más alta de Liguria, con sus 2.201 metros. El
           pueblo de origen más probable es Spotorno, en la costa, de donde salió también una rama de
-          Sacarello que terminó en Gibraltar y que no vuelve a cruzarse con esta. Tuvo al menos un hermano, <span
-          class="nombre">Juan Sacarello Parodi</span> (<span class="anio">1830–1909</span>), que
+          Sacarello que terminó en Gibraltar y que no vuelve a cruzarse con esta. Tuvo al menos un hermano, <a class="nombre" href="#pc-52" id="h-c63" data-f="c63">Juan Sacarello Parodi</a> (<span class="anio">1830–1909</span>), que
           emigró como él a Montevideo, se casó con Manuela Scaglia y tuvo ocho hijos.
         </p>
 
@@ -1789,8 +1920,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          El 30 de enero de <span class="anio">1853</span> se casó en Paysandú con <span
-          class="nombre">Eugenia de los Dolores Aberastury González</span> (<span
+          El 30 de enero de <span class="anio">1853</span> se casó en Paysandú con <a class="nombre" href="#pc-53" id="h-53" data-f="53">Eugenia de los Dolores Aberastury González</a> (<span
           class="anio">1826–1916</span>), la hija de aquel coronel Aberastury al que habían matado en
           la misma ciudad seis años antes. Ahí quedan enlazados genoveses y porteños.
           Aberastury es apellido vasco, pero
@@ -1815,7 +1945,7 @@ document.addEventListener('DOMContentLoaded', function(){
           cerraba los tratos tan rápido que le quedó el apodo de <strong>"Escoba de Hierro."</strong>
           Los manifiestos de aduana de <span class="anio">1878</span> y <span
           class="anio">1879</span> traen a un "B. Sacarello" entre los importadores. Murió en
-          Montevideo el 22 de noviembre de <span class="anio">1882</span><span class="ast">*</span>,
+          Montevideo el 22 de noviembre de <span class="anio">1882</span><a class="ast" id="ra-14" href="#nota-3-5" aria-label="Nota: Bartolo Sacarello, 22 de noviembre de 1882">*</a>,
           y así lo despidió la prensa:
         </p>
 
@@ -1827,7 +1957,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <p>
           El apellido cambió de forma en el camino. En Génova y en las listas de pasajeros se escribía
           Saccarello, con doble c; en los papeles de Montevideo aparece de las dos formas, según quién
-          tuviera la pluma. Cuando bautizaron a su hija <span class="nombre">Elvira Ciriaca</span> en
+          tuviera la pluma. Cuando bautizaron a su hija <a class="nombre" href="#pc-26" id="h-c65" data-f="c65">Elvira Ciriaca</a> en
           la Catedral, el 3 de diciembre de <span class="anio">1870</span>, el cura anotó "Don
           Bartolomé Sacarello, italiano", y a su hermano Juan, que fue el padrino, como Sacarelo. Once
           años después, en la misma Catedral, otro sacerdote bautizó a una nieta y escribió Saccarello
@@ -1862,7 +1992,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Casi ochenta y dos años después del crimen de Paysandú, la historia del coronel volvió a un
-          papel, y la trajo una de sus nietas: <span class="nombre">Aurelia</span>, hija de Bartolo y
+          papel, y la trajo una de sus nietas: <a class="nombre" href="#pc-26" id="h-c66" data-f="c66">Aurelia</a>, hija de Bartolo y
           Eugenia, que los papeles anotan Aurelia Sacarelo de Liendo. Tenía setenta años y era viuda
           de Doroteo Liendo, muerto en <span class="anio">1902</span>. En agosto de <span
           class="anio">1928</span> le pidió al Senado una pensión graciable por ser nieta del
@@ -1881,14 +2011,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Julia Castellanos se iba a casar con Juan Elías, el hijo de Bartolo, y traía un origen
-          todavía más largo. Era hija de <span class="nombre">José María Castellanos</span>, nacido
+          todavía más largo. Era hija de <a class="nombre" href="#pc-54" id="h-54" data-f="54">José María Castellanos</a>, nacido
           en <span class="anio">1808</span> en Chuquisaca, que hoy se llama Sucre y queda en
           Bolivia.
         </p>
 
         <p>
-          El padre de José María fue el doctor <span class="nombre">Francisco Remigio
-          Castellanos</span>, salteño de <span class="anio">1782</span><span class="ast">*</span> y abogado de la Real
+          El padre de José María fue el doctor <a class="nombre" href="#pc-108" id="h-108" data-f="108">Francisco Remigio
+          Castellanos</a>, salteño de <span class="anio">1782</span><a class="ast" id="ra-15" href="#nota-3-6" aria-label="Nota: Francisco Remigio Castellanos, 1782">*</a> y abogado de la Real
           Audiencia de Charcas, que se plegó a la revolución de <span class="anio">1810</span>.
           Después fue asesor del Cabildo de Buenos Aires y, en <span class="anio">1813</span>,
           integrante de la Junta Municipal de Canelones, y llegó a diputado del Congreso
@@ -1899,10 +2029,9 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           José María fue hacendado y hombre de negocios. El 25 de marzo de <span
-          class="anio">1837</span><span class="ast">*</span> se casó en Montevideo con <span class="nombre">Eumenia Lima</span>,
-          nacida allí el 6 de marzo de <span class="anio">1816</span>. Era hija de <span
-          class="nombre">María del Rosario Vidal</span> y de <span class="nombre">Manuel Fernandes
-          Lima</span>, un comerciante llegado de Portugal. Él venía de la feligresía de Santa María de
+          class="anio">1837</span><a class="ast" id="ra-16" href="#nota-3-10" aria-label="Nota: José María Castellanos y Eumenia Lima, 25 de marzo de 1837">*</a> se casó en Montevideo con <a class="nombre" href="#pc-55" id="h-55" data-f="55">Eumenia Lima</a>,
+          nacida allí el 6 de marzo de <span class="anio">1816</span>. Era hija de <a class="nombre" href="#pc-111" id="h-111" data-f="111">María del Rosario Vidal</a> y de <a class="nombre" href="#pc-110" id="h-110" data-f="110">Manuel Fernandes
+          Lima</a>, un comerciante llegado de Portugal. Él venía de la feligresía de Santa María de
           Fregosa, en el arzobispado de Braga. José María murió en Montevideo el 26 de febrero de
           <span class="anio">1882</span>, nueve meses antes que su consuegro Bartolo.
         </p>
@@ -1921,10 +2050,9 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Juan Elías Sacarello Aberastury</span> era hijo de Bartolo y Eugenia,
-          y hermano de aquella Aurelia. Nació hacia <span class="anio">1858</span><span
-          class="ast">*</span> y se casó el primero de junio de <span class="anio">1878</span> con
-          <span class="nombre">Julia Castellanos Lima</span>. Vivieron primero en la calle Cerrito 280, y ahí perdieron un hijo.
+          <a class="nombre" href="#pc-26" id="h-26" data-f="26">Juan Elías Sacarello Aberastury</a> era hijo de Bartolo y Eugenia,
+          y hermano de aquella Aurelia. Nació hacia <span class="anio">1858</span><a class="ast" id="ra-17" href="#nota-3-11" aria-label="Nota: Juan Elías Sacarello Aberastury, hacia 1858">*</a> y se casó el primero de junio de <span class="anio">1878</span> con
+          <a class="nombre" href="#pc-27" id="h-27" data-f="27">Julia Castellanos Lima</a>. Vivieron primero en la calle Cerrito 280, y ahí perdieron un hijo.
           El 15 de noviembre de <span class="anio">1879</span>, a las ocho de la noche, nació un varón
           al que llamaron Eugenio, por el bisabuelo de Paysandú, y murió diecinueve horas después. Dos días más tarde lo anotó en el registro civil el hermano de Julia, José María Castellanos hijo, y en esa acta Juan Elías figura de veintiún años y comerciante.
         </p>
@@ -1942,7 +2070,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <p>
           Dos años después, el 13 de septiembre de <span class="anio">1881</span>, nació una hija a
           la que llamaron Julia, como la madre, y que fue bautizada en la Catedral el 12 de enero de <span class="anio">1882</span>. Los padrinos fueron dos de sus abuelos, José María Castellanos y Eugenia Aberastury, y el acta anota también al abuelo Bartolomé, que murió ese mismo año. Después vinieron Adolfo Gerónimo, Carlos María y Eloísa, la bisabuela de Pablo, y casi seguro también
-          Sofía<span class="ast">*</span>, que según los papeles fue maestra de dactilografía en una
+          Sofía<a class="ast" id="ra-18" href="#nota-3-12" aria-label="Nota: Sofía Sacarello Castellanos, hija de Juan Elías y Julia">*</a>, que según los papeles fue maestra de dactilografía en una
           escuela pública y no se casó. En los años veinte Sofía figura en la Liga de Damas Católicas,
           en la comisión de beneficencia «Para Nuestros Pobres», la misma en que estaba Julia Castellanos de Sacarello, la madre de Eloísa. Julia Castellanos murió en Montevideo el 30 de mayo de <span class="anio">1943</span>.
         </p>
@@ -1953,10 +2081,9 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          Los Nin habían quedado en el contador de la Aduana. Su hijo, <span
-          class="nombre">Federico Nin Aguilar</span>, nació el 24 de octubre
+          Los Nin habían quedado en el contador de la Aduana. Su hijo, <a class="nombre" href="#pc-24" id="h-24" data-f="24">Federico Nin Aguilar</a>, nació el 24 de octubre
           de <span class="anio">1865</span> en Montevideo. Se casó el 1 de enero de <span class="anio">1883</span>, a los diecisiete años, con
-          <span class="nombre">María Elena Pérez Liñán</span> (<span class="anio">1866–1924</span>),
+          <a class="nombre" href="#pc-25" id="h-25" data-f="25">María Elena Pérez Liñán</a> (<span class="anio">1866–1924</span>),
           hija de Guillermo Pérez y Margarita Liñán Calatayud. Ese mismo año entró a la Cámara de
           Senadores. Hizo ahí toda su carrera: oficial tercero en <span class="anio">1892</span>,
           primero en <span class="anio">1903</span>, secretario en <span class="anio">1907</span>, y
@@ -1974,10 +2101,10 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          Su hijo se llamaba <span class="nombre">Federico Raúl Nin Pérez</span>, aunque los
+          Su hijo se llamaba <a class="nombre" href="#pc-12" id="h-12" data-f="12">Federico Raúl Nin Pérez</a>, aunque los
           papeles lo nombran de las dos formas por separado. El Senado lo nombra taquígrafo auxiliar en <span class="anio">1909</span> como Raúl; en <span class="anio">1913</span> <em>El Siglo</em> lo anota guarda de tercera clase en la Aduana como Federico, que es el nombre con que sigue el resto de su vida documentada. El 20 de
           mayo de <span class="anio">1914</span> el Diario Oficial publicó el aviso legal de su
-          matrimonio proyectado con <span class="nombre">Eloísa Sacarello Castellanos</span>, hija de
+          matrimonio proyectado con <a class="nombre" href="#pc-13" id="h-13" data-f="13">Eloísa Sacarello Castellanos</a>, hija de
           Juan Elías: él de veintinueve años, ella de veintisiete, domiciliada en la calle Pozos del
           Rey 7, en la Aguada. El <em>Libro de Oro</em> de <span class="anio">1914</span> anota esa misma dirección
           para la madre de Eloísa, Julia Castellanos de Sacarello, con recibo el primer y el segundo viernes.
@@ -1989,7 +2116,7 @@ document.addEventListener('DOMContentLoaded', function(){
         <p>
           En <span class="anio">1932</span> el Diario Oficial lo nombra apoderado de la Sociedad
           Anónima Molinos Harineros y, probablemente, de una compañía cubana de sogas, la Compañía
-          de Jarcia de Matanzas<span class="ast">*</span>. También lo fue de la Compañía Oleaginosa
+          de Jarcia de Matanzas<a class="ast" id="ra-19" href="#nota-3-8" aria-label="Nota: La compañía cubana de sogas, probablemente la Compañía de Jarcia de Matanzas">*</a>. También lo fue de la Compañía Oleaginosa
           Uruguaya, la fábrica del aceite Óptimo, con plantas en Nueva Palmira y Salto, cuyas
           marcas registraba, y en <span class="anio">1933</span> lo eligieron para presidir una asamblea. Murió en Montevideo el 19 de diciembre de <span class="anio">1956</span>.
         </p>
@@ -2019,7 +2146,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">Raúl Alberto Nin Sacarello</span> trabajó de taquígrafo en el Palacio
+          <a class="nombre" href="#pc-6" id="h-6" data-f="6">Raúl Alberto Nin Sacarello</a> trabajó de taquígrafo en el Palacio
           Legislativo, como su padre, pero su oficio fue la medicina del aparato digestivo. Daba
           clase en la Facultad de Medicina, y de ahí salió su casamiento. María Ercilia Márquez fue
           alumna suya y también se recibió de médica; se reunían en la Agrupación Universitaria de la
@@ -2040,7 +2167,7 @@ document.addEventListener('DOMContentLoaded', function(){
           su firma aparece al pie de certificados de defunción de vecinos de Montevideo. Entre <span
           class="anio">1983</span> y <span class="anio">1984</span> presidió la Sociedad de
           Gastroenterología del Uruguay. También fue dirigente del Club Atlético Aguada, de
-          básquetbol<span class="ast">*</span>. Como hincha de Nacional lo vio salir tres veces campeón del mundo, y en <span
+          básquetbol<a class="ast" id="ra-20" href="#nota-3-9" aria-label="Nota: Raúl Alberto, dirigente de Aguada">*</a>. Como hincha de Nacional lo vio salir tres veces campeón del mundo, y en <span
           class="anio">1980</span> viajó a Porto Alegre para el partido de ida de la final que le
           dio al club su segunda Copa Libertadores. Murió en <span class="anio">1993</span>.
         </p>
@@ -2055,35 +2182,35 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <div class="notas-fuente">
           <h3>Lo que lleva asterisco</h3>
-          <p>
+          <p id="nota-3-1">
             <strong>Juan Bautista Sacarello, capitán en 1847.</strong> Así lo anota el rol de la
             Legión Italiana de Garibaldi; otro libro lo hace subteniente y un tercero, alférez, que
-            es el mismo grado, y no hay con qué desempatar.
+            es el mismo grado, y no hay con qué desempatar. <a class="volver" href="#ra-12">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-2">
             <strong>Eugenio Aberastury, 26 de diciembre de 1846.</strong> Es el día en que Rivera
-            tomó Paysandú. Su nieta Aurelia, en el pedido de pensión de 1928, lo hace morir el 25.
+            tomó Paysandú. Su nieta Aurelia, en el pedido de pensión de 1928, lo hace morir el 25. <a class="volver" href="#ra-10">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-3">
             <strong>Juana González, Paysandú, agosto de 1878.</strong> Es el lugar que da el diario
             que anunció su muerte. Schulkin, en cambio, la hace irse a Buenos Aires en 1868. Se
-            eligió el diario, que es contemporáneo del hecho.
+            eligió el diario, que es contemporáneo del hecho. <a class="volver" href="#ra-11">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-4">
             <strong>Antonio Bartolomeo Sacarello, hacia 1827.</strong> Schulkin dice 1825, pero sus
             padres se casaron en Génova en 1826. Se eligió 1827 porque es la única de las dos fechas
-            que no lo hace nacer antes del casamiento.
+            que no lo hace nacer antes del casamiento. <a class="volver" href="#ra-13">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-5">
             <strong>Bartolo Sacarello, 22 de noviembre de 1882.</strong> Es el día en que
-            <em>El Demócrata</em> publicó su muerte, diciendo "hoy". Otra fuente la fecha el 21.
+            <em>El Demócrata</em> publicó su muerte, diciendo "hoy". Otra fuente la fecha el 21. <a class="volver" href="#ra-14">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-6">
             <strong>Francisco Remigio Castellanos, 1782.</strong> Es el año que da el Boletín n.º 16 del
             Instituto Argentino de Ciencias Genealógicas. Otras biografías lo hacen nacer en Salta el 1 de
-            octubre de 1779, y no hay partida que desempate.
+            octubre de 1779, y no hay partida que desempate. <a class="volver" href="#ra-15">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-7">
             <strong>Federico Raúl Nin Pérez.</strong> El nombre compuesto es dato de familia,
             confirmado por la madre de Pablo. Los papeles lo respaldan sin juntarlo del todo: el
             Senado lo nombra taquígrafo auxiliar en 1909 como Raúl Nin Pérez, la Aduana lo nombra
@@ -2091,39 +2218,39 @@ document.addEventListener('DOMContentLoaded', function(){
             civil, en 1914, declaró de profesión taquígrafo. Su padre tuvo además otro hijo,
             distinto de este, llamado Federico Guillermo, que murió soltero pocos años después.
           </p>
-          <p>
+          <p id="nota-3-8">
             <strong>La compañía cubana de sogas, probablemente la Compañía de Jarcia de
             Matanzas.</strong> El Diario Oficial de mayo de 1932 nombra varias veces a Federico
             Nin Pérez apoderado de la Sociedad Anónima Molinos Harineros, y en el mismo período
             aparece cerca del nombre de la Compañía de Jarcia de Matanzas (Matanzas Cordage
             Company), una empresa cubana real que en esos años registraba marcas en Uruguay. La
             cercanía no alcanza para darlo por seguro: puede ser una coincidencia de columna en la
-            página escaneada.
+            página escaneada. <a class="volver" href="#ra-19">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-9">
             <strong>Raúl Alberto, dirigente de Aguada.</strong> Dato de familia; no se encontró
             fuente que lo confirme. Lo de Nacional sí está verificado: tricampeón del mundo en
             1971, 1980 y 1988, y la segunda Copa Libertadores se definió contra Internacional de
             Porto Alegre, con la ida en Porto Alegre el 30 de julio de 1980 y la vuelta en
-            Montevideo el 6 de agosto.
+            Montevideo el 6 de agosto. <a class="volver" href="#ra-20">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-10">
             <strong>José María Castellanos y Eumenia Lima, 25 de marzo de 1837.</strong> Es la fecha
             del mismo Boletín. Un sitio genealógico da el 25 de agosto; se eligió el Boletín hasta ver
-            la partida de la Matriz.
+            la partida de la Matriz. <a class="volver" href="#ra-16">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-11">
             <strong>Juan Elías Sacarello Aberastury, hacia 1858.</strong> Sale de los veintiún años
             que le da el acta civil de noviembre de 1879. El árbol de FamilySearch dice 1859; se
-            eligió el acta, que es un documento de época, mientras no aparezca su partida.
+            eligió el acta, que es un documento de época, mientras no aparezca su partida. <a class="volver" href="#ra-17">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-3-12">
             <strong>Sofía Sacarello Castellanos, hija de Juan Elías y Julia.</strong> Es lo más
             probable, pero no está probado. El diccionario biográfico de Paysandú la hace hija de
             Julio Sacarello, que también se casó con una Castellanos, Valentina, así que las hijas de
             los dos hermanos llevaban los mismos apellidos. A favor de Juan Elías está que en 1921
             Sofía integraba la misma comisión de la Liga de Damas Católicas que "Julia C. de
-            Sacarelo", aunque su partida de bautismo no apareció.
+            Sacarelo", aunque su partida de bautismo no apareció. <a class="volver" href="#ra-18">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
         </div>
       </div>
@@ -2162,20 +2289,20 @@ document.addEventListener('DOMContentLoaded', function(){
         <p>
           Tres parejas se casaron en Minas y en Maldonado mientras el resto del territorio cambiaba de
           dueño. El 5 de mayo de <span class="anio">1823</span>, bajo dominio brasileño, se casaron en
-          Minas <span class="nombre">Juan Asencio Olmedo</span> y <span class="nombre">Juana María Chaparro Martínez</span>. En <span class="anio">1825</span>, el año del desembarco de
-          los Treinta y Tres, se casaron en Maldonado <span class="nombre">Francisco Gómez
-          Silveira</span> e <span class="nombre">Ignacia Mercedes Muñiz Dutra</span>. Ese mismo año, Felipe Pascual de los Campos andaba de
+          Minas <a class="nombre" href="#pc-114" id="h-114" data-f="114">Juan Asencio Olmedo</a> y <a class="nombre" href="#pc-115" id="h-115" data-f="115">Juana María Chaparro Martínez</a>. En <span class="anio">1825</span>, el año del desembarco de
+          los Treinta y Tres, se casaron en Maldonado <a class="nombre" href="#pc-118" id="h-118" data-f="118">Francisco Gómez
+          Silveira</a> e <a class="nombre" href="#pc-119" id="h-119" data-f="119">Ignacia Mercedes Muñiz Dutra</a>. Ese mismo año, Felipe Pascual de los Campos andaba de
           soldado con Lavalleja. Y el 10 de abril de <span class="anio">1829</span>, con la
-          Constitución todavía sin jurar, se casaron en Minas <span class="nombre">Vicente María Del
-          Puerto Dutra</span> y <span class="nombre">Juana María Silveira Pérez</span>.
+          Constitución todavía sin jurar, se casaron en Minas <a class="nombre" href="#pc-116" id="h-116" data-f="116">Vicente María Del
+          Puerto Dutra</a> y <a class="nombre" href="#pc-117" id="h-117" data-f="117">Juana María Silveira Pérez</a>.
         </p>
 
         <p>
-          Los Del Puerto tenían raíz en el lugar. El padre de Vicente, <span class="nombre">Ramón
-          Antonio Del Puerto</span>, tenía campos en Marmarajá entre <span class="anio">1818</span> y
+          Los Del Puerto tenían raíz en el lugar. El padre de Vicente, <a class="nombre" href="#pc-116" id="h-232" data-f="232">Ramón
+          Antonio Del Puerto</a>, tenía campos en Marmarajá entre <span class="anio">1818</span> y
           <span class="anio">1831</span>, según las mensuras de la época, que eran las mediciones
           oficiales con que se deslindaba un campo. Su
-          mujer, <span class="nombre">Ignacia Dutra Silveira</span>, tenía familia en San Francisco de
+          mujer, <a class="nombre" href="#pc-116" id="h-233" data-f="233">Ignacia Dutra Silveira</a>, tenía familia en San Francisco de
           Paula, en Río Grande, del lado brasilero de la frontera. Un libro genealógico sobre las
           familias Berro y Chopitea nombra a los dos y agrega que una hermana de Vicente, María
           Antonia, fue la madre de Práxedes Bustamante del Puerto, la esposa del presidente Bernardo
@@ -2193,13 +2320,13 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          <span class="nombre">Nicomedes Márquez</span>, el primero de cuatro Nicomedes seguidos, hijo de <span class="nombre">Ambrosio
-          Márquez</span> y <span class="nombre">Eugenia Rodríguez</span>, nació hacia <span class="anio">1817</span><span class="ast">*</span> en Minas. El 10 de julio de <span class="anio">1861</span> se casó en la parroquia de la Concepción de Minas con <span class="nombre">Atanasia Olmedo</span>, hija de Juan Asencio Olmedo y Juana Chaparro, la primera de las tres parejas de la década de <span class="anio">1820</span>. Para entonces ya era huérfano: su madre había muerto antes de <span class="anio">1834</span> y su padre, antes de la boda. Él murió en Minas el 23 de marzo de <span class="anio">1877</span>.
+          <a class="nombre" href="#pc-56" id="h-56" data-f="56">Nicomedes Márquez</a>, el primero de cuatro Nicomedes seguidos, hijo de <a class="nombre" href="#pc-112" id="h-112" data-f="112">Ambrosio
+          Márquez</a> y <a class="nombre" href="#pc-113" id="h-113" data-f="113">Eugenia Rodríguez</a>, nació hacia <span class="anio">1817</span><a class="ast" id="ra-21" href="#nota-4-2" aria-label="Nota: Nicomedes Márquez, hacia 1817">*</a> en Minas. El 10 de julio de <span class="anio">1861</span> se casó en la parroquia de la Concepción de Minas con <a class="nombre" href="#pc-57" id="h-57" data-f="57">Atanasia Olmedo</a>, hija de Juan Asencio Olmedo y Juana Chaparro, la primera de las tres parejas de la década de <span class="anio">1820</span>. Para entonces ya era huérfano: su madre había muerto antes de <span class="anio">1834</span> y su padre, antes de la boda. Él murió en Minas el 23 de marzo de <span class="anio">1877</span>.
         </p>
 
         <p>
-          Del otro lado de la sierra vivía <span class="nombre">Melchor Del Puerto Silveira</span>
-          (<span class="anio">hacia 1830–1909</span><span class="ast">*</span>), que era colorado. En <span class="anio">1892</span>
+          Del otro lado de la sierra vivía <a class="nombre" href="#pc-58" id="h-58" data-f="58">Melchor Del Puerto Silveira</a>
+          (<span class="anio">hacia 1830–1909</span><a class="ast" id="ra-22" href="#nota-4-3" aria-label="Nota: Melchor Del Puerto, hacia 1830">*</a>), que era colorado. En <span class="anio">1892</span>
           figura de suplente en la lista del club colorado de Minas y de capitán en las listas del
           ejército. En noviembre de <span class="anio">1896</span> un sargento mayor con su nombre le
           pedía al Estado Mayor el pago de haberes atrasados, muy probablemente él. El 13 de agosto de <span
@@ -2209,9 +2336,8 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          Con <span class="nombre">Liberata Gómez Muñiz</span>, nacida el 20 de julio de <span
-          class="anio">1835</span> en San Carlos, tuvo once hijos. Una de las hijas, <span
-          class="nombre">Fermina Ignacia Del Puerto Gómez</span>, nació el 7 de julio de <span
+          Con <a class="nombre" href="#pc-59" id="h-59" data-f="59">Liberata Gómez Muñiz</a>, nacida el 20 de julio de <span
+          class="anio">1835</span> en San Carlos, tuvo once hijos. Una de las hijas, <a class="nombre" href="#pc-29" id="h-29" data-f="29">Fermina Ignacia Del Puerto Gómez</a>, nació el 7 de julio de <span
           class="anio">1862</span> y fue bautizada recién nueve meses después, en San Carlos Borromeo,
           en Maldonado.
         </p>
@@ -2230,7 +2356,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          Los dos linajes se juntaron cuando <span class="nombre">Nicomedes Márquez Olmedo</span>
+          Los dos linajes se juntaron cuando <a class="nombre" href="#pc-28" id="h-28" data-f="28">Nicomedes Márquez Olmedo</a>
           (<span class="anio">1862–1912</span>), hijo de aquel matrimonio de <span
           class="anio">1861</span>, se casó el 23 de abril de <span class="anio">1884</span> con Fermina Ignacia, la hija de Melchor. El acta les da veintidós años a él y diecinueve a ella, aunque por su partida de bautismo ella tenía veintiuno. Vivieron en Campanero. Tuvieron doce hijos entre <span class="anio">1885</span> y <span class="anio">1900</span>, entre ellos un par de mellizos, Liberata Isabel y Melchor Isabelino, con los nombres de los abuelos maternos, Liberata y Melchor. Dos murieron de muy chicos. Felicia, nacida en febrero de <span class="anio">1885</span>, murió de anginitis crupal a los ocho meses; su acta nombra a los cuatro abuelos, y por ella se sabe que las dos ramas empalman como dice el árbol. El último, Fermín Gerónimo, con el nombre de la madre, nació y murió en <span class="anio">1900</span>.
         </p>
@@ -2253,19 +2379,18 @@ document.addEventListener('DOMContentLoaded', function(){
         </div>
 
         <p>
-          Uno de esos hijos, <span class="nombre">Nicomedes Bernardino Márquez</span>, nació el 20 de
+          Uno de esos hijos, <a class="nombre" href="#pc-14" id="h-14" data-f="14">Nicomedes Bernardino Márquez</a>, nació el 20 de
           mayo de <span class="anio">1891</span> en Campanero y fue hacendado. Llevaba el nombre de su
           padre y de su abuelo, y se lo pasaría a su hijo mayor, Nicomedes Carlos. El 23 de abril de <span
-          class="anio">1923</span>, a las cinco y media de la tarde, se casó en Minas con <span
-          class="nombre">María Elena Fernández Cabal</span>, a quien en la familia le decían Chichí.
+          class="anio">1923</span>, a las cinco y media de la tarde, se casó en Minas con <a class="nombre" href="#pc-15" id="h-15" data-f="15">María Elena Fernández Cabal</a>, a quien en la familia le decían Chichí.
           Ella había nacido en Minas el primero de junio de <span class="anio">1898</span>. Fue testigo Ambrosio, hermano del novio.
         </p>
 
         <p>
-          Chichí era hija de <span class="nombre">Carlos Fernández</span>, escribano de Minas, y de
-          <span class="nombre">Elena Cabal Martínez</span>, casados en Montevideo en <span
+          Chichí era hija de <a class="nombre" href="#pc-30" id="h-30" data-f="30">Carlos Fernández</a>, escribano de Minas, y de
+          <a class="nombre" href="#pc-31" id="h-31" data-f="31">Elena Cabal Martínez</a>, casados en Montevideo en <span
           class="anio">1894</span>. Carlos, que tenía cincuenta y cinco años en <span
-          class="anio">1923</span> y vivía en la calle 18 de Julio n.º 20, era hijo de Teodoro Fernández y de Fermina Calleros<span class="ast">*</span>. Murió en Montevideo el 4 de septiembre de <span class="anio">1924</span>, y el permiso para enterrarlo lo dio la parroquia de Villa Colón, el mismo barrio de los Nin y de los de los Campos. Su viuda, Elena, quedó en Minas, donde murió el 15 de febrero de <span class="anio">1942</span>.
+          class="anio">1923</span> y vivía en la calle 18 de Julio n.º 20, era hijo de Teodoro Fernández y de Fermina Calleros<a class="ast" id="ra-23" href="#nota-4-5" aria-label="Nota: Fermina Calleros">*</a>. Murió en Montevideo el 4 de septiembre de <span class="anio">1924</span>, y el permiso para enterrarlo lo dio la parroquia de Villa Colón, el mismo barrio de los Nin y de los de los Campos. Su viuda, Elena, quedó en Minas, donde murió el 15 de febrero de <span class="anio">1942</span>.
         </p>
 
         <p>
@@ -2276,13 +2401,12 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          El padre de Elena, <span class="nombre">Rafael Cabal Flores</span>, era español de Córdoba,
+          El padre de Elena, <a class="nombre" href="#pc-62" id="h-62" data-f="62">Rafael Cabal Flores</a>, era español de Córdoba,
           y por él la línea se va tres generaciones más atrás, hasta el dato fechado más antiguo de
           todo este documento. Su acta de matrimonio de <span class="anio">1853</span> lo hace hijo
-          de <span class="nombre">Juan Luis Cabal</span> y de <span class="nombre">María Rosario
-          Flores</span><span class="ast">*</span>. Y el papel de la familia da un escalón más: los
-          padres de ese Juan Luis, <span class="nombre">Juan Cabal López</span> y <span
-          class="nombre">María Villoslada</span>, se casaron en Córdoba en <span
+          de <a class="nombre" href="#pc-124" id="h-124" data-f="124">Juan Luis Cabal</a> y de <a class="nombre" href="#pc-125" id="h-125" data-f="125">María Rosario
+          Flores</a><a class="ast" id="ra-24" href="#nota-4-1" aria-label="Nota: María Rosario Flores">*</a>. Y el papel de la familia da un escalón más: los
+          padres de ese Juan Luis, <a class="nombre" href="#pc-248" id="h-248" data-f="248">Juan Cabal López</a> y <a class="nombre" href="#pc-249" id="h-249" data-f="249">María Villoslada</a>, se casaron en Córdoba en <span
           class="anio">1771</span>.
         </p>
 
@@ -2301,7 +2425,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <p>
           Murió el 16 de marzo de <span class="anio">1897</span> en la casa de la calle Reconquista
-          195. El acta de defunción lo anota rentista, de setenta y dos años<span class="ast">*</span>, y cuenta diez hijos:
+          195. El acta de defunción lo anota rentista, de setenta y dos años<a class="ast" id="ra-25" href="#nota-4-4" aria-label="Nota: Rafael Cabal, setenta y dos años en 1897">*</a>, y cuenta diez hijos:
           José, Rafaela, Rodolfo, Luisa, Elisa, Alfredo, Elena, Rosario, Arturo y Adela. Declararon
           su yerno Alejandro Wells y un conocido, que no recordaron los nombres de los abuelos. El
           aviso de <em>El Siglo</em> lo despide con su viuda, seis de esos hijos y sus yernos Carlos Fernández y Alejandro
@@ -2353,7 +2477,7 @@ document.addEventListener('DOMContentLoaded', function(){
         </p>
 
         <p>
-          <span class="nombre">María Ercilia</span> nació en Minas y es la abuela materna de Pablo. Los nietos le dicen Lala. Es bisnieta de un
+          <a class="nombre" href="#pc-7" id="h-7" data-f="7">María Ercilia</a> nació en Minas y es la abuela materna de Pablo. Los nietos le dicen Lala. Es bisnieta de un
           militar colorado de Marmarajá y tataranieta de gente que se casaba en las sierras en la
           década de <span class="anio">1820</span>. Se recibió de médica en una época en que muy
           pocas mujeres lo hacían en el Uruguay. En la Facultad conoció a Raúl, que era su profesor,
@@ -2422,28 +2546,28 @@ document.addEventListener('DOMContentLoaded', function(){
 
         <div class="notas-fuente">
           <h3>Lo que lleva asterisco</h3>
-          <p>
+          <p id="nota-4-1">
             <strong>María Rosario Flores.</strong> Así la nombra el acta de matrimonio de su hijo
             Rafael, en 1853. En el acta de defunción de él, en 1897, la misma mujer figura como
             Magdalena Flores. Se eligió María Rosario, que es la del acta levantada en vida de él;
-            el acta no dice quién dio los nombres, así que la duda sigue abierta.
+            el acta no dice quién dio los nombres, así que la duda sigue abierta. <a class="volver" href="#ra-24">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
-            <strong>Nicomedes Márquez, hacia 1817.</strong> Su partida de entierro, en Minas, en marzo de 1877, dice que murió «a los sesenta años». Antes este libro decía hacia 1830, sin un papel que lo respalde. Las edades de los entierros se ponían a ojo, y no apareció su bautismo.
+          <p id="nota-4-2">
+            <strong>Nicomedes Márquez, hacia 1817.</strong> Su partida de entierro, en Minas, en marzo de 1877, dice que murió «a los sesenta años». Antes este libro decía hacia 1830, sin un papel que lo respalde. Las edades de los entierros se ponían a ojo, y no apareció su bautismo. <a class="volver" href="#ra-21">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
-            <strong>Melchor Del Puerto, hacia 1830.</strong> Murió el 18 de febrero de 1909, y su acta de defunción lo hace nacer en 1830. Las edades que declaró en otras actas cierran con eso: cincuenta y seis años en 1885, setenta en 1900, setenta y siete en 1907. Antes este libro decía 1833, sin un papel que lo respalde.
+          <p id="nota-4-3">
+            <strong>Melchor Del Puerto, hacia 1830.</strong> Murió el 18 de febrero de 1909, y su acta de defunción lo hace nacer en 1830. Las edades que declaró en otras actas cierran con eso: cincuenta y seis años en 1885, setenta en 1900, setenta y siete en 1907. Antes este libro decía 1833, sin un papel que lo respalde. <a class="volver" href="#ra-22">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-4-4">
             <strong>Rafael Cabal, setenta y dos años en 1897.</strong> Esa edad lo hace nacer hacia
             1825. El parte de policía de 1846 le da veintitrés, que daría 1823. La diferencia es
-            chica y las dos edades se anotaron a ojo; no hay partida de bautismo que desempate.
+            chica y las dos edades se anotaron a ojo; no hay partida de bautismo que desempate. <a class="volver" href="#ra-25">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
-          <p>
+          <p id="nota-4-5">
             <strong>Fermina Calleros.</strong> Así llama a la madre de Carlos Fernández el expediente
             del casamiento de su nieta María Cristina, en 1928. El acta de defunción de Carlos, en
             1924, la llama Francisca. Se dejó la del expediente, que es la que venía usando el libro;
-            no hay un tercer papel que desempate.
+            no hay un tercer papel que desempate. <a class="volver" href="#ra-23">Volver al texto<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg></a>
           </p>
         </div>
       </div>
@@ -2961,152 +3085,152 @@ document.addEventListener('DOMContentLoaded', function(){
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">1.ª generación</span><span class="pc-tit">Él</span><span class="pc-rango">1</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">1</span><span class="pc-nom">Pablo Ignacio de los Campos Nin</span></li>
+        <li id="pc-1"><span class="pc-num">1</span><span class="pc-nom">Pablo Ignacio de los Campos Nin</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">2.ª generación</span><span class="pc-tit">Padres</span><span class="pc-rango">2–3</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">2</span><span class="pc-nom">Mario de los Campos Acosta</span></li>
-        <li><span class="pc-num">3</span><span class="pc-nom">María Ercilia Nin Márquez</span></li>
+        <li id="pc-2"><span class="pc-num">2</span><span class="pc-nom">Mario de los Campos Acosta</span></li>
+        <li id="pc-3"><span class="pc-num">3</span><span class="pc-nom">María Ercilia Nin Márquez</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">3.ª generación</span><span class="pc-tit">Abuelos</span><span class="pc-rango">4–7</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">4</span><span class="pc-nom">Eloy de los Campos Somma</span><span class="pc-dato">9 de enero de 1920, Trinidad · chofer</span></li>
-        <li><span class="pc-num">5</span><span class="pc-nom">Reina Verderina Acosta Britos</span><span class="pc-dato">6 de enero de 1922, Fraile Muerto</span></li>
-        <li><span class="pc-num">6</span><span class="pc-nom">Raúl Alberto Nin Sacarello</span><span class="pc-dato">3 de marzo de 1919 – 1993 · fundador de la Sociedad Uruguaya de Proctología</span></li>
-        <li><span class="pc-num">7</span><span class="pc-nom">María Ercilia Márquez Fernández</span><span class="pc-dato">Minas · médica</span></li>
+        <li id="pc-4"><span class="pc-num">4</span><span class="pc-nom"><a href="#h-4">Eloy de los Campos Somma</a></span><span class="pc-dato">9 de enero de 1920, Trinidad · chofer</span></li>
+        <li id="pc-5"><span class="pc-num">5</span><span class="pc-nom"><a href="#h-5">Reina Verderina Acosta Britos</a></span><span class="pc-dato">6 de enero de 1922, Fraile Muerto</span></li>
+        <li id="pc-6"><span class="pc-num">6</span><span class="pc-nom"><a href="#h-6">Raúl Alberto Nin Sacarello</a></span><span class="pc-dato">3 de marzo de 1919 – 1993 · fundador de la Sociedad Uruguaya de Proctología</span></li>
+        <li id="pc-7"><span class="pc-num">7</span><span class="pc-nom"><a href="#h-7">María Ercilia Márquez Fernández</a></span><span class="pc-dato">Minas · médica</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">4.ª generación</span><span class="pc-tit">Bisabuelos</span><span class="pc-rango">8–15</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">8</span><span class="pc-nom">Delmiro Conrado de los Campos</span><span class="pc-dato">1867 – c. 1948 · hacendado en el Sarandí</span></li>
-        <li><span class="pc-num">9</span><span class="pc-nom">Luisa María Soma Peraza</span><span class="pc-dato">1877, Trinidad – 1933, Durazno</span></li>
-        <li><span class="pc-num">10</span><span class="pc-nom">Lidoro Acosta</span><span class="pc-dato">1885, Treinta y Tres · jornalero</span></li>
-        <li><span class="pc-num">11</span><span class="pc-nom">Percilia Britos</span><span class="pc-dato">1898, Tacuarí</span></li>
-        <li><span class="pc-num">12</span><span class="pc-nom">Federico Raúl Nin Pérez</span><span class="pc-dato">29 de diciembre de 1884, Montevideo · guarda de aduana</span></li>
-        <li><span class="pc-num">13</span><span class="pc-nom">Eloísa Sacarello Castellanos</span><span class="pc-dato">15 de octubre de 1886 – 1972</span></li>
-        <li><span class="pc-num">14</span><span class="pc-nom">Nicomedes Bernardino Márquez Del Puerto</span><span class="pc-dato">1891, Campanero · hacendado</span></li>
-        <li><span class="pc-num">15</span><span class="pc-nom">María Elena Fernández Cabal</span><span class="pc-dato">1 de junio de 1898, Minas</span></li>
+        <li id="pc-8"><span class="pc-num">8</span><span class="pc-nom"><a href="#h-8">Delmiro Conrado de los Campos</a></span><span class="pc-dato">1867 – c. 1948 · hacendado en el Sarandí</span></li>
+        <li id="pc-9"><span class="pc-num">9</span><span class="pc-nom"><a href="#h-9">Luisa María Soma Peraza</a></span><span class="pc-dato">1877, Trinidad – 1933, Durazno</span></li>
+        <li id="pc-10"><span class="pc-num">10</span><span class="pc-nom"><a href="#h-10">Lidoro Acosta</a></span><span class="pc-dato">1885, Treinta y Tres · jornalero</span></li>
+        <li id="pc-11"><span class="pc-num">11</span><span class="pc-nom"><a href="#h-11">Percilia Britos</a></span><span class="pc-dato">1898, Tacuarí</span></li>
+        <li id="pc-12"><span class="pc-num">12</span><span class="pc-nom"><a href="#h-12">Federico Raúl Nin Pérez</a></span><span class="pc-dato">29 de diciembre de 1884, Montevideo · guarda de aduana</span></li>
+        <li id="pc-13"><span class="pc-num">13</span><span class="pc-nom"><a href="#h-13">Eloísa Sacarello Castellanos</a></span><span class="pc-dato">15 de octubre de 1886 – 1972</span></li>
+        <li id="pc-14"><span class="pc-num">14</span><span class="pc-nom"><a href="#h-14">Nicomedes Bernardino Márquez Del Puerto</a></span><span class="pc-dato">1891, Campanero · hacendado</span></li>
+        <li id="pc-15"><span class="pc-num">15</span><span class="pc-nom"><a href="#h-15">María Elena Fernández Cabal</a></span><span class="pc-dato">1 de junio de 1898, Minas</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">5.ª generación</span><span class="pc-tit">Tatarabuelos</span><span class="pc-rango">16–31</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">16</span><span class="pc-nom">Sandalio de los Campos</span><span class="pc-dato">c. 1836 – 1908 · militar</span></li>
-        <li><span class="pc-num">17</span><span class="pc-nom">Felicia Guerrero</span><span class="pc-dato">c. 1837</span></li>
-        <li><span class="pc-num">18</span><span class="pc-nom">Juan Soma Marmol</span><span class="pc-dato">c. 1837 – 2 de mayo de 1887, Trinidad · italiano</span></li>
-        <li><span class="pc-num">19</span><span class="pc-nom">Joaquina Peraza</span><span class="pc-dato">c. 1842 · testigo del casamiento de su hija María en 1895</span></li>
-        <li><span class="pc-num">20</span><span class="pc-nom">Justiniano Acosta</span><span class="pc-dato">jornalero, Fraile Muerto</span></li>
-        <li><span class="pc-num">21</span><span class="pc-nom">Petrona Jiménez</span><span class="pc-dato">Fraile Muerto</span></li>
-        <li><span class="pc-num">22</span><span class="pc-nom">Tomás Britos</span><span class="pc-dato">hacia 1871 · jornalero</span></li>
-        <li><span class="pc-num">23</span><span class="pc-nom">Rufina Duarte</span><span class="pc-dato">c. 1877</span></li>
-        <li><span class="pc-num">24</span><span class="pc-nom">Federico Nin Aguilar</span><span class="pc-dato">24 de octubre de 1865, Montevideo · en el Senado desde 1883, luego secretario; jubilado en 1915</span></li>
-        <li><span class="pc-num">25</span><span class="pc-nom">María Elena Pérez Liñán</span><span class="pc-dato">1866–1924, Villa Colón</span></li>
-        <li><span class="pc-num">26</span><span class="pc-nom">Juan Elías Sacarello Aberastury</span><span class="pc-dato">c. 1858, Montevideo</span></li>
-        <li><span class="pc-num">27</span><span class="pc-nom">Julia Castellanos Lima</span></li>
-        <li><span class="pc-num">28</span><span class="pc-nom">Nicomedes Márquez Olmedo</span><span class="pc-dato">1862 – 1912</span></li>
-        <li><span class="pc-num">29</span><span class="pc-nom">Fermina Ignacia Del Puerto Gómez</span><span class="pc-dato">1862 – 1911</span></li>
-        <li><span class="pc-num">30</span><span class="pc-nom">Carlos Fernández</span><span class="pc-dato">escribano de Minas · casado en 1894</span></li>
-        <li><span class="pc-num">31</span><span class="pc-nom">Elena Cabal Martínez</span><span class="pc-dato">26 de febrero de 1865</span></li>
+        <li id="pc-16"><span class="pc-num">16</span><span class="pc-nom"><a href="#h-16">Sandalio de los Campos</a></span><span class="pc-dato">c. 1836 – 1908 · militar</span></li>
+        <li id="pc-17"><span class="pc-num">17</span><span class="pc-nom"><a href="#h-17">Felicia Guerrero</a></span><span class="pc-dato">c. 1837</span></li>
+        <li id="pc-18"><span class="pc-num">18</span><span class="pc-nom"><a href="#h-18">Juan Soma Marmol</a></span><span class="pc-dato">c. 1837 – 2 de mayo de 1887, Trinidad · italiano</span></li>
+        <li id="pc-19"><span class="pc-num">19</span><span class="pc-nom"><a href="#h-19">Joaquina Peraza</a></span><span class="pc-dato">c. 1842 · testigo del casamiento de su hija María en 1895</span></li>
+        <li id="pc-20"><span class="pc-num">20</span><span class="pc-nom"><a href="#h-20">Justiniano Acosta</a></span><span class="pc-dato">jornalero, Fraile Muerto</span></li>
+        <li id="pc-21"><span class="pc-num">21</span><span class="pc-nom"><a href="#h-21">Petrona Jiménez</a></span><span class="pc-dato">Fraile Muerto</span></li>
+        <li id="pc-22"><span class="pc-num">22</span><span class="pc-nom"><a href="#h-22">Tomás Britos</a></span><span class="pc-dato">hacia 1871 · jornalero</span></li>
+        <li id="pc-23"><span class="pc-num">23</span><span class="pc-nom"><a href="#h-23">Rufina Duarte</a></span><span class="pc-dato">c. 1877</span></li>
+        <li id="pc-24"><span class="pc-num">24</span><span class="pc-nom"><a href="#h-24">Federico Nin Aguilar</a></span><span class="pc-dato">24 de octubre de 1865, Montevideo · en el Senado desde 1883, luego secretario; jubilado en 1915</span></li>
+        <li id="pc-25"><span class="pc-num">25</span><span class="pc-nom"><a href="#h-25">María Elena Pérez Liñán</a></span><span class="pc-dato">1866–1924, Villa Colón</span></li>
+        <li id="pc-26"><span class="pc-num">26</span><span class="pc-nom"><a href="#h-26">Juan Elías Sacarello Aberastury</a></span><span class="pc-dato">c. 1858, Montevideo</span></li>
+        <li id="pc-27"><span class="pc-num">27</span><span class="pc-nom"><a href="#h-27">Julia Castellanos Lima</a></span></li>
+        <li id="pc-28"><span class="pc-num">28</span><span class="pc-nom"><a href="#h-28">Nicomedes Márquez Olmedo</a></span><span class="pc-dato">1862 – 1912</span></li>
+        <li id="pc-29"><span class="pc-num">29</span><span class="pc-nom"><a href="#h-29">Fermina Ignacia Del Puerto Gómez</a></span><span class="pc-dato">1862 – 1911</span></li>
+        <li id="pc-30"><span class="pc-num">30</span><span class="pc-nom"><a href="#h-30">Carlos Fernández</a></span><span class="pc-dato">escribano de Minas · casado en 1894</span></li>
+        <li id="pc-31"><span class="pc-num">31</span><span class="pc-nom"><a href="#h-31">Elena Cabal Martínez</a></span><span class="pc-dato">26 de febrero de 1865</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">6.ª generación</span><span class="pc-tit">Choznos</span><span class="pc-rango">32–63</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">32</span><span class="pc-nom">Felipe Pascual de los Campos Chavarría</span><span class="pc-dato">19 de mayo de 1796, Las Piedras – 5 de junio de 1889 · diputado y juez de paz</span></li>
-        <li><span class="pc-num">33</span><span class="pc-nom">Margarita García Martínez</span><span class="pc-dato">1805 – 1887 · un acta la anota García de la Fuente, el apellido de su padre</span></li>
-        <li><span class="pc-num">34</span><span class="pc-nom">Juan Guerrero</span></li>
-        <li><span class="pc-num">35</span><span class="pc-nom">María Pena</span></li>
-        <li><span class="pc-num">36</span><span class="pc-nom">José Soma</span><span class="pc-dato">abuelo paterno de Luisa, nombrado en su bautismo de 1877 · apellido inferido</span></li>
-        <li><span class="pc-num">37</span><span class="pc-nom">María Antonia Mármol</span><span class="pc-dato">abuela paterna de Luisa, nombrada en su bautismo de 1877</span></li>
-        <li><span class="pc-num">38</span><span class="pc-nom">Francisco Peraza</span><span class="pc-dato">abuelo materno de Luisa, nombrado en su bautismo de 1877 · apellido inferido</span></li>
-        <li><span class="pc-num">39</span><span class="pc-nom">Luisa Díaz</span><span class="pc-dato">abuela materna de Luisa, nombrada en su bautismo de 1877</span></li>
-        <li><span class="pc-num">40</span><span class="pc-nom">Basilio Acosta</span><span class="pc-dato">oriental, ya difunto en 1885</span></li>
-        <li><span class="pc-num">41</span><span class="pc-nom">Leonarda Acosta</span><span class="pc-dato">Tacuarembó</span></li>
-        <li><span class="pc-num">42</span><span class="pc-nom">Simón Jiménez</span></li>
-        <li><span class="pc-num">43</span><span class="pc-nom">Josefa Vecerje</span></li>
-        <li><span class="pc-num">44</span><span class="pc-nom">Félix Brito</span><span class="pc-dato">c. 1848 · paraguayo</span></li>
-        <li><span class="pc-num">45</span><span class="pc-nom">Amara Burgos</span><span class="pc-dato">c. 1852</span></li>
-        <li><span class="pc-num">46</span><span class="pc-nom">Antonio Duarte</span><span class="pc-dato">c. 1828 · brasilero</span></li>
-        <li><span class="pc-num">47</span><span class="pc-nom">Antonia González</span><span class="pc-dato">c. 1844 · brasilera</span></li>
-        <li><span class="pc-num">48</span><span class="pc-nom">Federico Nin Alagón</span><span class="pc-dato">c. 1823 – 14 de septiembre de 1898 · contador de la Aduana</span></li>
-        <li><span class="pc-num">49</span><span class="pc-nom">Matilde Aguilar Pareja</span><span class="pc-dato">1836 – 1877</span></li>
-        <li><span class="pc-num">50</span><span class="pc-nom">Guillermo Pérez</span><span class="pc-dato">1834 – 1902</span></li>
-        <li><span class="pc-num">51</span><span class="pc-nom">Margarita Liñán Calatayud</span><span class="pc-dato">1841</span></li>
-        <li><span class="pc-num">52</span><span class="pc-nom">Antonio Bartolomeo Sacarello Parodi</span><span class="pc-dato">1827 – 1882 · nacido en Liguria</span></li>
-        <li><span class="pc-num">53</span><span class="pc-nom">Eugenia de los Dolores Aberastury González</span><span class="pc-dato">1826 – 1916 · argentina, de apellido vasco</span></li>
-        <li><span class="pc-num">54</span><span class="pc-nom">José María Castellanos</span><span class="pc-dato">1808, Chuquisaca – 1882 · hacendado, socio fundador de la Asociación Rural</span></li>
-        <li><span class="pc-num">55</span><span class="pc-nom">Eumenia Lima</span><span class="pc-dato">1816, Montevideo</span></li>
-        <li><span class="pc-num">56</span><span class="pc-nom">Nicomedes Márquez</span><span class="pc-dato">c. 1817, Minas</span></li>
-        <li><span class="pc-num">57</span><span class="pc-nom">Atanasia Olmedo</span><span class="pc-dato">c. 1832 – 23 de octubre de 1898</span></li>
-        <li><span class="pc-num">58</span><span class="pc-nom">Melchor Del Puerto Silveira</span><span class="pc-dato">c. 1830 – 1909 · militar y hacendado</span></li>
-        <li><span class="pc-num">59</span><span class="pc-nom">Liberata Gómez Muñiz</span><span class="pc-dato">20 de julio de 1835, San Carlos, Maldonado</span></li>
-        <li><span class="pc-num">60</span><span class="pc-nom">Teodoro Fernández</span></li>
-        <li><span class="pc-num">61</span><span class="pc-nom">Fermina Calleros</span></li>
-        <li><span class="pc-num">62</span><span class="pc-nom">Rafael Cabal Flores</span><span class="pc-dato">español, de Córdoba · propietario · casado en Montevideo el 28 de marzo de 1853</span></li>
-        <li><span class="pc-num">63</span><span class="pc-nom">Ángela Martínez</span><span class="pc-dato">argentina</span></li>
+        <li id="pc-32"><span class="pc-num">32</span><span class="pc-nom"><a href="#h-32">Felipe Pascual de los Campos Chavarría</a></span><span class="pc-dato">19 de mayo de 1796, Las Piedras – 5 de junio de 1889 · diputado y juez de paz</span></li>
+        <li id="pc-33"><span class="pc-num">33</span><span class="pc-nom"><a href="#h-33">Margarita García Martínez</a></span><span class="pc-dato">1805 – 1887 · un acta la anota García de la Fuente, el apellido de su padre</span></li>
+        <li id="pc-34"><span class="pc-num">34</span><span class="pc-nom">Juan Guerrero</span></li>
+        <li id="pc-35"><span class="pc-num">35</span><span class="pc-nom">María Pena</span></li>
+        <li id="pc-36"><span class="pc-num">36</span><span class="pc-nom">José Soma</span><span class="pc-dato">abuelo paterno de Luisa, nombrado en su bautismo de 1877 · apellido inferido</span></li>
+        <li id="pc-37"><span class="pc-num">37</span><span class="pc-nom">María Antonia Mármol</span><span class="pc-dato">abuela paterna de Luisa, nombrada en su bautismo de 1877</span></li>
+        <li id="pc-38"><span class="pc-num">38</span><span class="pc-nom">Francisco Peraza</span><span class="pc-dato">abuelo materno de Luisa, nombrado en su bautismo de 1877 · apellido inferido</span></li>
+        <li id="pc-39"><span class="pc-num">39</span><span class="pc-nom">Luisa Díaz</span><span class="pc-dato">abuela materna de Luisa, nombrada en su bautismo de 1877</span></li>
+        <li id="pc-40"><span class="pc-num">40</span><span class="pc-nom"><a href="#h-40">Basilio Acosta</a></span><span class="pc-dato">oriental, ya difunto en 1885</span></li>
+        <li id="pc-41"><span class="pc-num">41</span><span class="pc-nom"><a href="#h-41">Leonarda Acosta</a></span><span class="pc-dato">Tacuarembó</span></li>
+        <li id="pc-42"><span class="pc-num">42</span><span class="pc-nom"><a href="#h-42">Simón Jiménez</a></span></li>
+        <li id="pc-43"><span class="pc-num">43</span><span class="pc-nom"><a href="#h-43">Josefa Vecerje</a></span></li>
+        <li id="pc-44"><span class="pc-num">44</span><span class="pc-nom"><a href="#h-44">Félix Brito</a></span><span class="pc-dato">c. 1848 · paraguayo</span></li>
+        <li id="pc-45"><span class="pc-num">45</span><span class="pc-nom"><a href="#h-45">Amara Burgos</a></span><span class="pc-dato">c. 1852</span></li>
+        <li id="pc-46"><span class="pc-num">46</span><span class="pc-nom"><a href="#h-46">Antonio Duarte</a></span><span class="pc-dato">c. 1828 · brasilero</span></li>
+        <li id="pc-47"><span class="pc-num">47</span><span class="pc-nom"><a href="#h-47">Antonia González</a></span><span class="pc-dato">c. 1844 · brasilera</span></li>
+        <li id="pc-48"><span class="pc-num">48</span><span class="pc-nom"><a href="#h-48">Federico Nin Alagón</a></span><span class="pc-dato">c. 1823 – 14 de septiembre de 1898 · contador de la Aduana</span></li>
+        <li id="pc-49"><span class="pc-num">49</span><span class="pc-nom"><a href="#h-49">Matilde Aguilar Pareja</a></span><span class="pc-dato">1836 – 1877</span></li>
+        <li id="pc-50"><span class="pc-num">50</span><span class="pc-nom">Guillermo Pérez</span><span class="pc-dato">1834 – 1902</span></li>
+        <li id="pc-51"><span class="pc-num">51</span><span class="pc-nom">Margarita Liñán Calatayud</span><span class="pc-dato">1841</span></li>
+        <li id="pc-52"><span class="pc-num">52</span><span class="pc-nom"><a href="#h-52">Antonio Bartolomeo Sacarello Parodi</a></span><span class="pc-dato">1827 – 1882 · nacido en Liguria</span></li>
+        <li id="pc-53"><span class="pc-num">53</span><span class="pc-nom"><a href="#h-53">Eugenia de los Dolores Aberastury González</a></span><span class="pc-dato">1826 – 1916 · argentina, de apellido vasco</span></li>
+        <li id="pc-54"><span class="pc-num">54</span><span class="pc-nom"><a href="#h-54">José María Castellanos</a></span><span class="pc-dato">1808, Chuquisaca – 1882 · hacendado, socio fundador de la Asociación Rural</span></li>
+        <li id="pc-55"><span class="pc-num">55</span><span class="pc-nom"><a href="#h-55">Eumenia Lima</a></span><span class="pc-dato">1816, Montevideo</span></li>
+        <li id="pc-56"><span class="pc-num">56</span><span class="pc-nom"><a href="#h-56">Nicomedes Márquez</a></span><span class="pc-dato">c. 1817, Minas</span></li>
+        <li id="pc-57"><span class="pc-num">57</span><span class="pc-nom"><a href="#h-57">Atanasia Olmedo</a></span><span class="pc-dato">c. 1832 – 23 de octubre de 1898</span></li>
+        <li id="pc-58"><span class="pc-num">58</span><span class="pc-nom"><a href="#h-58">Melchor Del Puerto Silveira</a></span><span class="pc-dato">c. 1830 – 1909 · militar y hacendado</span></li>
+        <li id="pc-59"><span class="pc-num">59</span><span class="pc-nom"><a href="#h-59">Liberata Gómez Muñiz</a></span><span class="pc-dato">20 de julio de 1835, San Carlos, Maldonado</span></li>
+        <li id="pc-60"><span class="pc-num">60</span><span class="pc-nom">Teodoro Fernández</span></li>
+        <li id="pc-61"><span class="pc-num">61</span><span class="pc-nom">Fermina Calleros</span></li>
+        <li id="pc-62"><span class="pc-num">62</span><span class="pc-nom"><a href="#h-62">Rafael Cabal Flores</a></span><span class="pc-dato">español, de Córdoba · propietario · casado en Montevideo el 28 de marzo de 1853</span></li>
+        <li id="pc-63"><span class="pc-num">63</span><span class="pc-nom">Ángela Martínez</span><span class="pc-dato">argentina</span></li>
       </ol>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">7.ª generación</span><span class="pc-tit">Séptima generación</span><span class="pc-rango">64–127</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">64</span><span class="pc-nom">Miguel de los Campos</span><span class="pc-dato">tierras entre el Sarandí y el Marincho · hijo de Juan José y Felipa Escopal</span></li>
-        <li><span class="pc-num">65</span><span class="pc-nom">Clara Chavarría</span><span class="pc-dato">hija de Juan Chavarría y Teresa Muñoz</span></li>
-        <li><span class="pc-num">66</span><span class="pc-nom">Manuel García de la Fuente</span><span class="pc-dato">1775</span></li>
-        <li><span class="pc-num">67</span><span class="pc-nom">Gertrudis Martínez</span><span class="pc-dato">1775</span></li>
-        <li><span class="pc-num">96</span><span class="pc-nom">Esteban Nin y Soler</span><span class="pc-dato">c. 1791, El Vendrell · casado en Colonia en 1821</span></li>
-        <li><span class="pc-num">97</span><span class="pc-nom">Juana Eusebia Alagón Crosa</span><span class="pc-dato">c. 1801, Colonia del Sacramento</span></li>
-        <li><span class="pc-num">98</span><span class="pc-nom">Francisco Aguilar</span></li>
-        <li><span class="pc-num">99</span><span class="pc-nom">Javiera Pareja</span></li>
-        <li><span class="pc-num">100</span><span class="pc-nom">Antonio Joaquín Pérez</span></li>
-        <li><span class="pc-num">101</span><span class="pc-nom">María del Pino</span></li>
-        <li><span class="pc-num">102</span><span class="pc-nom">Ramón Liñán</span></li>
-        <li><span class="pc-num">103</span><span class="pc-nom">María Calatayud</span></li>
-        <li><span class="pc-num">104</span><span class="pc-nom">Juan Bautista Sacarello</span><span class="pc-dato">1801 – 1877, Génova</span></li>
-        <li><span class="pc-num">105</span><span class="pc-nom">Magdalena Parodi</span><span class="pc-dato">1805 – 1867, Génova</span></li>
-        <li><span class="pc-num">106</span><span class="pc-nom">Eugenio Aberastury</span><span class="pc-dato">1796, Buenos Aires – 26 de diciembre de 1846, Paysandú · coronel</span></li>
-        <li><span class="pc-num">107</span><span class="pc-nom">Juana González</span><span class="pc-dato">porteña · murió en agosto de 1878, en Paysandú</span></li>
-        <li><span class="pc-num">108</span><span class="pc-nom">Francisco Remigio Castellanos</span><span class="pc-dato">1782, Salta – 1839 · abogado y constituyente</span></li>
-        <li><span class="pc-num">110</span><span class="pc-nom">Manuel Fernandes Lima</span><span class="pc-dato">portugués, comerciante · de Santa María de Fregosa, Braga</span></li>
-        <li><span class="pc-num">111</span><span class="pc-nom">María del Rosario Vidal</span></li>
-        <li><span class="pc-num">112</span><span class="pc-nom">Ambrosio Márquez</span></li>
-        <li><span class="pc-num">113</span><span class="pc-nom">Eugenia Rodríguez</span></li>
-        <li><span class="pc-num">114</span><span class="pc-nom">Juan Asencio Olmedo</span><span class="pc-dato">1800 – antes de 1861 · casado en Minas en 1823</span></li>
-        <li><span class="pc-num">115</span><span class="pc-nom">Juana María Chaparro Martínez</span><span class="pc-dato">1808 – 1890</span></li>
-        <li><span class="pc-num">116</span><span class="pc-nom">Vicente María Del Puerto Dutra</span><span class="pc-dato">1800 · casado en Minas en 1829</span></li>
-        <li><span class="pc-num">117</span><span class="pc-nom">Juana María Silveira Pérez</span><span class="pc-dato">1806 – 1842</span></li>
-        <li><span class="pc-num">118</span><span class="pc-nom">Francisco Gómez Silveira</span><span class="pc-dato">1800 · casado en Maldonado en 1825</span></li>
-        <li><span class="pc-num">119</span><span class="pc-nom">Ignacia Mercedes Muñiz Dutra</span><span class="pc-dato">1805 – 1893</span></li>
-        <li><span class="pc-num">124</span><span class="pc-nom">Juan Luis Cabal</span><span class="pc-dato">Córdoba, España</span></li>
-        <li><span class="pc-num">125</span><span class="pc-nom">María Rosario Flores</span><span class="pc-dato">en el acta de defunción de su hijo figura como Magdalena</span></li>
-        <li><span class="pc-num">126</span><span class="pc-nom">José N. Martínez</span></li>
-        <li><span class="pc-num">127</span><span class="pc-nom">Ángela Nevares</span></li>
+        <li id="pc-64"><span class="pc-num">64</span><span class="pc-nom"><a href="#h-64">Miguel de los Campos</a></span><span class="pc-dato">tierras entre el Sarandí y el Marincho · hijo de Juan José y Felipa Escopal</span></li>
+        <li id="pc-65"><span class="pc-num">65</span><span class="pc-nom"><a href="#h-65">Clara Chavarría</a></span><span class="pc-dato">hija de Juan Chavarría y Teresa Muñoz</span></li>
+        <li id="pc-66"><span class="pc-num">66</span><span class="pc-nom">Manuel García de la Fuente</span><span class="pc-dato">1775</span></li>
+        <li id="pc-67"><span class="pc-num">67</span><span class="pc-nom">Gertrudis Martínez</span><span class="pc-dato">1775</span></li>
+        <li id="pc-96"><span class="pc-num">96</span><span class="pc-nom"><a href="#h-96">Esteban Nin y Soler</a></span><span class="pc-dato">c. 1791, El Vendrell · casado en Colonia en 1821</span></li>
+        <li id="pc-97"><span class="pc-num">97</span><span class="pc-nom"><a href="#h-97">Juana Eusebia Alagón Crosa</a></span><span class="pc-dato">c. 1801, Colonia del Sacramento</span></li>
+        <li id="pc-98"><span class="pc-num">98</span><span class="pc-nom">Francisco Aguilar</span></li>
+        <li id="pc-99"><span class="pc-num">99</span><span class="pc-nom">Javiera Pareja</span></li>
+        <li id="pc-100"><span class="pc-num">100</span><span class="pc-nom">Antonio Joaquín Pérez</span></li>
+        <li id="pc-101"><span class="pc-num">101</span><span class="pc-nom">María del Pino</span></li>
+        <li id="pc-102"><span class="pc-num">102</span><span class="pc-nom">Ramón Liñán</span></li>
+        <li id="pc-103"><span class="pc-num">103</span><span class="pc-nom">María Calatayud</span></li>
+        <li id="pc-104"><span class="pc-num">104</span><span class="pc-nom"><a href="#h-104">Juan Bautista Sacarello</a></span><span class="pc-dato">1801 – 1877, Génova</span></li>
+        <li id="pc-105"><span class="pc-num">105</span><span class="pc-nom"><a href="#h-105">Magdalena Parodi</a></span><span class="pc-dato">1805 – 1867, Génova</span></li>
+        <li id="pc-106"><span class="pc-num">106</span><span class="pc-nom"><a href="#h-106">Eugenio Aberastury</a></span><span class="pc-dato">1796, Buenos Aires – 26 de diciembre de 1846, Paysandú · coronel</span></li>
+        <li id="pc-107"><span class="pc-num">107</span><span class="pc-nom"><a href="#h-107">Juana González</a></span><span class="pc-dato">porteña · murió en agosto de 1878, en Paysandú</span></li>
+        <li id="pc-108"><span class="pc-num">108</span><span class="pc-nom"><a href="#h-108">Francisco Remigio Castellanos</a></span><span class="pc-dato">1782, Salta – 1839 · abogado y constituyente</span></li>
+        <li id="pc-110"><span class="pc-num">110</span><span class="pc-nom"><a href="#h-110">Manuel Fernandes Lima</a></span><span class="pc-dato">portugués, comerciante · de Santa María de Fregosa, Braga</span></li>
+        <li id="pc-111"><span class="pc-num">111</span><span class="pc-nom"><a href="#h-111">María del Rosario Vidal</a></span></li>
+        <li id="pc-112"><span class="pc-num">112</span><span class="pc-nom"><a href="#h-112">Ambrosio Márquez</a></span></li>
+        <li id="pc-113"><span class="pc-num">113</span><span class="pc-nom"><a href="#h-113">Eugenia Rodríguez</a></span></li>
+        <li id="pc-114"><span class="pc-num">114</span><span class="pc-nom"><a href="#h-114">Juan Asencio Olmedo</a></span><span class="pc-dato">1800 – antes de 1861 · casado en Minas en 1823</span></li>
+        <li id="pc-115"><span class="pc-num">115</span><span class="pc-nom"><a href="#h-115">Juana María Chaparro Martínez</a></span><span class="pc-dato">1808 – 1890</span></li>
+        <li id="pc-116"><span class="pc-num">116</span><span class="pc-nom"><a href="#h-116">Vicente María Del Puerto Dutra</a></span><span class="pc-dato">1800 · casado en Minas en 1829</span></li>
+        <li id="pc-117"><span class="pc-num">117</span><span class="pc-nom"><a href="#h-117">Juana María Silveira Pérez</a></span><span class="pc-dato">1806 – 1842</span></li>
+        <li id="pc-118"><span class="pc-num">118</span><span class="pc-nom"><a href="#h-118">Francisco Gómez Silveira</a></span><span class="pc-dato">1800 · casado en Maldonado en 1825</span></li>
+        <li id="pc-119"><span class="pc-num">119</span><span class="pc-nom"><a href="#h-119">Ignacia Mercedes Muñiz Dutra</a></span><span class="pc-dato">1805 – 1893</span></li>
+        <li id="pc-124"><span class="pc-num">124</span><span class="pc-nom"><a href="#h-124">Juan Luis Cabal</a></span><span class="pc-dato">Córdoba, España</span></li>
+        <li id="pc-125"><span class="pc-num">125</span><span class="pc-nom"><a href="#h-125">María Rosario Flores</a></span><span class="pc-dato">en el acta de defunción de su hijo figura como Magdalena</span></li>
+        <li id="pc-126"><span class="pc-num">126</span><span class="pc-nom">José N. Martínez</span></li>
+        <li id="pc-127"><span class="pc-num">127</span><span class="pc-nom">Ángela Nevares</span></li>
       </ol>
       <p class="pc-vacios">Sin registrar todavía: 68–95, 109, 120–123</p>
     </div>
     <div class="pc-banda">
       <div class="pc-rot"><span class="pc-gen">8.ª generación</span><span class="pc-tit">Octava generación</span><span class="pc-rango">128–255</span></div>
       <ol class="pc-lista">
-        <li><span class="pc-num">128</span><span class="pc-nom">Juan José de los Campos</span><span class="pc-dato">c. 1744, Vizcaya · pulpero en Montevideo en 1772, si es el mismo hombre</span></li>
-        <li><span class="pc-num">129</span><span class="pc-nom">Felipa Escopal</span><span class="pc-dato">en la reseña de la familia, Escopal; quizá Escobal</span></li>
-        <li><span class="pc-num">130</span><span class="pc-nom">Juan Chavarría</span></li>
-        <li><span class="pc-num">131</span><span class="pc-nom">Teresa Muñoz</span></li>
-        <li><span class="pc-num">192</span><span class="pc-nom">Antonio Nin y Estalella</span><span class="pc-dato">c. 1748, Lliurona de Albañá</span></li>
-        <li><span class="pc-num">193</span><span class="pc-nom">María Soler</span><span class="pc-dato">c. 1760, El Vendrell</span></li>
-        <li><span class="pc-num">194</span><span class="pc-nom">José Alagón</span><span class="pc-dato">nombrado en el acta de su nieta Silveria, 1901 · casi seguro el del Cabildo de Colonia de 1821</span></li>
-        <li><span class="pc-num">195</span><span class="pc-nom">Francisca Crosa</span><span class="pc-dato">nombrada en el acta de su nieta Silveria, 1901</span></li>
-        <li><span class="pc-num">212</span><span class="pc-nom">José Aberastury</span></li>
-        <li><span class="pc-num">213</span><span class="pc-nom">Jacinta Salas</span></li>
-        <li><span class="pc-num">214</span><span class="pc-nom">Manuel González</span><span class="pc-dato">vecino de San José de Flores</span></li>
-        <li><span class="pc-num">215</span><span class="pc-nom">Isidora Sigarra</span><span class="pc-dato">vecina de San José de Flores</span></li>
-        <li><span class="pc-num">216</span><span class="pc-nom">Juan Bautista Castellanos Jáuregui</span></li>
-        <li><span class="pc-num">217</span><span class="pc-nom">Juana Saravia y Aguirre</span></li>
-        <li><span class="pc-num">248</span><span class="pc-nom">Juan Cabal López</span><span class="pc-dato">casado en Córdoba, España, en 1771</span></li>
-        <li><span class="pc-num">249</span><span class="pc-nom">María Villoslada</span></li>
+        <li id="pc-128"><span class="pc-num">128</span><span class="pc-nom"><a href="#h-128">Juan José de los Campos</a></span><span class="pc-dato">c. 1744, Vizcaya · pulpero en Montevideo en 1772, si es el mismo hombre</span></li>
+        <li id="pc-129"><span class="pc-num">129</span><span class="pc-nom"><a href="#h-129">Felipa Escopal</a></span><span class="pc-dato">en la reseña de la familia, Escopal; quizá Escobal</span></li>
+        <li id="pc-130"><span class="pc-num">130</span><span class="pc-nom"><a href="#h-130">Juan Chavarría</a></span></li>
+        <li id="pc-131"><span class="pc-num">131</span><span class="pc-nom"><a href="#h-131">Teresa Muñoz</a></span></li>
+        <li id="pc-192"><span class="pc-num">192</span><span class="pc-nom"><a href="#h-192">Antonio Nin y Estalella</a></span><span class="pc-dato">c. 1748, Lliurona de Albañá</span></li>
+        <li id="pc-193"><span class="pc-num">193</span><span class="pc-nom"><a href="#h-193">María Soler</a></span><span class="pc-dato">c. 1760, El Vendrell</span></li>
+        <li id="pc-194"><span class="pc-num">194</span><span class="pc-nom">José Alagón</span><span class="pc-dato">nombrado en el acta de su nieta Silveria, 1901 · casi seguro el del Cabildo de Colonia de 1821</span></li>
+        <li id="pc-195"><span class="pc-num">195</span><span class="pc-nom">Francisca Crosa</span><span class="pc-dato">nombrada en el acta de su nieta Silveria, 1901</span></li>
+        <li id="pc-212"><span class="pc-num">212</span><span class="pc-nom"><a href="#h-212">José Aberastury</a></span></li>
+        <li id="pc-213"><span class="pc-num">213</span><span class="pc-nom"><a href="#h-213">Jacinta Salas</a></span></li>
+        <li id="pc-214"><span class="pc-num">214</span><span class="pc-nom">Manuel González</span><span class="pc-dato">vecino de San José de Flores</span></li>
+        <li id="pc-215"><span class="pc-num">215</span><span class="pc-nom">Isidora Sigarra</span><span class="pc-dato">vecina de San José de Flores</span></li>
+        <li id="pc-216"><span class="pc-num">216</span><span class="pc-nom">Juan Bautista Castellanos Jáuregui</span></li>
+        <li id="pc-217"><span class="pc-num">217</span><span class="pc-nom">Juana Saravia y Aguirre</span></li>
+        <li id="pc-248"><span class="pc-num">248</span><span class="pc-nom"><a href="#h-248">Juan Cabal López</a></span><span class="pc-dato">casado en Córdoba, España, en 1771</span></li>
+        <li id="pc-249"><span class="pc-num">249</span><span class="pc-nom"><a href="#h-249">María Villoslada</a></span></li>
       </ol>
       <p class="pc-vacios">Sin registrar todavía: 132–191, 196–211, 218–247, 250–255</p>
     </div>
@@ -3149,7 +3273,21 @@ document.addEventListener('DOMContentLoaded', function(){
 </div>
 </div>
 
-<a class="al-mapa" href="#mapa" aria-label="Volver al mapa"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 10.5V1.8M2.2 5.4 6 1.6l3.8 3.8"/></svg>Mapa</a>
+<nav class="indice" aria-label="Índice del libro">
+  <a href="#mapa" data-sec="mapa" aria-label="Mapa: cuatro lugares, un país chico"><svg class="ind-ico" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M8 2.9 9.4 8 8 13.1 6.6 8Z"/></svg><span class="ind-nom">Mapa</span></a>
+  <span class="ind-sep" aria-hidden="true"></span>
+  <a href="#p1" data-sec="p1" aria-label="Padrón I, de los Campos"><span class="ind-sig">I</span><span class="ind-nom">de los Campos</span></a>
+  <a href="#p2" data-sec="p2" aria-label="Padrón II, Acosta y Britos"><span class="ind-sig">II</span><span class="ind-nom">Acosta y Britos</span></a>
+  <a href="#p3" data-sec="p3" aria-label="Padrón III, Nin y Sacarello"><span class="ind-sig">III</span><span class="ind-nom">Nin y Sacarello</span></a>
+  <a href="#p4" data-sec="p4" aria-label="Padrón IV, Márquez y Del Puerto"><span class="ind-sig">IV</span><span class="ind-nom">Márquez y Del Puerto</span></a>
+  <a href="#p5" data-sec="p5" aria-label="Donde las cuatro se juntan"><span class="ind-sig">V</span><span class="ind-nom">Donde se juntan</span></a>
+  <span class="ind-sep" aria-hidden="true"></span>
+  <a href="#pc" data-sec="pc" aria-label="El padrón completo"><svg class="ind-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.6 2.6h10.8v10.8H2.6zM2.6 6.2h10.8M2.6 9.8h10.8M6.2 2.6v10.8M9.8 2.6v10.8"/></svg><span class="ind-nom">Padrón completo</span></a>
+</nav>
+<div class="emerge" id="emerge" popover role="dialog" aria-labelledby="em-tit">
+  <button class="em-cerrar" type="button" popovertarget="emerge" popovertargetaction="hide" aria-label="Cerrar"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  <div class="em-cuerpo"></div>
+</div>
 
 <script>
 (function(){
@@ -3224,3 +3362,149 @@ document.addEventListener('DOMContentLoaded', function(){
   svg.addEventListener('pointercancel', soltar);
 })();
 </script>
+<script>
+/* Índice: marca el tramo que se está leyendo; en el teléfono se esconde al bajar y vuelve al subir. */
+(function(){
+  var nav = document.querySelector('.indice');
+  if (!nav || !window.requestAnimationFrame) return;
+  document.documentElement.classList.add('js-indice');
+  var tel = window.matchMedia('(max-width: 40rem)');
+  var tramos = [].slice.call(nav.querySelectorAll('a[data-sec]')).map(function(a){
+    var el = document.getElementById(a.getAttribute('data-sec'));
+    return [a, el ? (el.closest('section') || el) : null];
+  }).filter(function(t){ return t[1]; });
+  var ultimoY = window.scrollY, pedido = false;
+  function mirar(){
+    pedido = false;
+    var linea = innerHeight * 0.35, activo = null;
+    tramos.forEach(function(t){ if (t[1].getBoundingClientRect().top <= linea) activo = t[0]; });
+    tramos.forEach(function(t){
+      if (t[0] === activo) t[0].setAttribute('aria-current', 'location');
+      else t[0].removeAttribute('aria-current');
+    });
+    nav.classList.toggle('visible', tramos[0][1].getBoundingClientRect().top < innerHeight * 0.5);
+    var y = window.scrollY;
+    if (tel.matches){
+      if (y > ultimoY + 6 && y > 400) nav.classList.add('escondido');
+      else if (y < ultimoY - 6 || innerHeight + y >= document.documentElement.scrollHeight - 40) nav.classList.remove('escondido');
+    } else nav.classList.remove('escondido');
+    ultimoY = y;
+  }
+  function pedir(){ if (!pedido){ pedido = true; requestAnimationFrame(mirar); } }
+  addEventListener('scroll', pedir, {passive: true});
+  addEventListener('resize', pedir);
+  nav.addEventListener('focusin', function(){ nav.classList.remove('escondido'); });
+  mirar();
+})();
+
+/* Ficha de cada persona y nota de cada asterisco, en una misma caja emergente. */
+(function(){
+  var caja = document.getElementById('emerge');
+  if (!caja || typeof caja.showPopover !== 'function') return;  // sin popover, los enlaces llevan al padrón y a las notas
+  var FICHAS = {"128": {"nom": "Juan José de los Campos", "rol": "Antepasado de Pablo por la línea paterna", "dat": "c. 1744, Vizcaya · pulpero en Montevideo en 1772, si es el mismo hombre", "meta": "8.ª generación · Padrón I · de los Campos", "n": 128, "ir": "#pc-128", "irl": "Ver en el padrón completo", "vivo": false}, "129": {"nom": "Felipa Escopal", "rol": "Antepasada de Pablo por la línea paterna", "dat": "en la reseña de la familia, Escopal; quizá Escobal", "meta": "8.ª generación · Padrón I · de los Campos", "n": 129, "ir": "#pc-129", "irl": "Ver en el padrón completo", "vivo": false}, "130": {"nom": "Juan Chavarría", "rol": "Antepasado de Pablo por la línea paterna", "dat": "", "meta": "8.ª generación · Padrón I · de los Campos", "n": 130, "ir": "#pc-130", "irl": "Ver en el padrón completo", "vivo": false}, "131": {"nom": "Teresa Muñoz", "rol": "Antepasada de Pablo por la línea paterna", "dat": "", "meta": "8.ª generación · Padrón I · de los Campos", "n": 131, "ir": "#pc-131", "irl": "Ver en el padrón completo", "vivo": false}, "64": {"nom": "Miguel de los Campos", "rol": "Antepasado de Pablo por la línea paterna", "dat": "tierras entre el Sarandí y el Marincho · hijo de Juan José y Felipa Escopal", "meta": "7.ª generación · Padrón I · de los Campos", "n": 64, "ir": "#pc-64", "irl": "Ver en el padrón completo", "vivo": false}, "65": {"nom": "Clara Chavarría", "rol": "Antepasada de Pablo por la línea paterna", "dat": "hija de Juan Chavarría y Teresa Muñoz", "meta": "7.ª generación · Padrón I · de los Campos", "n": 65, "ir": "#pc-65", "irl": "Ver en el padrón completo", "vivo": false}, "c6": {"nom": "Pedro de los Campos", "rol": "Hermano de Felipe Pascual de los Campos", "meta": "Padrón I · de los Campos", "ir": "#pc-32", "irl": "Ver a Felipe Pascual en el padrón"}, "32": {"nom": "Felipe Pascual de los Campos Chavarría", "rol": "Trastatarabuelo paterno de Pablo", "dat": "19 de mayo de 1796, Las Piedras – 5 de junio de 1889 · diputado y juez de paz", "meta": "6.ª generación · Padrón I · de los Campos", "n": 32, "ir": "#pc-32", "irl": "Ver en el padrón completo", "vivo": false}, "33": {"nom": "Margarita García Martínez", "rol": "Trastatarabuela paterna de Pablo", "dat": "1805 – 1887 · un acta la anota García de la Fuente, el apellido de su padre", "meta": "6.ª generación · Padrón I · de los Campos", "n": 33, "ir": "#pc-33", "irl": "Ver en el padrón completo", "vivo": false}, "16": {"nom": "Sandalio de los Campos", "rol": "Tatarabuelo paterno de Pablo", "dat": "c. 1836 – 1908 · militar", "meta": "5.ª generación · Padrón I · de los Campos", "n": 16, "ir": "#pc-16", "irl": "Ver en el padrón completo", "vivo": false}, "17": {"nom": "Felicia Guerrero", "rol": "Tatarabuela paterna de Pablo", "dat": "c. 1837", "meta": "5.ª generación · Padrón I · de los Campos", "n": 17, "ir": "#pc-17", "irl": "Ver en el padrón completo", "vivo": false}, "c12": {"nom": "Felipe Robustiano de los Campos", "rol": "Hijo de Felipe Pascual y hermano del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c13": {"nom": "Isabel Falcón", "rol": "Mujer de Felipe Robustiano, hijo de Felipe Pascual", "meta": "Padrón I · de los Campos", "ir": "#pc-32", "irl": "Ver a Felipe Pascual en el padrón"}, "c14": {"nom": "Eduardo de los Campos", "rol": "Hijo de Felipe Pascual y hermano del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c15": {"nom": "Paula Luz", "rol": "Mujer de Eduardo de los Campos, hijo de Felipe Pascual", "meta": "Padrón I · de los Campos", "ir": "#pc-32", "irl": "Ver a Felipe Pascual en el padrón"}, "c16": {"nom": "Manuel de los Campos", "rol": "Hijo de Felipe Pascual y hermano del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c17": {"nom": "Juan de los Campos", "rol": "Hijo de Felipe Pascual y hermano del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c18": {"nom": "Rolando de los Campos", "rol": "Hijo de Felipe Pascual y hermano del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c19": {"nom": "Luis Carlos", "rol": "Hijo de Rolando de los Campos", "meta": "Padrón I · de los Campos", "ir": "#pc-32", "irl": "Ver a su abuelo Felipe Pascual en el padrón"}, "c20": {"nom": "Margarita de los Campos", "rol": "Hija de Felipe Pascual y hermana del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "c21": {"nom": "Gertrudis de los Campos", "rol": "Hija de Felipe Pascual y hermana del tatarabuelo Sandalio", "meta": "Padrón I · de los Campos", "ir": "#pc-16", "irl": "Ver a Sandalio en el padrón"}, "8": {"nom": "Delmiro Conrado de los Campos", "rol": "Bisabuelo paterno de Pablo", "dat": "1867 – c. 1948 · hacendado en el Sarandí", "meta": "4.ª generación · Padrón I · de los Campos", "n": 8, "ir": "#pc-8", "irl": "Ver en el padrón completo", "vivo": false}, "9": {"nom": "Luisa María Soma Peraza", "rol": "Bisabuela paterna de Pablo", "dat": "1877, Trinidad – 1933, Durazno", "meta": "4.ª generación · Padrón I · de los Campos", "n": 9, "ir": "#pc-9", "irl": "Ver en el padrón completo", "vivo": false}, "18": {"nom": "Juan Soma Marmol", "rol": "Tatarabuelo paterno de Pablo", "dat": "c. 1837 – 2 de mayo de 1887, Trinidad · italiano", "meta": "5.ª generación · Padrón I · de los Campos", "n": 18, "ir": "#pc-18", "irl": "Ver en el padrón completo", "vivo": false}, "19": {"nom": "Joaquina Peraza", "rol": "Tatarabuela paterna de Pablo", "dat": "c. 1842 · testigo del casamiento de su hija María en 1895", "meta": "5.ª generación · Padrón I · de los Campos", "n": 19, "ir": "#pc-19", "irl": "Ver en el padrón completo", "vivo": false}, "4": {"nom": "Eloy de los Campos Somma", "rol": "Abuelo paterno de Pablo", "dat": "9 de enero de 1920, Trinidad · chofer", "meta": "3.ª generación · Padrón I · de los Campos", "n": 4, "ir": "#pc-4", "irl": "Ver en el padrón completo", "vivo": false}, "44": {"nom": "Félix Brito", "rol": "Trastatarabuelo paterno de Pablo", "dat": "c. 1848 · paraguayo", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 44, "ir": "#pc-44", "irl": "Ver en el padrón completo", "vivo": false}, "45": {"nom": "Amara Burgos", "rol": "Trastatarabuela paterna de Pablo", "dat": "c. 1852", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 45, "ir": "#pc-45", "irl": "Ver en el padrón completo", "vivo": false}, "46": {"nom": "Antonio Duarte", "rol": "Trastatarabuelo paterno de Pablo", "dat": "c. 1828 · brasilero", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 46, "ir": "#pc-46", "irl": "Ver en el padrón completo", "vivo": false}, "47": {"nom": "Antonia González", "rol": "Trastatarabuela paterna de Pablo", "dat": "c. 1844 · brasilera", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 47, "ir": "#pc-47", "irl": "Ver en el padrón completo", "vivo": false}, "22": {"nom": "Tomás Britos", "rol": "Tatarabuelo paterno de Pablo", "dat": "hacia 1871 · jornalero", "meta": "5.ª generación · Padrón II · Acosta y Britos", "n": 22, "ir": "#pc-22", "irl": "Ver en el padrón completo", "vivo": false}, "23": {"nom": "Rufina Duarte", "rol": "Tatarabuela paterna de Pablo", "dat": "c. 1877", "meta": "5.ª generación · Padrón II · Acosta y Britos", "n": 23, "ir": "#pc-23", "irl": "Ver en el padrón completo", "vivo": false}, "11": {"nom": "Percilia Britos", "rol": "Bisabuela paterna de Pablo", "dat": "1898, Tacuarí", "meta": "4.ª generación · Padrón II · Acosta y Britos", "n": 11, "ir": "#pc-11", "irl": "Ver en el padrón completo", "vivo": false}, "10": {"nom": "Lidoro Acosta", "rol": "Bisabuelo paterno de Pablo", "dat": "1885, Treinta y Tres · jornalero", "meta": "4.ª generación · Padrón II · Acosta y Britos", "n": 10, "ir": "#pc-10", "irl": "Ver en el padrón completo", "vivo": false}, "20": {"nom": "Justiniano Acosta", "rol": "Tatarabuelo paterno de Pablo", "dat": "jornalero, Fraile Muerto", "meta": "5.ª generación · Padrón II · Acosta y Britos", "n": 20, "ir": "#pc-20", "irl": "Ver en el padrón completo", "vivo": false}, "21": {"nom": "Petrona Jiménez", "rol": "Tatarabuela paterna de Pablo", "dat": "Fraile Muerto", "meta": "5.ª generación · Padrón II · Acosta y Britos", "n": 21, "ir": "#pc-21", "irl": "Ver en el padrón completo", "vivo": false}, "40": {"nom": "Basilio Acosta", "rol": "Trastatarabuelo paterno de Pablo", "dat": "oriental, ya difunto en 1885", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 40, "ir": "#pc-40", "irl": "Ver en el padrón completo", "vivo": false}, "41": {"nom": "Leonarda Acosta", "rol": "Trastatarabuela paterna de Pablo", "dat": "Tacuarembó", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 41, "ir": "#pc-41", "irl": "Ver en el padrón completo", "vivo": false}, "42": {"nom": "Simón Jiménez", "rol": "Trastatarabuelo paterno de Pablo", "dat": "", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 42, "ir": "#pc-42", "irl": "Ver en el padrón completo", "vivo": false}, "43": {"nom": "Josefa Vecerje", "rol": "Trastatarabuela paterna de Pablo", "dat": "", "meta": "6.ª generación · Padrón II · Acosta y Britos", "n": 43, "ir": "#pc-43", "irl": "Ver en el padrón completo", "vivo": false}, "c44": {"nom": "Margarita Malvina Menchaca", "rol": "Esposa de Lidoro Acosta, el bisabuelo", "meta": "Padrón II · Acosta y Britos", "ir": "#pc-10", "irl": "Ver a Lidoro en el padrón"}, "5": {"nom": "Reina Verderina Acosta Britos", "rol": "Abuela paterna de Pablo", "dat": "6 de enero de 1922, Fraile Muerto", "meta": "3.ª generación · Padrón II · Acosta y Britos", "n": 5, "ir": "#pc-5", "irl": "Ver en el padrón completo", "vivo": false}, "96": {"nom": "Esteban Nin y Soler", "rol": "Antepasado de Pablo por la línea materna", "dat": "c. 1791, El Vendrell · casado en Colonia en 1821", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 96, "ir": "#pc-96", "irl": "Ver en el padrón completo", "vivo": false}, "192": {"nom": "Antonio Nin y Estalella", "rol": "Antepasado de Pablo por la línea materna", "dat": "c. 1748, Lliurona de Albañá", "meta": "8.ª generación · Padrón III · Nin y Sacarello", "n": 192, "ir": "#pc-192", "irl": "Ver en el padrón completo", "vivo": false}, "193": {"nom": "María Soler", "rol": "Antepasada de Pablo por la línea materna", "dat": "c. 1760, El Vendrell", "meta": "8.ª generación · Padrón III · Nin y Sacarello", "n": 193, "ir": "#pc-193", "irl": "Ver en el padrón completo", "vivo": false}, "97": {"nom": "Juana Eusebia Alagón Crosa", "rol": "Antepasada de Pablo por la línea materna", "dat": "c. 1801, Colonia del Sacramento", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 97, "ir": "#pc-97", "irl": "Ver en el padrón completo", "vivo": false}, "c50": {"nom": "Antonio Nin y Soler", "rol": "Hermano de Esteban Nin y Soler", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-96", "irl": "Ver a Esteban en el padrón"}, "c51": {"nom": "Federico Nin Reyes", "rol": "Hijo de Antonio Nin y Soler y sobrino de Esteban", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-96", "irl": "Ver a Esteban en el padrón"}, "c52": {"nom": "Antonio Nin y Reyes", "rol": "Hijo de Antonio Nin y Soler y sobrino de Esteban", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-96", "irl": "Ver a Esteban en el padrón"}, "48": {"nom": "Federico Nin Alagón", "rol": "Trastatarabuelo materno de Pablo", "dat": "c. 1823 – 14 de septiembre de 1898 · contador de la Aduana", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 48, "ir": "#pc-48", "irl": "Ver en el padrón completo", "vivo": false}, "49": {"nom": "Matilde Aguilar Pareja", "rol": "Trastatarabuela materna de Pablo", "dat": "1836 – 1877", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 49, "ir": "#pc-49", "irl": "Ver en el padrón completo", "vivo": false}, "c55": {"nom": "Alberto Nin", "rol": "Casi con seguridad, hijo de Silveria Nin, hermana de Federico Nin Alagón", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-48", "irl": "Ver a Federico Nin Alagón en el padrón"}, "106": {"nom": "Eugenio Aberastury", "rol": "Antepasado de Pablo por la línea materna", "dat": "1796, Buenos Aires – 26 de diciembre de 1846, Paysandú · coronel", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 106, "ir": "#pc-106", "irl": "Ver en el padrón completo", "vivo": false}, "212": {"nom": "José Aberastury", "rol": "Antepasado de Pablo por la línea materna", "dat": "", "meta": "8.ª generación · Padrón III · Nin y Sacarello", "n": 212, "ir": "#pc-212", "irl": "Ver en el padrón completo", "vivo": false}, "213": {"nom": "Jacinta Salas", "rol": "Antepasada de Pablo por la línea materna", "dat": "", "meta": "8.ª generación · Padrón III · Nin y Sacarello", "n": 213, "ir": "#pc-213", "irl": "Ver en el padrón completo", "vivo": false}, "107": {"nom": "Juana González", "rol": "Antepasada de Pablo por la línea materna", "dat": "porteña · murió en agosto de 1878, en Paysandú", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 107, "ir": "#pc-107", "irl": "Ver en el padrón completo", "vivo": false}, "104": {"nom": "Juan Bautista Sacarello", "rol": "Antepasado de Pablo por la línea materna", "dat": "1801 – 1877, Génova", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 104, "ir": "#pc-104", "irl": "Ver en el padrón completo", "vivo": false}, "105": {"nom": "Magdalena Parodi", "rol": "Antepasada de Pablo por la línea materna", "dat": "1805 – 1867, Génova", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 105, "ir": "#pc-105", "irl": "Ver en el padrón completo", "vivo": false}, "52": {"nom": "Antonio Bartolomeo Sacarello Parodi", "rol": "Trastatarabuelo materno de Pablo", "dat": "1827 – 1882 · nacido en Liguria", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 52, "ir": "#pc-52", "irl": "Ver en el padrón completo", "vivo": false}, "c63": {"nom": "Juan Sacarello Parodi", "rol": "Hermano de Antonio Bartolomeo Sacarello Parodi", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-52", "irl": "Ver a Bartolo en el padrón"}, "53": {"nom": "Eugenia de los Dolores Aberastury González", "rol": "Trastatarabuela materna de Pablo", "dat": "1826 – 1916 · argentina, de apellido vasco", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 53, "ir": "#pc-53", "irl": "Ver en el padrón completo", "vivo": false}, "c65": {"nom": "Elvira Ciriaca", "rol": "Hija de Bartolo Sacarello y Eugenia Aberastury, hermana de Juan Elías", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-26", "irl": "Ver a Juan Elías en el padrón"}, "c66": {"nom": "Aurelia Sacarello", "rol": "Hija de Bartolo Sacarello y Eugenia Aberastury, hermana de Juan Elías", "meta": "Padrón III · Nin y Sacarello", "ir": "#pc-26", "irl": "Ver a Juan Elías en el padrón"}, "54": {"nom": "José María Castellanos", "rol": "Trastatarabuelo materno de Pablo", "dat": "1808, Chuquisaca – 1882 · hacendado, socio fundador de la Asociación Rural", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 54, "ir": "#pc-54", "irl": "Ver en el padrón completo", "vivo": false}, "108": {"nom": "Francisco Remigio Castellanos", "rol": "Antepasado de Pablo por la línea materna", "dat": "1782, Salta – 1839 · abogado y constituyente", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 108, "ir": "#pc-108", "irl": "Ver en el padrón completo", "vivo": false}, "55": {"nom": "Eumenia Lima", "rol": "Trastatarabuela materna de Pablo", "dat": "1816, Montevideo", "meta": "6.ª generación · Padrón III · Nin y Sacarello", "n": 55, "ir": "#pc-55", "irl": "Ver en el padrón completo", "vivo": false}, "111": {"nom": "María del Rosario Vidal", "rol": "Antepasada de Pablo por la línea materna", "dat": "", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 111, "ir": "#pc-111", "irl": "Ver en el padrón completo", "vivo": false}, "110": {"nom": "Manuel Fernandes Lima", "rol": "Antepasado de Pablo por la línea materna", "dat": "portugués, comerciante · de Santa María de Fregosa, Braga", "meta": "7.ª generación · Padrón III · Nin y Sacarello", "n": 110, "ir": "#pc-110", "irl": "Ver en el padrón completo", "vivo": false}, "26": {"nom": "Juan Elías Sacarello Aberastury", "rol": "Tatarabuelo materno de Pablo", "dat": "c. 1858, Montevideo", "meta": "5.ª generación · Padrón III · Nin y Sacarello", "n": 26, "ir": "#pc-26", "irl": "Ver en el padrón completo", "vivo": false}, "27": {"nom": "Julia Castellanos Lima", "rol": "Tatarabuela materna de Pablo", "dat": "", "meta": "5.ª generación · Padrón III · Nin y Sacarello", "n": 27, "ir": "#pc-27", "irl": "Ver en el padrón completo", "vivo": false}, "24": {"nom": "Federico Nin Aguilar", "rol": "Tatarabuelo materno de Pablo", "dat": "24 de octubre de 1865, Montevideo · en el Senado desde 1883, luego secretario; jubilado en 1915", "meta": "5.ª generación · Padrón III · Nin y Sacarello", "n": 24, "ir": "#pc-24", "irl": "Ver en el padrón completo", "vivo": false}, "25": {"nom": "María Elena Pérez Liñán", "rol": "Tatarabuela materna de Pablo", "dat": "1866–1924, Villa Colón", "meta": "5.ª generación · Padrón III · Nin y Sacarello", "n": 25, "ir": "#pc-25", "irl": "Ver en el padrón completo", "vivo": false}, "12": {"nom": "Federico Raúl Nin Pérez", "rol": "Bisabuelo materno de Pablo", "dat": "29 de diciembre de 1884, Montevideo · guarda de aduana", "meta": "4.ª generación · Padrón III · Nin y Sacarello", "n": 12, "ir": "#pc-12", "irl": "Ver en el padrón completo", "vivo": false}, "13": {"nom": "Eloísa Sacarello Castellanos", "rol": "Bisabuela materna de Pablo", "dat": "15 de octubre de 1886 – 1972", "meta": "4.ª generación · Padrón III · Nin y Sacarello", "n": 13, "ir": "#pc-13", "irl": "Ver en el padrón completo", "vivo": false}, "6": {"nom": "Raúl Alberto Nin Sacarello", "rol": "Abuelo materno de Pablo", "dat": "3 de marzo de 1919 – 1993 · fundador de la Sociedad Uruguaya de Proctología", "meta": "3.ª generación · Padrón III · Nin y Sacarello", "n": 6, "ir": "#pc-6", "irl": "Ver en el padrón completo", "vivo": false}, "114": {"nom": "Juan Asencio Olmedo", "rol": "Antepasado de Pablo por la línea materna", "dat": "1800 – antes de 1861 · casado en Minas en 1823", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 114, "ir": "#pc-114", "irl": "Ver en el padrón completo", "vivo": false}, "115": {"nom": "Juana María Chaparro Martínez", "rol": "Antepasada de Pablo por la línea materna", "dat": "1808 – 1890", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 115, "ir": "#pc-115", "irl": "Ver en el padrón completo", "vivo": false}, "118": {"nom": "Francisco Gómez Silveira", "rol": "Antepasado de Pablo por la línea materna", "dat": "1800 · casado en Maldonado en 1825", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 118, "ir": "#pc-118", "irl": "Ver en el padrón completo", "vivo": false}, "119": {"nom": "Ignacia Mercedes Muñiz Dutra", "rol": "Antepasada de Pablo por la línea materna", "dat": "1805 – 1893", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 119, "ir": "#pc-119", "irl": "Ver en el padrón completo", "vivo": false}, "116": {"nom": "Vicente María Del Puerto Dutra", "rol": "Antepasado de Pablo por la línea materna", "dat": "1800 · casado en Minas en 1829", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 116, "ir": "#pc-116", "irl": "Ver en el padrón completo", "vivo": false}, "117": {"nom": "Juana María Silveira Pérez", "rol": "Antepasada de Pablo por la línea materna", "dat": "1806 – 1842", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 117, "ir": "#pc-117", "irl": "Ver en el padrón completo", "vivo": false}, "232": {"nom": "Ramón Antonio Del Puerto", "rol": "Antepasado de Pablo por la línea materna", "meta": "8.ª generación · Padrón IV · Márquez y Del Puerto", "ir": "#pc-116", "irl": "Ver a su hijo Vicente en el padrón"}, "233": {"nom": "Ignacia Dutra Silveira", "rol": "Antepasada de Pablo por la línea materna", "meta": "8.ª generación · Padrón IV · Márquez y Del Puerto", "ir": "#pc-116", "irl": "Ver a su hijo Vicente en el padrón"}, "56": {"nom": "Nicomedes Márquez", "rol": "Trastatarabuelo materno de Pablo", "dat": "c. 1817, Minas", "meta": "6.ª generación · Padrón IV · Márquez y Del Puerto", "n": 56, "ir": "#pc-56", "irl": "Ver en el padrón completo", "vivo": false}, "112": {"nom": "Ambrosio Márquez", "rol": "Antepasado de Pablo por la línea materna", "dat": "", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 112, "ir": "#pc-112", "irl": "Ver en el padrón completo", "vivo": false}, "113": {"nom": "Eugenia Rodríguez", "rol": "Antepasada de Pablo por la línea materna", "dat": "", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 113, "ir": "#pc-113", "irl": "Ver en el padrón completo", "vivo": false}, "57": {"nom": "Atanasia Olmedo", "rol": "Trastatarabuela materna de Pablo", "dat": "c. 1832 – 23 de octubre de 1898", "meta": "6.ª generación · Padrón IV · Márquez y Del Puerto", "n": 57, "ir": "#pc-57", "irl": "Ver en el padrón completo", "vivo": false}, "58": {"nom": "Melchor Del Puerto Silveira", "rol": "Trastatarabuelo materno de Pablo", "dat": "c. 1830 – 1909 · militar y hacendado", "meta": "6.ª generación · Padrón IV · Márquez y Del Puerto", "n": 58, "ir": "#pc-58", "irl": "Ver en el padrón completo", "vivo": false}, "59": {"nom": "Liberata Gómez Muñiz", "rol": "Trastatarabuela materna de Pablo", "dat": "20 de julio de 1835, San Carlos, Maldonado", "meta": "6.ª generación · Padrón IV · Márquez y Del Puerto", "n": 59, "ir": "#pc-59", "irl": "Ver en el padrón completo", "vivo": false}, "29": {"nom": "Fermina Ignacia Del Puerto Gómez", "rol": "Tatarabuela materna de Pablo", "dat": "1862 – 1911", "meta": "5.ª generación · Padrón IV · Márquez y Del Puerto", "n": 29, "ir": "#pc-29", "irl": "Ver en el padrón completo", "vivo": false}, "28": {"nom": "Nicomedes Márquez Olmedo", "rol": "Tatarabuelo materno de Pablo", "dat": "1862 – 1912", "meta": "5.ª generación · Padrón IV · Márquez y Del Puerto", "n": 28, "ir": "#pc-28", "irl": "Ver en el padrón completo", "vivo": false}, "14": {"nom": "Nicomedes Bernardino Márquez Del Puerto", "rol": "Bisabuelo materno de Pablo", "dat": "1891, Campanero · hacendado", "meta": "4.ª generación · Padrón IV · Márquez y Del Puerto", "n": 14, "ir": "#pc-14", "irl": "Ver en el padrón completo", "vivo": false}, "15": {"nom": "María Elena Fernández Cabal", "rol": "Bisabuela materna de Pablo", "dat": "1 de junio de 1898, Minas", "meta": "4.ª generación · Padrón IV · Márquez y Del Puerto", "n": 15, "ir": "#pc-15", "irl": "Ver en el padrón completo", "vivo": false}, "30": {"nom": "Carlos Fernández", "rol": "Tatarabuelo materno de Pablo", "dat": "escribano de Minas · casado en 1894", "meta": "5.ª generación · Padrón IV · Márquez y Del Puerto", "n": 30, "ir": "#pc-30", "irl": "Ver en el padrón completo", "vivo": false}, "31": {"nom": "Elena Cabal Martínez", "rol": "Tatarabuela materna de Pablo", "dat": "26 de febrero de 1865", "meta": "5.ª generación · Padrón IV · Márquez y Del Puerto", "n": 31, "ir": "#pc-31", "irl": "Ver en el padrón completo", "vivo": false}, "62": {"nom": "Rafael Cabal Flores", "rol": "Trastatarabuelo materno de Pablo", "dat": "español, de Córdoba · propietario · casado en Montevideo el 28 de marzo de 1853", "meta": "6.ª generación · Padrón IV · Márquez y Del Puerto", "n": 62, "ir": "#pc-62", "irl": "Ver en el padrón completo", "vivo": false}, "124": {"nom": "Juan Luis Cabal", "rol": "Antepasado de Pablo por la línea materna", "dat": "Córdoba, España", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 124, "ir": "#pc-124", "irl": "Ver en el padrón completo", "vivo": false}, "125": {"nom": "María Rosario Flores", "rol": "Antepasada de Pablo por la línea materna", "dat": "en el acta de defunción de su hijo figura como Magdalena", "meta": "7.ª generación · Padrón IV · Márquez y Del Puerto", "n": 125, "ir": "#pc-125", "irl": "Ver en el padrón completo", "vivo": false}, "248": {"nom": "Juan Cabal López", "rol": "Antepasado de Pablo por la línea materna", "dat": "casado en Córdoba, España, en 1771", "meta": "8.ª generación · Padrón IV · Márquez y Del Puerto", "n": 248, "ir": "#pc-248", "irl": "Ver en el padrón completo", "vivo": false}, "249": {"nom": "María Villoslada", "rol": "Antepasada de Pablo por la línea materna", "dat": "", "meta": "8.ª generación · Padrón IV · Márquez y Del Puerto", "n": 249, "ir": "#pc-249", "irl": "Ver en el padrón completo", "vivo": false}, "7": {"nom": "María Ercilia Márquez Fernández", "rol": "Abuela materna de Pablo", "dat": "Minas · médica", "meta": "3.ª generación · Padrón IV · Márquez y Del Puerto", "n": 7, "ir": "#pc-7", "irl": "Ver en el padrón completo", "vivo": true}};
+  var cuerpo = caja.querySelector('.em-cuerpo');
+  var hoja = window.matchMedia('(max-width: 40rem), (pointer: coarse) and (max-width: 64rem)');
+  var FLECHA = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.8 6h8.4M6.6 2.4 10.2 6 6.6 9.6"/></svg>';
+  var disparador = null, rectBase = null, recienCerrada = null, yendo = false;
+
+  function el(tag, cls, txt){
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  function ir(href, texto){
+    var a = el('a', 'ef-ir'); a.href = href;
+    a.appendChild(document.createTextNode(texto));
+    a.insertAdjacentHTML('beforeend', FLECHA);
+    a.addEventListener('click', function(){ yendo = true; caja.hidePopover(); });
+    return a;
+  }
+  function ficha(f){
+    var cab = el('div', 'ef-cab');
+    if (f.n){
+      var sello = el('span', 'ef-sello');
+      sello.appendChild(el('b', null, f.n));
+      sello.appendChild(el('small', null, 'casilla'));
+      sello.setAttribute('aria-label', 'Casilla ' + f.n);
+      cab.appendChild(sello);
+    }
+    var t = el('div');
+    var h = el('p', 'ef-nom', f.nom); h.id = 'em-tit'; h.tabIndex = -1;
+    t.appendChild(h);
+    t.appendChild(el('p', 'ef-rol' + (f.vivo ? ' vivo' : ''), f.rol));
+    cab.appendChild(t);
+    cuerpo.appendChild(cab);
+    if (f.dat) cuerpo.appendChild(el('p', 'ef-dat', f.dat));
+    cuerpo.appendChild(el('p', 'ef-meta', f.meta));
+    cuerpo.appendChild(ir(f.ir, f.irl));
+  }
+  function nota(id){
+    var p = document.getElementById(id);
+    if (!p) return false;
+    var copia = p.cloneNode(true);
+    var st = copia.querySelector('strong');
+    var tit = st ? st.textContent.trim().replace(/\.$/, '') : 'Nota';
+    if (st) st.remove();
+    copia.querySelectorAll('a.volver').forEach(function(v){ v.remove(); });
+    var h = el('p', 'en-tit', tit); h.id = 'em-tit'; h.tabIndex = -1;
+    cuerpo.appendChild(h);
+    var tx = el('p', 'en-texto'); tx.innerHTML = copia.innerHTML.trim();
+    cuerpo.appendChild(tx);
+    cuerpo.appendChild(ir('#' + id, 'Ver entre las notas del padrón'));
+    return true;
+  }
+  function ubicar(){
+    if (!disparador) return;
+    if (hoja.matches){ caja.classList.add('hojita'); caja.style.left = caja.style.top = ''; return; }
+    caja.classList.remove('hojita');
+    var rs = disparador.getClientRects(), r = rs[0];
+    if (rectBase != null && rs.length > 1){
+      for (var i = 0; i < rs.length; i++) if (Math.abs(rs[i].top + rs[i].height / 2 - rectBase) < rs[i].height) r = rs[i];
+    }
+    if (!r) return;
+    var w = caja.offsetWidth, h = caja.offsetHeight, m = 16, g = 10;
+    var left = Math.min(Math.max(m, r.left + r.width / 2 - w / 2), innerWidth - w - m);
+    var top = r.bottom + g;
+    if (top + h > innerHeight - m) top = (r.top - g - h >= m) ? r.top - g - h : Math.max(m, innerHeight - h - m);
+    caja.style.left = left + 'px'; caja.style.top = top + 'px';
+    if (r.bottom < 0 || r.top > innerHeight) caja.hidePopover();
+  }
+  function abrir(a, ev){
+    cuerpo.textContent = '';
+    var ok = false;
+    if (a.classList.contains('ast')) ok = nota(a.getAttribute('href').slice(1));
+    else { var f = FICHAS[a.getAttribute('data-f')]; if (f){ ficha(f); ok = true; } }
+    if (!ok) return false;
+    if (disparador && disparador !== a) disparador.removeAttribute('aria-expanded');
+    if (caja.matches(':popover-open')) caja.hidePopover();
+    disparador = a; rectBase = ev && ev.clientY ? ev.clientY : null;
+    a.setAttribute('aria-expanded', 'true');
+    caja.showPopover();
+    ubicar();
+    document.getElementById('em-tit').focus({preventScroll: true});
+    return true;
+  }
+  document.addEventListener('pointerdown', function(e){
+    var a = e.target.closest && e.target.closest('a.nombre[data-f], a.ast');
+    recienCerrada = (a && a === disparador && caja.matches(':popover-open')) ? a : null;
+  }, true);
+  document.addEventListener('click', function(e){
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var a = e.target.closest && e.target.closest('a.nombre[data-f], a.ast');
+    if (!a) return;
+    e.preventDefault();
+    if (a === recienCerrada){ recienCerrada = null; return; }  // segundo toque sobre el mismo: solo cierra
+    abrir(a, e);
+  });
+  caja.addEventListener('toggle', function(e){
+    if (e.newState !== 'closed' || caja.matches(':popover-open')) return;
+    var d = disparador; disparador = null;
+    if (d){ d.removeAttribute('aria-expanded'); if (!yendo) d.focus({preventScroll: true}); }
+    yendo = false;
+  });
+  addEventListener('scroll', function(){ if (disparador && !hoja.matches) ubicar(); }, {passive: true});
+  addEventListener('resize', function(){ if (disparador) ubicar(); });
+})();
+</script>
+
