@@ -1,0 +1,404 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:#0c0a08}canvas{display:block}</style>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+const W=1080,H=1920,DUR=72;
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let GEO=null;
+const CREAM='#f1e8d4',INK='#0c0a08',RED='#e2452b';
+const COL={fl:'#e0a63a',cl:'#8fc06a',mv:'#63b6e0',la:'#e8705f'};
+const SERIF='"Bitstream Charter","Liberation Serif",serif',SANS='"Liberation Sans",sans-serif',MONO='"Courier 10 Pitch","Liberation Mono",monospace';
+const SITE={fl:[158.4,412.5],cl:[389.2,300.2],mv:[228.9,568.9],la:[317.5,509.3]};
+const VC=[214,556]; // Villa Colón, en el borde de Montevideo
+
+const ease=t=>t<0?0:t>1?1:t*t*(3-2*t);
+const easeO=t=>{t=Math.min(1,Math.max(0,t));return 1-Math.pow(1-t,3)};
+const lerp=(a,b,t)=>a+(b-a)*t;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+function rnd(n){const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)}
+
+// ---------- geometría ----------
+let P=null;
+function prep(){
+  P={deps:GEO.deps.map(d=>({c:d.c,p:new Path2D(d.d)})),borde:new Path2D(GEO.borde),rios:GEO.rios.map(d=>new Path2D(d))};
+  // longitud aproximada del borde para animar el trazo
+  const pts=[...GEO.borde.matchAll(/([\d.]+) ([\d.]+)/g)].map(m=>[+m[1],+m[2]]);
+  let L=0;for(let i=1;i<pts.length;i++)L+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
+  P.L=L;
+  // los 4 padrones, en el orden en que aparecen en el archivo
+  const pad=P.deps.filter(d=>d.c.includes('padron'));
+  P.pad={mv:pad[0].p,la:pad[1].p,fl:pad[2].p,cl:pad[3].p};
+}
+
+// ---------- cámara ----------
+const CX=260,CY=300,SF=1.95;
+const CAM=[ // t, cx, cy, s, sy(pantalla)
+ [0,CX,CY,SF*0.92,660],[7,CX,CY,SF*0.92,660],[12.5,CX,CY,SF,650],
+ [14.2,SITE.fl[0]+8,SITE.fl[1]-10,3.7,640],[26.0,SITE.fl[0]+8,SITE.fl[1]-10,3.9,640],
+ [28.6,SITE.cl[0]-4,SITE.cl[1]+4,3.7,640],[34.5,SITE.cl[0]-4,SITE.cl[1]+4,3.9,640],
+ [36.6,SITE.mv[0]+10,SITE.mv[1]-30,3.9,640],[42.2,SITE.mv[0]+10,SITE.mv[1]-30,4.1,640],
+ [44.4,SITE.la[0]+2,SITE.la[1]-10,3.7,640],[48.6,SITE.la[0]+2,SITE.la[1]-10,3.85,640],
+ [51.5,CX+10,CY+40,SF*1.02,650],[56,CX+10,CY+40,SF*1.02,650],
+ [60,VC[0]+30,VC[1]-70,3.0,700],[72,VC[0]+30,VC[1]-70,3.1,700]
+];
+function cam(t){
+  let i=0;while(i<CAM.length-2&&t>CAM[i+1][0])i++;
+  const a=CAM[i],b=CAM[i+1];const u=ease((t-a[0])/(b[0]-a[0]));
+  return{cx:lerp(a[1],b[1],u),cy:lerp(a[2],b[2],u),s:Math.exp(lerp(Math.log(a[3]),Math.log(b[3]),u)),sy:lerp(a[4],b[4],u)};
+}
+
+// ---------- texto ----------
+const CAPS=[ // t0, t1, líneas, color de énfasis (opcional), tamaño
+ [8.0,9.6,['Cuatro familias.'],CREAM,84],
+ [9.6,11.2,['Cuatro rincones','del Uruguay.'],CREAM,84],
+ [11.2,14.3,['Ninguna sabía','de las otras.'],CREAM,84],
+
+ [14.6,17.4,['1753 · Vizcaya','Nace Miguel de los Campos,','junto a la ría de Bilbao.'],COL.fl,58],
+ [17.4,20.0,['Cruza el océano.','Se hace de un campo','entre el Sarandí y el Yí.'],COL.fl,62],
+ [20.0,22.6,['Tres gobiernos distintos','le ratifican la tierra.'],COL.fl,62],
+ [22.6,25.3,['1840. El juez de paz denuncia:','Venancio Flores entró al Juzgado','y le puso una pistola en el pecho.'],COL.fl,56],
+ [25.3,28.2,['Cuarenta y cinco años después,','el departamento entero','llevaría ese apellido.'],COL.fl,60],
+
+ [28.9,31.6,['Un río, el Tacuarí.','De un lado, brasileros.','Del otro, un paraguayo.'],COL.cl,62],
+ [31.6,34.2,['1898. Un padre dicta de memoria','los abuelos de su hija.','Todo lo que sabemos sale de ahí.'],COL.cl,54],
+ [34.2,36.3,['6 de enero de 1922.','Nace Reina, el día de Reyes.'],COL.cl,62],
+
+ [37.0,39.6,['En el puerto:','genoveses con goletas,','catalanes, porteños.'],COL.mv,62],
+ [39.6,43.0,['Del taquígrafo del Senado','al cirujano,','en dos generaciones.'],COL.mv,62],
+
+ [44.0,46.6,['Tres bodas en las sierras','mientras el país se hacía.'],COL.la,62],
+ [46.6,49.6,['Ercilia fue médica','cuando casi ninguna mujer lo era.'],COL.la,58],
+
+ [50.0,52.8,['Entre cien y trescientos km.','Casi dos siglos','sin cruzarse.'],CREAM,62],
+ [52.8,55.6,['Villa Colón, Montevideo.','Los Nin ya vivían ahí.','Los de los Campos llegaron después.'],CREAM,54],
+ [55.6,57.9,['1946. Eloy, chofer de Trinidad,','se casa con Reina,','la de Fraile Muerto.'],CREAM,56],
+ [57.9,60.2,['1952. Raúl, médico,','se casa con su alumna,','Ercilia.'],CREAM,60],
+
+ [60.6,63.0,['Sus hijos, Mario y Erci,','también se encontraron.'],CREAM,62],
+ [63.0,65.6,['Pablo.','Y después, Facundo y Camila.'],CREAM,70],
+];
+const KICK=[ // t0,t1, texto, color
+ [12.9,28.4,'I  ·  TRINIDAD  ·  FLORES',COL.fl],
+ [28.9,36.6,'II  ·  FRAILE MUERTO  ·  CERRO LARGO',COL.cl],
+ [37.0,43.4,'III  ·  MONTEVIDEO',COL.mv],
+ [44.0,49.9,'IV  ·  MINAS  ·  LAVALLEJA',COL.la],
+];
+const YEAR=[ // t0,t1, desde, hasta, color
+ [14.4,17.4,1753,1753,COL.fl],[17.4,20.0,1753,1810,COL.fl],[20.0,22.6,1810,1821,COL.fl],[22.6,25.3,1821,1840,COL.fl],[25.3,28.4,1840,1885,COL.fl],
+ [28.9,31.6,1881,1898,COL.cl],[31.6,34.2,1898,1898,COL.cl],[34.2,36.6,1898,1922,COL.cl],
+ [37.0,39.6,1826,1909,COL.mv],[39.6,43.4,1909,1976,COL.mv],
+ [44.0,46.6,1823,1829,COL.la],[46.6,49.9,1829,1952,COL.la],
+ [55.6,57.9,1946,1946,CREAM],[57.9,60.4,1952,1952,CREAM]
+];
+
+function drawCaption(t){
+  for(const [a,b,lines,col,size0] of CAPS){
+    if(t<a||t>b)continue;
+    const fi=easeO((t-a)/0.55),fo=1-ease((t-(b-0.35))/0.35);
+    const al=Math.min(fi,fo);
+    const size=size0*1.16;const lh=size*1.26,y0=1480+(3-lines.length)*lh*0.5;
+    ctx.save();ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    lines.forEach((ln,i)=>{
+      const d=clamp((t-a-i*0.16)/0.55,0,1);
+      const ai=Math.min(easeO(d),fo);
+      ctx.globalAlpha=ai;
+      const yy=y0+i*lh+ (1-easeO(d))*22;
+      ctx.font=(i===0&&lines.length>2&&col!==CREAM&&/^\d/.test(ln)?'700 ':'400 ')+size+'px '+SERIF;
+      ctx.fillStyle=(i===0&&col!==CREAM&&/^\d/.test(ln))?col:CREAM;
+      ctx.shadowColor='rgba(0,0,0,.85)';ctx.shadowBlur=24;
+      ctx.fillText(ln,W/2,yy);
+    });
+    ctx.restore();
+  }
+}
+function drawKicker(t){
+  for(const [a,b,txt,col] of KICK){
+    if(t<a||t>b)continue;
+    const al=Math.min(easeO((t-a)/0.6),1-ease((t-(b-0.4))/0.4));
+    ctx.save();ctx.globalAlpha=al;ctx.fillStyle=col;ctx.textAlign='center';
+    ctx.font='700 34px '+SANS;
+    if('letterSpacing' in ctx)ctx.letterSpacing='9px';
+    ctx.fillText(txt,W/2+4,1250);
+    ctx.globalAlpha=al*0.6;ctx.fillRect(W/2-60,1276,120,3);
+    ctx.restore();
+  }
+}
+function drawYear(t){
+  for(const [a,b,y0,y1,col] of YEAR){
+    if(t<a||t>b)continue;
+    const u=ease((t-a)/(b-a-0.2));
+    const yr=Math.round(lerp(y0,y1,u));
+    const al=Math.min(easeO((t-a)/0.4),1-ease((t-(b-0.25))/0.25));
+    ctx.save();ctx.globalAlpha=al*0.95;ctx.fillStyle=col;ctx.textAlign='left';
+    ctx.font='400 120px '+SERIF;ctx.shadowColor='rgba(0,0,0,.9)';ctx.shadowBlur=30;
+    ctx.fillText(String(yr),70,190);
+    ctx.restore();
+  }
+}
+
+// ---------- mapa ----------
+function mapLayer(t){
+  const c=cam(t);
+  ctx.save();
+  ctx.translate(W/2,c.sy);ctx.scale(c.s,c.s);ctx.translate(-c.cx,-c.cy);
+  const px=1/c.s;
+  // visibilidad del mapa
+  let mapA=ease((t-7.0)/1.6);
+  if(t>60.2)mapA=1-0.55*ease((t-60.2)/2.4);
+  const drawIn=ease((t-7.0)/3.2);
+  ctx.globalAlpha=mapA;
+  // fondo de departamentos
+  for(const d of P.deps){ctx.fillStyle='#181410';ctx.fill(d.p);ctx.strokeStyle='rgba(241,232,212,.14)';ctx.lineWidth=0.8*px;ctx.stroke(d.p)}
+  // ríos
+  ctx.strokeStyle='rgba(99,182,224,.28)';ctx.lineWidth=1.4*px;ctx.lineCap='round';
+  for(const r of P.rios)ctx.stroke(r);
+  // departamentos activos
+  const act=[['fl',12.9,28.6],['cl',28.9,36.8],['mv',37.0,43.6],['la',44.0,50.2]];
+  const glow={};
+  for(const [k,a,b] of act){
+    let g=Math.min(ease((t-a)/1.0),1-ease((t-(b-0.6))/1.0));
+    // en la convergencia quedan encendidos todos
+    if(t>50.4)g=Math.max(g,ease((t-50.4)/1.4));
+    glow[k]=clamp(g,0,1);
+    if(t>=8&&t<12.6){ // intro: se encienden de a uno
+      const ia=[['fl',9.9],['cl',10.5],['la',11.1],['mv',11.7]].find(x=>x[0]===k)[1];
+      glow[k]=Math.max(glow[k],ease((t-ia)/0.8)*0.9);
+    }
+    if(glow[k]>0.001){
+      ctx.globalAlpha=mapA*glow[k]*0.30;ctx.fillStyle=COL[k];ctx.fill(P.pad[k]);
+      ctx.globalAlpha=mapA*glow[k];ctx.strokeStyle=COL[k];ctx.lineWidth=2.2*px;ctx.stroke(P.pad[k]);
+    }
+  }
+  ctx.globalAlpha=mapA;
+  // borde: se dibuja
+  ctx.strokeStyle='rgba(241,232,212,.85)';ctx.lineWidth=1.8*px;ctx.lineJoin='round';
+  ctx.setLineDash([P.L*drawIn+1,P.L*2]);ctx.stroke(P.borde);ctx.setLineDash([]);
+  ctx.restore();
+  return {c,mapA,glow};
+}
+const toScreen=(c,p)=>[W/2+(p[0]-c.cx)*c.s,c.sy+(p[1]-c.cy)*c.s];
+
+function bez(a,b,c2,u){ // cuadrática
+  const x=(1-u)*(1-u)*a[0]+2*(1-u)*u*c2[0]+u*u*b[0],y=(1-u)*(1-u)*a[1]+2*(1-u)*u*c2[1]+u*u*b[1];return[x,y]}
+
+function sitesLayer(t,m){
+  const c=m.c;
+  const order=[['fl',9.9,'Trinidad'],['cl',10.5,'Fraile Muerto'],['la',11.1,'Minas'],['mv',11.7,'Montevideo']];
+  for(const [k,ti,name] of order){
+    const a=ease((t-ti)/0.7)*m.mapA;if(a<=0)continue;
+    const [x,y]=toScreen(c,SITE[k]);
+    const focus=m.glow[k];
+    const pulse=(t*0.9)%1;
+    ctx.save();
+    ctx.globalAlpha=a;
+    ctx.shadowColor=COL[k];ctx.shadowBlur=30+40*focus;
+    ctx.fillStyle=COL[k];
+    ctx.beginPath();ctx.arc(x,y,9+6*focus,0,7);ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.strokeStyle=COL[k];ctx.lineWidth=3;
+    ctx.globalAlpha=a*(1-pulse)*(0.4+0.6*focus);
+    ctx.beginPath();ctx.arc(x,y,14+pulse*(50+40*focus),0,7);ctx.stroke();
+    // rótulo
+    const showName=(t>=ti+0.3&&t<14)||focus>0.5&&t<50;
+    if(showName){
+      ctx.globalAlpha=a*(t<14?ease((t-ti-0.3)/0.6)*(1-ease((t-13)/1)):focus);
+      ctx.fillStyle=CREAM;ctx.font='700 30px '+SANS;
+      if('letterSpacing' in ctx)ctx.letterSpacing='4px';
+      ctx.textAlign=(k==='cl'||k==='la')?'left':(k==='fl'?'right':'center');
+      const dx=(k==='cl'||k==='la')?26:(k==='fl'?-26:0), dy=k==='mv'?52:-22;
+      ctx.shadowColor='#000';ctx.shadowBlur=14;
+      ctx.fillText(name.toUpperCase(),x+dx,y+dy);
+    }
+    ctx.restore();
+  }
+}
+
+// ---------- hilos ----------
+function threadPath(k){
+  const a=SITE[k],b=VC;
+  const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  const off={fl:[-30,-50],cl:[60,-20],la:[50,30],mv:[-10,-20]}[k];
+  return {a,b,c:[mid[0]+off[0],mid[1]+off[1]]};
+}
+function strokeThread(c,k,u,alpha,w){
+  const {a,b,c:cc}=threadPath(k);
+  const pts=[];const n=80;
+  for(let i=0;i<=n*u;i++){pts.push(toScreen(c,bez(a,b,cc,i/n)))}
+  if(pts.length<2)return;
+  ctx.save();
+  ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.strokeStyle=COL[k];ctx.shadowColor=COL[k];ctx.shadowBlur=26;ctx.globalAlpha=alpha;ctx.lineWidth=w;
+  ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(const p of pts)ctx.lineTo(p[0],p[1]);ctx.stroke();
+  const h=pts[pts.length-1];
+  ctx.fillStyle='#fff';ctx.shadowBlur=36;ctx.globalAlpha=alpha*(u<1?1:0);ctx.beginPath();ctx.arc(h[0],h[1],w*1.3,0,7);ctx.fill();
+  ctx.restore();
+}
+function threadsLayer(t,m){
+  const c=m.c;
+  const starts={fl:50.4,cl:50.8,la:51.2,mv:51.6};
+  for(const k of ['fl','cl','la','mv']){
+    const u=ease((t-starts[k])/4.2);
+    if(u<=0)continue;
+    let al=1;
+    if(t>60.2)al=1-ease((t-60.2)/1.4);
+    if(al>0.001)strokeThread(c,k,u,al,7);
+  }
+  // Villa Colón: marca
+  if(t>53.4&&t<61.8){
+    const [x,y]=toScreen(c,VC);
+    const a=ease((t-53.4)/0.6)*(1-ease((t-60.4)/1.2));
+    ctx.save();ctx.globalAlpha=a;ctx.strokeStyle=CREAM;ctx.lineWidth=4;
+    const p=(t*0.7)%1;
+    ctx.beginPath();ctx.arc(x,y,16+p*40,0,7);ctx.globalAlpha=a*(1-p);ctx.stroke();
+    ctx.globalAlpha=a;ctx.fillStyle=CREAM;ctx.beginPath();ctx.arc(x,y,9,0,7);ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ---------- trenza final ----------
+function braidLayer(t){
+  if(t<59.4||t>72)return;
+  const g=ease((t-59.4)/4.0);            // cuánto sube
+  const ys=1150, ye=1150-g*760;          // de abajo hacia arriba
+  const fadeOut=1-ease((t-65.4)/0.9);
+  const cols=[COL.fl,COL.cl,COL.mv,COL.la];
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  for(let s=0;s<4;s++){
+    ctx.beginPath();
+    let first=true;
+    for(let y=ys;y>=ye;y-=6){
+      const k=(ys-y)/760;                  // 0..1 a lo largo
+      const A=(1-0.55*ease(k*1.3))*130*(1-0.0*k);
+      const ph=s*Math.PI/2;
+      const x=W/2+A*Math.sin((ys-y)/62+ph)*(0.55+0.45*Math.cos((ys-y)/140));
+      if(first){ctx.moveTo(x,y);first=false}else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle=cols[s];ctx.shadowColor=cols[s];ctx.shadowBlur=22;ctx.lineWidth=9;
+    ctx.globalAlpha=(0.95)*fadeOut;ctx.stroke();
+  }
+  ctx.restore();
+  // nudo dorado arriba: un solo hilo
+  if(g>0.98&&fadeOut>0){
+    const a=ease((t-63.3)/0.8)*fadeOut;
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle=CREAM;ctx.shadowColor=CREAM;ctx.shadowBlur=40;
+    ctx.beginPath();ctx.arc(W/2,ye-10,15,0,7);ctx.fill();ctx.restore();
+  }
+}
+
+// ---------- gancho: el acta ----------
+function typed(s,t,t0,cps){const n=clamp(Math.floor((t-t0)*cps),0,s.length);return s.slice(0,n)}
+function hookLayer(t){
+  if(t>8.6)return;
+  const fo=1-ease((t-7.6)/0.9);
+  ctx.save();ctx.globalAlpha=fo;
+  // papel
+  const pw=960,ph=700,px=(W-pw)/2,py=560;
+  const paperA=ease((t-0.2)/1.0);
+  ctx.globalAlpha=fo*paperA;
+  ctx.fillStyle='#e9dfc6';
+  ctx.save();ctx.translate(W/2,py+ph/2);ctx.rotate(-0.012);
+  ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=60;ctx.shadowOffsetY=20;
+  ctx.fillRect(-pw/2,-ph/2,pw,ph);
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  // manchas y renglones
+  for(let i=0;i<9;i++){ctx.fillStyle='rgba(120,90,50,.035)';ctx.beginPath();ctx.arc(-pw/2+rnd(i)*pw,-ph/2+rnd(i+9)*ph,60+rnd(i+3)*90,0,7);ctx.fill()}
+  ctx.fillStyle='#1a140d';ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  ctx.font='700 36px '+MONO;
+  const L=[
+   ['ACTA DE DEFUNCIÓN  ·  FRAILE MUERTO',0.9,-ph/2+90,700,30],
+   ['Lidoro Acosta murió el 1/8/1944.',2.0,-ph/2+180,400,30],
+   ['El acta pide nombrar a sus abuelos.',3.6,-ph/2+250,400,30],
+   ['El escribiente anotó:',5.0,-ph/2+320,400,30]];
+  for(const [s,t0,y,w,sz] of L){ctx.font=w+' '+(sz+5)+'px '+MONO;ctx.fillText(typed(s,t,t0,26),-pw/2+50,y)}
+  // la frase
+  const pa=ease((t-5.7)/0.7);
+  ctx.globalAlpha=fo*paperA*pa;
+  ctx.font='italic 400 56px '+SERIF;ctx.fillStyle='#1a140d';
+  ctx.fillText('«abuelos paternos y maternos',-pw/2+50,ph/2-150);
+  const si=ease((t-6.5)/0.5);
+  ctx.globalAlpha=fo*paperA*si;
+  ctx.fillStyle=RED;ctx.font='italic 700 78px '+SERIF;
+  ctx.fillText('se ignoran»',-pw/2+50,ph/2-52);
+  ctx.restore();
+  ctx.restore();
+  // sello rojo discreto
+}
+
+// ---------- final ----------
+function finaleLayer(t){
+  if(t<65.6)return;
+  // 65.6–69: vuelve el acta
+  const a1=ease((t-65.8)/0.7)*(1-ease((t-69.2)/0.7));
+  if(a1>0){
+    ctx.save();ctx.globalAlpha=a1;ctx.textAlign='center';
+    ctx.fillStyle=CREAM;ctx.font='italic 400 56px '+SERIF;ctx.shadowColor='#000';ctx.shadowBlur=20;
+    ctx.fillText('«abuelos paternos y maternos',W/2,760);
+    ctx.font='italic 700 84px '+SERIF;
+    const w=ctx.measureText('se ignoran»').width;
+    ctx.fillStyle='rgba(226,69,43,'+(1-0.55*ease((t-66.8)/0.6))+')';
+    ctx.fillText('se ignoran»',W/2,860);
+    // tachado
+    const s=ease((t-66.6)/0.6);
+    ctx.strokeStyle=RED;ctx.lineWidth=8;ctx.shadowBlur=0;ctx.beginPath();
+    ctx.moveTo(W/2-w/2-10,835);ctx.lineTo(W/2-w/2-10+(w+20)*s,835-14*s);ctx.stroke();
+    const b=ease((t-67.6)/0.7);
+    ctx.globalAlpha=a1*b;ctx.fillStyle=CREAM;ctx.font='400 130px '+SERIF;
+    ctx.fillText('Ya no.',W/2,1090);
+    ctx.restore();
+  }
+  // 69.4–72: título
+  const a2=ease((t-69.5)/0.9);
+  if(a2>0){
+    ctx.save();ctx.globalAlpha=a2;ctx.textAlign='center';
+    ctx.fillStyle=CREAM;ctx.shadowColor='#000';ctx.shadowBlur=24;
+    if('letterSpacing' in ctx)ctx.letterSpacing='14px';
+    ctx.font='700 40px '+SANS;ctx.fillStyle=COL.fl;ctx.fillText('CUATRO FAMILIAS · UN MAPA',W/2+7,700);
+    ctx.font='400 132px '+SERIF;ctx.fillStyle=CREAM;
+    if('letterSpacing' in ctx)ctx.letterSpacing='0px';
+    ctx.fillText('Los cuatro',W/2,880);ctx.fillText('padrones',W/2,1030);
+    // cuatro hilos como subrayado
+    ['fl','cl','mv','la'].forEach((k,i)=>{ctx.fillStyle=COL[k];ctx.fillRect(W/2-200+i*100,1090,90,8)});
+    ctx.font='400 32px '+SANS;ctx.fillStyle='rgba(241,232,212,.75)';
+    if('letterSpacing' in ctx)ctx.letterSpacing='3px';
+    ctx.fillText('pdelosca.github.io/los-cuatro-padrones',W/2,1230);
+    ctx.restore();
+  }
+}
+// ---------- atmósfera ----------
+let noiseC=null;
+function atmo(t,fadeAll){
+  if(!noiseC){noiseC=document.createElement('canvas');noiseC.width=noiseC.height=256;
+    const nx=noiseC.getContext('2d'),id=nx.createImageData(256,256);
+    for(let i=0;i<id.data.length;i+=4){const v=Math.floor(rnd(i)*255);id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=16}
+    nx.putImageData(id,0,0)}
+  ctx.save();
+  const ox=Math.floor(rnd(Math.floor(t*24))*256),oy=Math.floor(rnd(Math.floor(t*24)+7)*256);
+  ctx.globalAlpha=0.9;ctx.globalCompositeOperation='overlay';
+  const pat=ctx.createPattern(noiseC,'repeat');ctx.translate(-ox,-oy);ctx.fillStyle=pat;ctx.fillRect(0,0,W+256,H+256);
+  ctx.restore();
+  // viñeta
+  const g=ctx.createRadialGradient(W/2,H*0.42,300,W/2,H*0.5,1250);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.78)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  // degradé inferior para el texto
+  const g2=ctx.createLinearGradient(0,1150,0,1500);g2.addColorStop(0,'rgba(12,10,8,0)');g2.addColorStop(1,'rgba(12,10,8,.75)');
+  ctx.fillStyle=g2;ctx.fillRect(0,1150,W,H-1150);
+}
+
+window.render=function(t){
+  ctx.globalAlpha=1;ctx.fillStyle=INK;ctx.fillRect(0,0,W,H);
+  const m=mapLayer(t);
+  sitesLayer(t,m);
+  threadsLayer(t,m);
+  braidLayer(t);
+  atmo(t);
+  hookLayer(t);
+  drawYear(t);drawKicker(t);drawCaption(t);
+  finaleLayer(t);
+  // fundidos de entrada y salida
+  const f=1-ease(t/0.6),o=ease((t-(DUR-0.8))/0.8);
+  ctx.fillStyle='rgba(12,10,8,'+Math.max(f,o)+')';ctx.fillRect(0,0,W,H);
+};
+fetch('geo.json').then(r=>r.json()).then(g=>{GEO=g;prep();window.READY=true;render(0)});
+</script>
