@@ -16,7 +16,7 @@ Escena en HTML+canvas, un cuadro por vez con Chromium (Playwright), unido con ff
 
 1. `python3 ensamblar.py` une `_h1.js _tek.js _a.js _pc.js _b.js _lp.js _c.js` en `cadena2.html` (las escenas y sus textos están en `_c.js`).
 2. `node auditoria.js` valida: regla de lectura (duración de leyenda = `0,9 s + palabras/2,8`, mínimo 3 s), márgenes de texto, saltos de luz entre escenas; escribe `linea-de-tiempo.json`.
-3. `python3 musica2.py` (lee la línea de tiempo) → `musica-cadena2.wav`; `python3 auditoria_audio.py` valida pico, recortes, nivel por escena, silencios y empalmes.
+3. `python3 musica3.py` (lee la línea de tiempo; necesita las muestras: `sh tools/fetch.sh instruments <lib>` en lemo-opuscar) → `musica-cadena3.wav`; `python3 auditoria_audio.py` valida pico, recortes, nivel por escena, silencios y empalmes.
 4. `SCENE=cadena2.html NOMBRE=... DUR=<seg> FPS=30 OUT=<carpeta> FF=<ffmpeg> node frames.js render` (o `frames.js probe t1 t2 …` para cuadros sueltos). FPS=10 sirve de ensayo.
 5. Mezcla: `ffmpeg -i mudo.mp4 -i musica.wav -c:v copy -c:a aac …`; versión liviana 720×1280 CRF 27 para poder enviarla (límite de envío: 30 MB).
 
@@ -30,7 +30,7 @@ Entorno: ffmpeg completo con `libx264` está en `/usr/local/lib/python3.11/dist-
 
 ## Estado
 
-Última versión: `video/la-cadena-v3.mp4` (4:39) y `la-cadena-v3-liviano.mp4` (720×1280, 15 MB). Guion en `guion-cadena-v2.md` (los textos exactos están en `_c.js`), plan en `plan-pulido.md`, críticas en `registro-criticas.md`. Pendientes: el décimo repo de la lista de Pablo (`opus-video-skills`, sin enlace); decidir si se suma narración (Kokoro) o muestras reales de instrumentos.
+Última versión: `video/la-cadena-v4.mp4` (4:58) y `la-cadena-v4-liviano.mp4` (720×1280). Cambios de v4 pedidos por Pablo: orden de Eloy (nace → ciclismo → Mosaicos Rivas → chofer → boda → sótano → final), bandera uruguaya ondeando en la jura de 1830 (9 franjas, Sol de Mayo de 16 rayos, `uyFlag` en `_b.js`), «Felipe Pascual» siempre completo y cada tarjeta dice de quién es hijo, ruta Sarandí → Trinidad → Durazno → Villa Colón en tres leyendas, taxi Mercedes «Ponton» negro con techo amarillo (referencia que mandó Pablo), árbol final con Ercilia (Erci, esposa de Mario), Matías y Antonia (hija de Matías), «según la familia» en Mosaicos y Olimpia. Música nueva: `musica3.py` con instrumentos reales (muestras de lemo-opuscar: vsco2ce, salamander, vcsl, freepats; `LEMO=/home/user/lemomo-ai/lemo-opuscar`), tres temas y solistas distintos por escena. Pendientes: décimo repo (`opus-video-skills`, sin enlace); narración con Kokoro; parejas de Pablo y Matías no incluidas.
 
 ## Lecciones
 
@@ -44,3 +44,6 @@ Entorno: ffmpeg completo con `libx264` está en `/usr/local/lib/python3.11/dist-
 ## Referencias evaluadas
 
 Detalle y veredictos en `video/referencias-utiles.md`. Resumen: sirven *motion-video-kit* (medidas y bucle de crítica), *ClaudeAnimationBase* (reglas de tiempo y transiciones), *lemo-opuscar* (guía de dirección, estilos, voz Kokoro, muestras de instrumentos), *PDoomVideo* (render en paralelo). No sirven *chrome-bridge*, *shipvideo*, *motion-graphics-music-video-skill* (requiere créditos pagos de generación), los juegos *tidewater* y *claude-opus-5-5-demo*.
+- `pencil()` necesita al menos 3 puntos: dibujar un tramo de 2 puntos no muestra nada (la ruta del mapa estuvo invisible en v3).
+- No encadenar `node auditoria.js | head` con `&&`: el SIGPIPE corta la cadena. Correr paso a paso.
+- Los instrumentos reales suenan distinto a la síntesis: igual solo se pueden medir, no escuchar.

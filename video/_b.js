@@ -10,7 +10,7 @@ function labelCard(x,t,sc){
   piece(x,rrect(54,y0,W-108,h,18),'#f6efdf');
   piece(x,rrect(54,y0-52,sc.chipW||700,64,12),'#b84a2c',{shadow:1});
   txt(x,sc.chip,78,y0-8,'700 30px Fraunces','#fff3df','left',3);
-  if(sc.sub)txt(x,sc.sub,78,y0+54,'700 34px Fraunces','#6b3412','left',1);
+  if(sc.sub)txt(x,sc.sub,78,y0+54,'700 36px Fraunces','#6b3412','left',1);
   C.forEach(c=>{
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
     x.save();x.globalAlpha=v*al;x.translate(0,(1-eO(seg(t,c.a,c.a+.5)))*12);
@@ -58,16 +58,35 @@ function pcCampo(x,t,dur,sc){
   labelCard(x,t,sc);
 }
 // ── la plaza de Trinidad, 1830 (tarde dorada)
+// ── bandera de Uruguay (9 franjas, 5 blancas y 4 celestes; Sol de Mayo de 16 rayos en el cantón), ondeando por rebanadas
+let UYF=null;
+function uyFlagBuild(w,h){
+  const c=mk(w,h),g=c.getContext('2d'),sh=h/9;
+  for(let i=0;i<9;i++){g.fillStyle=i%2?'#3a80c8':'#fbf8ef';g.fillRect(0,i*sh,w,sh+.6)}
+  const cw=sh*4;g.fillStyle='#fbf8ef';g.fillRect(0,0,cw,cw);
+  const cx=cw/2,cy=cw/2,r=cw*.2;g.fillStyle='#f2b61d';g.strokeStyle='#f2b61d';g.lineCap='round';
+  g.beginPath();g.arc(cx,cy,r,0,7);g.fill();
+  for(let k=0;k<16;k++){const an=k*Math.PI/8,long=k%2===0;g.lineWidth=long?3:2.4;g.beginPath();g.moveTo(cx+Math.cos(an)*(r+1),cy+Math.sin(an)*(r+1));g.lineTo(cx+Math.cos(an)*(r+cw*(long?.26:.2)),cy+Math.sin(an)*(r+cw*(long?.26:.2)));g.stroke()}
+  g.fillStyle='#8a5a1c';g.beginPath();g.arc(cx-r*.3,cy-r*.15,r*.1,0,7);g.arc(cx+r*.3,cy-r*.15,r*.1,0,7);g.fill();
+  g.strokeStyle='#8a5a1c';g.lineWidth=2;g.beginPath();g.arc(cx,cy+r*.15,r*.4,.2,Math.PI-.2);g.stroke();
+  return c}
+function uyFlag(x,fx,fy,w,h,t){
+  if(!UYF||UYF.width!==w)UYF=uyFlagBuild(w,h);
+  const sw=4;x.save();
+  for(let sx_=0;sx_<w;sx_+=sw){const u=sx_/w,amp=3+16*u,dy=Math.sin(t*4.2-sx_*.035)*amp,dy2=Math.sin(t*4.2-(sx_+sw)*.035)*amp,shade=Math.cos(t*4.2-sx_*.035)*.14*u;
+    x.drawImage(UYF,sx_,0,sw,h,fx+sx_,fy+dy,sw+.6,h);
+    if(shade>0){x.fillStyle=`rgba(255,255,255,${shade*.6})`}else{x.fillStyle=`rgba(20,30,60,${-shade*.9})`}
+    x.fillRect(fx+sx_,fy+dy,sw+.6,h)}
+  x.restore()}
 function pcPlaza(x,t,dur,sc){
   const C=sc.C;
   sky(x,'#86bde0','#f9dca0',1200);piece(x,circ(880,420,90),'#fff0b8',{shadow:0});cloud(x,260+Math.sin(t*.3)*25,420,1.1);cloud(x,640,360,.8);
   [[120,'#efe1c4','#c4502f'],[330,'#f2cbb0','#8a4a38'],[560,'#d9e6c4','#b6573a'],[790,'#efe1c4','#a24432'],[990,'#f2cbb0','#c4502f']].forEach(([cx,b,r],i)=>{house(x,cx,820-(i%2)*14,.9,b,r,false)});
   piece(x,hillPath(860,25,4,0,false,120),'#9cbf6e');piece(x,rect(-40,860,W+80,520),'#d8b985');
   x.save();x.strokeStyle='#5a3b22';x.lineWidth=4;x.beginPath();x.moveTo(0,330);x.quadraticCurveTo(540,430,W,330);x.stroke();x.restore();
-  for(let i=0;i<10;i++){const uu=(i+.5)/10,bx=uu*W,by=330+Math.sin(uu*Math.PI)*92;piece(x,poly([[bx-26,by],[bx+26,by],[bx,by+56]]),['#c4502f','#f5c945','#3f88c5','#fff4de'][i%4],{shadow:0})}
-  piece(x,rect(150,420,10,460),'#5a3b22');
-  piece(x,x=>{x.moveTo(160,430);for(let i=0;i<=10;i++)x.lineTo(160+i*22,430+Math.sin(t*3+i*.6)*7);for(let i=10;i>=0;i--)x.lineTo(160+i*22,500+Math.sin(t*3+i*.6)*7);x.closePath()},'#f4f1e8');
-  piece(x,x=>{x.moveTo(160,452);for(let i=0;i<=10;i++)x.lineTo(160+i*22,452+Math.sin(t*3+i*.6)*7);for(let i=10;i>=0;i--)x.lineTo(160+i*22,472+Math.sin(t*3+i*.6)*7);x.closePath()},'#5aa7de',{shadow:0});
+  for(let i=0;i<10;i++){if(i<5)continue;const uu=(i+.5)/10,bx=uu*W,by=330+Math.sin(uu*Math.PI)*92;piece(x,poly([[bx-26,by],[bx+26,by],[bx,by+56]]),['#c4502f','#f5c945','#3f88c5','#fff4de'][i%4],{shadow:0})}
+  piece(x,rect(146,396,12,490),'#5a3b22');piece(x,circ(152,392,14),'#e0b030',{shadow:0});
+  uyFlag(x,158,414,420,280,t);
   const tb=eO(seg(t,.5,1.8));x.save();x.translate(0,(1-tb)*400);
   piece(x,rect(380,800,420,40),'#8a5a2b');piece(x,rect(400,840,22,130),'#6b4420');piece(x,rect(760,840,22,130),'#6b4420');
   person(x,590,800,1.25,'#b43a2a',t*3,'#26211d');x.restore();
@@ -85,7 +104,7 @@ function pcFlores(x,t,dur,sc){
   const fl=eBack(seg(t,.6,2.2),1.2),pts=P.flPts;let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;pts.forEach(([a,b])=>{mnx=Math.min(mnx,a);mxx=Math.max(mxx,a);mny=Math.min(mny,b);mxy=Math.max(mxy,b)});
   const sc2=540/(mxx-mnx),ox=W/2-(mnx+mxx)/2*sc2,oy=700-(mny+mxy)/2*sc2+(1-fl)*700;
   piece(x,x=>{pts.forEach(([a,b],i)=>i?x.lineTo(ox+a*sc2,oy+b*sc2):x.moveTo(ox+a*sc2,oy+b*sc2));x.closePath()},'#f2c14e');
-  const ta=eO(seg(t,2.2,3.2));if(ta>0){x.save();x.globalAlpha=ta;txt(x,'FLORES',W/2,oy+(mny+mxy)/2*sc2+10,'700 96px Fraunces','#7a4a1c','center',6);txt(x,'1885',W/2,oy+(mny+mxy)/2*sc2+90,'700 56px Fraunces',PCBAL,'center',4);x.restore()}
+  const ta=eO(seg(t,2.2,3.2));if(ta>0){x.save();x.globalAlpha=ta;txt(x,'FLORES',W/2,oy+(mny+mxy)/2*sc2+10,'700 84px Fraunces','#7a4a1c','center',6);txt(x,'1885',W/2,oy+(mny+mxy)/2*sc2+90,'700 56px Fraunces',PCBAL,'center',4);x.restore()}
   for(let i=0;i<6;i++){const k=eBack(seg(t,C[1].a+i*.18,C[1].a+.8+i*.18));if(k>0){x.save();x.translate(0,(1-k)*200);const hl=i===2;person(x,110+i*172,1190,1.5,hl?PCBAL:'#5b4a78',0,hl?'#f5c945':null);
     if(hl)txt(x,'Sandalio',110+i*172,1236,'700 38px Fraunces','#fff3df','center');x.restore()}}
   labelCard(x,t,sc);
@@ -117,18 +136,25 @@ function wheelDraw(x,cx,cy,r,rot,spokes=6){
   x.restore()}
 function car(x,cx,cy,s,t){
   x.save();x.translate(cx,cy+Math.sin(t*9)*1.6);x.scale(s,s);
-  const body='#8b2d2d',roof='#4a1a1a';
-  piece(x,rrect(-190,-100,380,76,26),body);
-  piece(x,poly([[100,-100],[196,-84],[204,-48],[104,-48]]),body,{shadow:0});
-  piece(x,circ(-115,-44,60),body,{shadow:0});piece(x,circ(120,-44,60),body,{shadow:0});
-  piece(x,poly([[-122,-98],[-84,-168],[58,-168],[108,-98]]),roof);
-  piece(x,poly([[-102,-104],[-76,-156],[-6,-156],[-6,-104]]),'#cfe4ee',{shadow:0});piece(x,poly([[10,-104],[10,-156],[46,-156],[84,-104]]),'#cfe4ee',{shadow:0});
-  piece(x,rect(-156,-34,312,12),'#2a1a1a',{shadow:0});
-  piece(x,circ(194,-72,15),'#fff2c4',{shadow:0});piece(x,rrect(186,-56,24,44,8),'#d8d4cc',{shadow:0});
-  for(let i=0;i<4;i++)piece(x,rect(150+i*8,-84,4,34),'#d8d4cc',{shadow:0});
+  // taxi Mercedes «Ponton» negro con techo amarillo (como el de la foto de referencia): guardabarros redondeados, parrilla cromada vertical, faros redondos, ruedas de cantero blanco
+  const body='#17161a',roofc='#f0be2a',chrome='#dad6cc',glass='#a9c3cf';
+  piece(x,rrect(-204,-104,412,70,26),body);
+  piece(x,poly([[60,-108],[200,-96],[214,-62],[60,-62]]),body,{shadow:0});
+  piece(x,circ(-115,-44,56),body,{shadow:0});piece(x,circ(122,-44,56),body,{shadow:0});
+  piece(x,x=>{x.moveTo(-142,-104);x.quadraticCurveTo(-130,-176,-72,-190);x.lineTo(34,-190);x.quadraticCurveTo(84,-170,100,-104);x.closePath()},roofc);
+  piece(x,x=>{x.moveTo(-142,-104);x.lineTo(-134,-126);x.lineTo(96,-126);x.lineTo(100,-104);x.closePath()},body,{shadow:0});
+  piece(x,poly([[-118,-132],[-106,-172],[-64,-180],[-10,-180],[-10,-132]]),glass,{shadow:0});
+  piece(x,poly([[6,-132],[6,-180],[34,-180],[76,-132]]),glass,{shadow:0});
+  piece(x,rect(-6,-182,12,54),roofc,{shadow:0});
+  piece(x,rect(-198,-72,396,4),chrome,{shadow:0});
+  piece(x,rrect(-222,-56,40,11,5),chrome,{shadow:0});piece(x,rrect(172,-56,50,11,5),chrome,{shadow:0});
+  piece(x,rrect(194,-98,20,46,6),chrome,{shadow:0});for(let i=0;i<4;i++)piece(x,rect(198+i*4,-94,1.6,38),body,{shadow:0});
+  piece(x,circ(168,-92,16),chrome,{shadow:0});piece(x,circ(168,-92,11),'#fff2c4',{shadow:0});
+  x.save();x.strokeStyle=chrome;x.lineWidth=3;x.beginPath();x.arc(204,-104,8,0,7);for(let k=0;k<3;k++){const an=-Math.PI/2+k*2.094;x.moveTo(204,-104);x.lineTo(204+Math.cos(an)*8,-104+Math.sin(an)*8)}x.stroke();x.restore();
+  piece(x,rrect(-30,-216,60,26,5),'#fbf7e6');txt(x,'TAXI',0,-196,'700 19px Fraunces','#1d1c20','center',2);
   // conductor: cabeza con gorra y manos al volante
   x.save();x.fillStyle='#e2bc94';x.beginPath();x.arc(10,-132,17,0,7);x.fill();x.fillStyle='#26211d';x.beginPath();x.arc(10,-138,18,Math.PI,0);x.fill();x.fillRect(-9,-139,38,5);x.fillStyle='#3a5a8a';x.fillRect(-8,-118,36,22);x.restore();
-  wheelDraw(x,-115,-42,42,-t*9);wheelDraw(x,120,-42,42,-t*9);
+  wheelDraw(x,-115,-42,42,-t*9);wheelDraw(x,122,-42,42,-t*9);x.save();x.strokeStyle='#f4efe0';x.lineWidth=7;[-115,122].forEach(cx_=>{x.beginPath();x.arc(cx_,-42,30,0,7);x.stroke()});x.restore();piece(x,circ(-115,-42,14),chrome,{shadow:0});piece(x,circ(122,-42,14),chrome,{shadow:0});
   x.restore()}
 function eucalyptus(x,cx,by,s,col){piece(x,rect(cx-5*s,by-210*s,10*s,210*s),'#6a4a30',{shadow:0});piece(x,x=>{x.ellipse(cx,by-250*s,38*s,104*s,0,0,7)},col)}
 function pole(x,cx,by,s){piece(x,rect(cx-5*s,by-280*s,10*s,280*s),'#5a3b22',{shadow:0});piece(x,rect(cx-46*s,by-262*s,92*s,8*s),'#5a3b22',{shadow:0})}

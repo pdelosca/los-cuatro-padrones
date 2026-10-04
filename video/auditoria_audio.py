@@ -2,7 +2,7 @@
 import json, sys, wave
 import numpy as np
 from scipy import signal
-f = sys.argv[1] if len(sys.argv) > 1 else 'musica-cadena2.wav'
+f = sys.argv[1] if len(sys.argv) > 1 else 'musica-cadena3.wav'
 TL = json.load(open('linea-de-tiempo.json'))
 w = wave.open(f); sr = w.getframerate(); n = w.getnframes()
 x = np.frombuffer(w.readframes(n), dtype=np.int16).reshape(-1, 2).astype(np.float64) / 32768

@@ -54,7 +54,7 @@ function lpPuente(x,t,dur,sc){
   pencilFinish(x);
   x.save();
   const ink=(s,px,py,sz,u,col,al='center')=>{hand(x,s,px,py,sz,u,col,al);hand(x,s,px+.9,py,sz,u,col,al)};
-  ink('ESCRITURA · 1810',270,450,52,seg(t,.8,1.8),'rgba(30,27,23,');ink('ACTA DE BODA · 1946',810,450,52,seg(t,1.4,2.4),'rgba(30,27,23,');
+  ink('ESCRITURA · 1810',270,450,52,seg(t,.8,1.8),'rgba(30,27,23,');ink('BODA · 1946',810,450,52,seg(t,1.4,2.4),'rgba(30,27,23,');
   ink('de los Campos',270,790,70,seg(t,C[0].a,C[0].a+1.0),'rgba(140,36,24,');ink('chofer',810,790,84,seg(t,C[1].a,C[1].a+1.0),'rgba(140,36,24,');
   names.forEach((n,i)=>ink(n,cx0+i*(cx1-cx0)/4,cy+100,i===4?56:50,seg(t,t3+i*.45,t3+i*.45+.6),i===4?'rgba(140,36,24,':'rgba(30,27,23,'));
   x.restore();
@@ -66,27 +66,32 @@ function lpRuta(x,t,dur,sc){
   gx.save();gx.setTransform(MS,0,0,MS,MC[0]-190*MS,MC[1]-470*MS);gx.globalAlpha=.25*eO(seg(t,0,1.4));gx.strokeStyle=GRAPH+'1)';gx.lineWidth=.9/MS;for(const d of P.deps)gx.stroke(d.p);gx.restore();
   pencil(gx,P.bordePts.map(toS),eIO(seg(t,.2,2.4)),3.2,.92,5,t);
   const pts=[['el Sarandí',[186,421],'right'],['Trinidad',[158.4,412.5],'left'],['Durazno',[194.6,396.6],'right'],['Villa Colón',[214,556],'left']].map(([n,p,al])=>[n,toS(p),al]);
-  const k0=C[0].a,k1=k0+3.0;
-  const seq=[[pts[0],pts[1],k0+.2,k0+1.4],[pts[1],pts[2],k0+1.6,k0+2.8],[pts[2],pts[3],k1-.2,k1+2.2]];
-  seq.forEach(([a,b,t0,t1],i)=>{const c=[lerp(a[1][0],b[1][0],.5)-70*(i===2?-1:1),lerp(a[1][1],b[1][1],.5)];const r=bezPts(a[1],b[1],c,40);const u=eIO(seg(t,t0,t1));
-    for(let k=0;k<r.length-1;k++){if(k/(r.length-1)>u)break;if(k%3!==2)pencil(gx,[r[k],r[k+1]],1,3,.85,100+i*50+k,t,RED_P)}});
-  const tts=[k0,k0+1.3,k0+2.6,k1+2.0];
+  const k0=C[0].a,k1=C[1].a;
+  const seq=[[pts[0],pts[1],k0+1.0,k0+2.4],[pts[1],pts[2],k0+3.6,k0+5.0],[pts[2],pts[3],k1+.2,k1+2.4]];
+  seq.forEach(([a,b,t0,t1],i)=>{const c=[lerp(a[1][0],b[1][0],.5)-(i===2?-200:70),lerp(a[1][1],b[1][1],.5)];const r=bezPts(a[1],b[1],c,40);const u=eIO(seg(t,t0,t1));
+    pencil(gx,r,u,4.2,.9,100+i*50,t,RED_P)});
+  const tts=[k0+.2,k0+2.3,k0+4.9,k1+2.3];
   pts.forEach(([n,p,al],i)=>{const tt=tts[i],u=seg(t,tt,tt+.8);if(u<=0)return;gx.save();gx.globalAlpha=eO(u);gx.fillStyle=RED_P+'1)';gx.beginPath();gx.arc(p[0],p[1],10,0,7);gx.fill();gx.restore();
-    const dx=i===0?-8:(al==='right'?26:-26),yy=i===0?p[1]+58:p[1]+8;hand(gx,n,p[0]+dx,yy,52,seg(t,tt+.1,tt+1),GRAPH,i===0?'left':(al==='right'?'left':'right'))});
-  if(t>k1+2.4){const p=pts[3][1];hand(gx,'la chacra del Pantanoso',p[0]-20,p[1]+86,50,seg(t,k1+2.5,k1+3.8),GRAPH,'center')}
+    const dx=i===0?-14:(al==='right'?26:-26),yy=i===0?p[1]+58:p[1]+8;hand(gx,n,p[0]+dx,yy,52,seg(t,tt+.1,tt+1),GRAPH,i===0?'right':(al==='right'?'left':'right'))});
+  if(t>C[2].a){const p=pts[3][1];hand(gx,'la chacra del Pantanoso',p[0]-20,p[1]+86,50,seg(t,C[2].a+.2,C[2].a+1.4),GRAPH,'center')}
   pencilFinish(x);lpCaps(x,t,C);
 }
 const CHAIN=[['Miguel','trastatarabuelo de Mario','1753'],['Felipe Pascual','tatarabuelo de Mario','1800'],['Sandalio','bisabuelo de Mario','h. 1836'],['Delmiro','abuelo de Mario','1867'],['Eloy','padre de Mario','1920'],['Mario','','' ],['Pablo','hijo de Mario',''],['Facundo y Camila','nietos de Mario','']];
+// árbol: [nombre, relación, año, x, y, padre (para la línea), tamaño del nombre]
+const TREE=[['Miguel','trastatarabuelo de Mario','1753',250,410,-1],['Felipe Pascual','tatarabuelo de Mario','1800',490,550,0],['Sandalio','bisabuelo de Mario','h. 1836',250,690,1],['Delmiro','abuelo de Mario','1867',490,830,2],['Eloy','padre de Mario','1920',250,970,3],
+ ['Mario','','',200,1110,4],['Ercilia','su esposa, Erci','',640,1110,5],['Pablo','hijo de Mario','',190,1250,5],['Matías','hijo de Mario','',620,1250,5],['Facundo y Camila','nietos de Mario','',190,1390,7],['Antonia','nieta de Mario','',690,1390,8]];
+const TREE_T=i=>i<=5?1.0+i*1.25:7.25+(i-5)*1.0;
 function lpArbol(x,t,dur,sc){
   const C=sc.C;gx.clearRect(0,0,W,H);
-  const y0=410,gap=140,pos=CHAIN.map((_,i)=>[i%2?490:250,y0+i*gap]);
-  for(let i=0;i<7;i++){const tt=1.0+i*1.25,u=seg(t,tt+.6,tt+1.2);if(u>0)pencil(gx,lin([pos[i][0],pos[i][1]+18],[pos[i+1][0],pos[i+1][1]-48],20),u,3.6,.9,40+i,t)}
-  CHAIN.forEach(([n,rel,yr],i)=>{const tt=1.0+i*1.25,u=seg(t,tt,tt+.9);if(u<=0)return;circleHand(gx,pos[i][0],pos[i][1]-22,i===5?78:62,eO(u),i+3,t,i===5?RED_P:GRAPH)});
+  const pos=TREE.map(n=>[n[3],n[4]]);
+  TREE.forEach((n,i)=>{if(n[5]<0||i===6)return;const tt=TREE_T(i),u=seg(t,tt-.4,tt+.3),p=pos[n[5]],q=pos[i];if(u>0){const side=i===6;
+    pencil(gx,side?lin([p[0]+62,p[1]-20],[q[0]-62,q[1]-20],14):lin([p[0],p[1]+18],[q[0],q[1]-48],20),u,3.6,.9,40+i,t)}});
+  TREE.forEach(([n,rel,yr,px,py],i)=>{const tt=TREE_T(i),u=seg(t,tt,tt+.9);if(u<=0)return;circleHand(gx,px,py-22,i===5?78:62,eO(u),i+3,t,i===5?RED_P:GRAPH)});
   pencilFinish(x);
   const ink=(s,px,py,sz,u,col,al)=>{hand(x,s,px,py,sz,u,col,al);hand(x,s,px+.8,py,sz,u,col,al)};
-  CHAIN.forEach(([n,rel,yr],i)=>{const tt=1.0+i*1.25,[px,py]=pos[i],mario=i===5,K=mario?'rgba(140,36,24,':'rgba(30,27,23,';if(t<tt)return;
-    ink(n,px+96,py-8,mario?80:66,seg(t,tt+.1,tt+.9),K,'left');
-    if(rel)ink(rel,px+96,py+36,42,seg(t,tt+.3,tt+1.1),'rgba(70,40,20,','left');
+  TREE.forEach(([n,rel,yr,px,py],i)=>{const tt=TREE_T(i),mario=i===5,K=mario?'rgba(140,36,24,':'rgba(30,27,23,';if(t<tt)return;
+    ink(n,px+96,py-8,mario?80:(i>=9?54:66),seg(t,tt+.1,tt+.9),K,'left');
+    if(rel)ink(rel,px+96,py+36,i>=9?38:42,seg(t,tt+.3,tt+1.1),'rgba(70,40,20,','left');
     if(yr)ink(yr,px-96,py-8,46,seg(t,tt+.2,tt+.9),'rgba(140,36,24,','right')});
   lpCaps(x,t,C);
   const ta=C[0].b+.1,a=eO(seg(t,ta,ta+.6));
@@ -103,38 +108,38 @@ const chip=(s,w)=>({chip:s,chipW:w});
 SCENES.push(
  {id:'linea-apertura',style:'tek',link:-1,lead:2.0,tail:1.0,cfg:{icons:['wheel','mojon'],morphAt:[2],in0:-3.0,in1:3.0},draw:tekDraw,
   caps:[{l:['Para Mario','y su familia.'],s:76,at:0},{l:['Eloy de los Campos,','el padre de Mario,','*fue chofer.*'],s:72},{l:['Su apellido ya figuraba','en una *escritura de campo*','de 1810.'],s:68},{l:['Esta es la cadena','que las une.'],s:78}]},
- {id:'miguel-mar',style:'pc',link:0,lead:.8,tail:.6,...chip('MIGUEL DE LOS CAMPOS',560),sub:'trastatarabuelo de Mario',draw:pcMiguel,
+ {id:'miguel-mar',style:'pc',link:0,lead:.5,tail:.6,...chip('MIGUEL DE LOS CAMPOS',560),sub:'trastatarabuelo de Mario',draw:pcMiguel,
   caps:[{l:['1753. Nace en Las Carreras,','una aldea de Vizcaya.'],s:52},{l:['Cruza el océano.'],s:62},{l:['Se casa en Las Piedras','con Clara Chavarría.'],s:54}]},
- {id:'escritura',style:'lp',link:0,lead:.8,tail:.6,draw:lpEscritura,
+ {id:'escritura',style:'lp',link:0,lead:.5,tail:.6,draw:lpEscritura,
   caps:[{l:['Consigue un campo,','en lo que hoy es Flores.'],s:66},{l:['Entre el Sarandí,','el Marincho y el Yí.'],s:68},{l:['Tres gobiernos distintos','se lo ratifican:','1810, 1815 y 1821.'],s:64}]},
- {id:'felipe-plaza',style:'pc',link:1,lead:.8,tail:.6,...chip('FELIPE PASCUAL DE LOS CAMPOS',720),sub:'tatarabuelo de Mario',draw:pcPlaza,
-  caps:[{l:['1830. Trinidad jura','la Constitución.'],s:58},{l:['Felipe, juez de paz,','les toma juramento.'],s:54},{l:['Ese año lo eligen diputado.'],s:52}]},
- {id:'felipe-papeles',style:'lp',link:1,lead:.8,tail:.6,draw:lpPapeles,
-  caps:[{l:['1840. Dos Flores entran','armados al Juzgado.','Según Felipe, le apuntaron.'],s:62},{l:['Dos semanas después firman:','Pascual es «la única autoridad».'],s:62},{l:['1864. Trinidad, sitiada.','Felipe consigue un papel firmado,','y la familia lo guarda 49 años.'],s:60}]},
- {id:'sandalio-flores',style:'pc',link:2,lead:.8,tail:.6,...chip('SANDALIO DE LOS CAMPOS',600),sub:'bisabuelo de Mario',draw:pcFlores,
+ {id:'felipe-plaza',style:'pc',link:1,lead:.5,tail:.6,...chip('FELIPE PASCUAL DE LOS CAMPOS',720),sub:'hijo de Miguel · tatarabuelo de Mario',draw:pcPlaza,
+  caps:[{l:['1830. Trinidad jura','la Constitución.'],s:58},{l:['Felipe Pascual, juez de paz,','les toma juramento.'],s:54},{l:['Ese año lo eligen diputado.'],s:52}]},
+ {id:'felipe-papeles',style:'lp',link:1,lead:.5,tail:.6,draw:lpPapeles,
+  caps:[{l:['1840. Dos Flores entran','armados al Juzgado.','Felipe Pascual dice que le apuntaron.'],s:62},{l:['Dos semanas después, los dos firman:','Felipe Pascual es «la única autoridad».'],s:62},{l:['1864. Trinidad, sitiada.','Felipe Pascual consigue un papel firmado,','y la familia lo guarda 49 años.'],s:60}]},
+ {id:'sandalio-flores',style:'pc',link:2,lead:.5,tail:.6,...chip('SANDALIO DE LOS CAMPOS',600),sub:'hijo de Felipe Pascual · bisabuelo de Mario',draw:pcFlores,
   caps:[{l:['1885. Nace el departamento','de Flores, con el apellido','de Venancio Flores.'],s:48},{l:['Sandalio, nacido hacia 1836,','es uno de los seis que lo','gobiernan al principio.'],s:48},{l:['Su hermano Rolando','es el primer jefe político.'],s:52}]},
- {id:'delmiro',style:'pc',link:3,lead:.8,tail:.8,...chip('DELMIRO DE LOS CAMPOS',600),sub:'abuelo de Mario',draw:pcDelmiro,
+ {id:'delmiro',style:'pc',link:3,lead:.5,tail:.8,...chip('DELMIRO DE LOS CAMPOS',600),sub:'hijo de Sandalio · abuelo de Mario',draw:pcDelmiro,
   caps:[{l:['Delmiro vuelve al campo:','el Sarandí, el mismo río','de la escritura.'],s:48},{l:['En 1896 se casa con Luisa Soma.','Tienen doce hijos.'],s:50},{l:['Al menos siete mueren','antes que Eloy.'],s:56}]},
- {id:'ruta-villa-colon',style:'lp',link:3,lead:.8,tail:.7,draw:lpRuta,
-  caps:[{l:['Del Sarandí a Trinidad,','Durazno y Villa Colón:','la chacra que Felipe vendió en 1848.'],s:58}]},
+ {id:'ruta-villa-colon',style:'lp',link:3,lead:.5,tail:.7,draw:lpRuta,
+  caps:[{l:['La familia deja el campo.','Del Sarandí pasa a Trinidad,','y de Trinidad a Durazno.'],s:56},{l:['Después, a Villa Colón,','en Montevideo.'],s:60},{l:['Allí estaba la chacra que','Felipe Pascual vendió en 1848.'],s:56}]},
  {id:'eloy-nace',style:'tek',link:4,lead:1.4,tail:1.0,cfg:{icons:['house']},draw:tekDraw,
   caps:[{l:['Eloy nace en Trinidad,','el 9 de enero de 1920.'],s:72},{l:['Según la familia, a los ocho','dejó la escuela y trabajó','en un hotel de Durazno.'],s:64}]},
- {id:'eloy-chofer',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcChofer,
-  caps:[{l:['De grande fue chofer.'],s:62},{l:['En el acta de su boda','figura así: chofer, de Trinidad.'],s:52}]},
- {id:'eloy-mosaicos',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcMosaicos,
-  caps:[{l:['También trabajó en','Mosaicos Rivas y Cía.'],s:58},{l:['Una fábrica de baldosas','y pisos de imitación mármol.'],s:54}]},
- {id:'eloy-ciclista',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcCiclista,
-  caps:[{l:['Y corrió en bicicleta','para el Club Olimpia, en Colón.'],s:52},{l:['El club ganaba carreras','y campeonatos de ciclismo.'],s:54}]},
+ {id:'eloy-ciclista',style:'pc',link:4,lead:.5,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'hijo de Delmiro · padre de Mario',draw:pcCiclista,
+  caps:[{l:['Según la familia, Eloy corrió','en bicicleta para el Club Olimpia,','en Colón, el barrio de la familia.'],s:50},{l:['El club existió y tuvo','una sección de ciclismo.'],s:54}]},
+ {id:'eloy-mosaicos',style:'pc',link:4,lead:.5,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'hijo de Delmiro · padre de Mario',draw:pcMosaicos,
+  caps:[{l:['Según la familia, también','trabajó en Mosaicos Rivas y Cía.'],s:54},{l:['Una fábrica de baldosas','y pisos de imitación mármol.'],s:54}]},
+ {id:'eloy-chofer',style:'pc',link:4,lead:.5,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'hijo de Delmiro · padre de Mario',draw:pcChofer,
+  caps:[{l:['De grande fue chofer.'],s:62},{l:['Cuando se casa, en 1946,','es «un chofer de Trinidad».'],s:54}]},
  {id:'eloy-boda',style:'tek',link:4,lead:1.2,tail:1.0,cfg:{icons:['rings']},draw:tekDraw,
   caps:[{l:['*26 de enero de 1946.*','Eloy se casa con Reina,','la muchacha de Fraile Muerto.'],s:62},{l:['Tienen dos hijos:','Walter y *Mario.*'],s:74}]},
- {id:'eloy-sotano',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcSotano,
+ {id:'eloy-sotano',style:'pc',link:4,lead:.5,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'hijo de Delmiro · padre de Mario',draw:pcSotano,
   caps:[{l:['Magallanes 1973. Los viernes,','Eloy se juntaba con amigos','en un sótano de la esquina.'],s:46},{l:['Asado con carbón bajo tierra.','Truco, sí. Tute cabrero, no.'],s:50},{l:['Así lo cuenta la familia.'],s:56}]},
  {id:'eloy-final',style:'tek',link:4,lead:1.2,tail:1.2,cfg:{icons:['candle']},draw:tekDraw,
   caps:[{l:['Eloy muere el *9 de enero de 2000,*','el día que cumplía ochenta años.'],s:62}]},
- {id:'puente',style:'lp',link:4,lead:.8,tail:.8,draw:lpPuente,
-  caps:[{l:['En 1810, el apellido estaba','en una escritura de campo.'],s:62},{l:['En 1946, en el acta de boda','de un chofer.'],s:62},{l:['En el medio, cinco generaciones','de padres a hijos.'],s:60}]},
- {id:'arbol',style:'lp',link:7,lead:10.4,tail:6.4,draw:lpArbol,
-  caps:[{l:['Una cadena de padres a hijos,','de un vizcaíno a Facundo y Camila.'],s:60,at:10.4}]}
+ {id:'puente',style:'lp',link:4,lead:.5,tail:.8,draw:lpPuente,
+  caps:[{l:['En 1810, el apellido estaba','en una escritura de campo.'],s:62},{l:['En 1946, en un acta de boda,','un chofer de Trinidad.'],s:60},{l:['En el medio, cinco generaciones','de padres a hijos.'],s:60}]},
+ {id:'arbol',style:'lp',link:7,lead:13.6,tail:6.4,draw:lpArbol,
+  caps:[{l:['Una cadena de padres a hijos,','de un vizcaíno a los nietos de Mario.'],s:60,at:13.6}]}
 );
 const LINKROLE=SCENES;
 // ═══════════════ indicador de la cadena (siempre visible) ═══════════════
@@ -152,9 +157,9 @@ function chainBar(x,T,sc){
     x.beginPath();x.arc(px,py,now?18:13,0,7);x.fillStyle=on?'#b84a2c':'#f7f0e0';x.fill();x.strokeStyle='#3c2d1e';x.lineWidth=3;x.stroke();
     if(now){x.strokeStyle='rgba(184,74,44,.5)';x.lineWidth=3;x.beginPath();x.arc(px,py,27+(T*1.2%1)*10,0,7);x.stroke()}});
   const names=['Miguel','Felipe','Sandalio','Delmiro','Eloy','Mario','Pablo','Nietos'];
-  nodes.forEach(([px],i)=>{const on=cur===7||i<=cur,now=i===cur||(cur===7&&i>=5);x.globalAlpha=a*(on?1:.8);txt(x,names[i],px,198,`800 ${now?37:35}px "Cormorant Garamond"`,'#2c2018','center')});
-  const rel=cur===7?'Mario, Pablo, Facundo y Camila':(cur>=0?`${CHAIN[cur][0]} · ${CHAIN[cur][1]}`:'Cada punto es un padre y su hijo');
-  x.globalAlpha=a;txt(x,rel,W/2,252,'italic 700 40px "Cormorant Garamond"','#5a2f12','center');
+  nodes.forEach(([px],i)=>{const on=cur===7||i<=cur,now=i===cur||(cur===7&&i>=5);x.globalAlpha=a*(on?1:.8);txt(x,names[i],px,198,`800 ${now?38:36}px "Cormorant Garamond"`,'#2c2018','center')});
+  const rel=cur===7?'Mario y Ercilia, Pablo y Matías, y los nietos':(cur>=0?`${CHAIN[cur][0]} · ${CHAIN[cur][1]}`:'Cada punto es un padre y su hijo');
+  x.globalAlpha=a;txt(x,rel,W/2,252,'italic 700 44px "Cormorant Garamond"','#5a2f12','center');
   x.restore();
 }
 // ═══════════════ render ═══════════════
