@@ -2,7 +2,9 @@
 // ═══════════════ LÍNEA DE TIEMPO (una sola fuente de verdad) ═══════════════
 const SCENES=[];
 const wc=lines=>lines.join(' ').split(/\s+/).filter(Boolean).length;
-const dwell=c=>Math.max(3.0,0.9+wc(c.l)/2.8);       // regla de lectura
+const READ={base:1.2,wps:2.2,min:3.6};              // regla de lectura (fundidos incluidos)
+const needOf=c=>Math.max(READ.min,READ.base+wc(c.l)/READ.wps);
+const dwell=needOf;
 const LINT=[];
 function fitSize(lines,size,maxW,font,minS,id){
   const m=mk(10,10).getContext('2d');let s=size;
@@ -20,8 +22,8 @@ function buildTimeline(){
     for(const c of sc.caps){
       const a=c.at??tt,d=c.hold??dwell(c);
       const fs=fitSize(c.l,c.s||48,CAPMAX[sc.style],CAPFONT[sc.style],CAPMIN[sc.style],sc.id);
-      sc.C.push({a,b:a+d,l:c.l,s:fs,words:wc(c.l),need:Math.max(3.0,0.9+wc(c.l)/2.8)});
-      if(d+1e-6<Math.max(3.0,0.9+wc(c.l)/2.8))LINT.push(`[${sc.id}] leyenda corta: ${d.toFixed(1)} s para ${wc(c.l)} palabras`);
+      sc.C.push({a,b:a+d,l:c.l,s:fs,words:wc(c.l),need:needOf(c)});
+      if(d+1e-6<needOf(c))LINT.push(`[${sc.id}] leyenda corta: ${d.toFixed(1)} s para ${wc(c.l)} palabras`);
       tt=a+d+0.12;
     }
     sc.dur=Math.max(sc.min||0,tt+(sc.tail??1.2));sc.a=T;sc.b=T+sc.dur;T+=sc.dur;
@@ -30,6 +32,12 @@ function buildTimeline(){
 }
 const sceneAtT=T=>SCENES.find(a=>T>=a.a&&T<a.b)||SCENES[SCENES.length-1];
 
+
+// texto con *acento* y cifras en una fuente de números alineados (las serif antiguas confunden 3 y 5, 3 y 8)
+const DIGITF={pc:'"Liberation Serif"',tek:'"Liberation Serif"'};
+function segsOf(s){const out=[];s.split(/(\*[^*]*\*)/).filter(Boolean).forEach(p=>{const acc=p.startsWith('*'),t=p.replace(/\*/g,'');t.split(/(\d[\d.,–h ]*\d|\d)/).filter(Boolean).forEach(q=>out.push({t:q,acc,dig:/^\d/.test(q)}))});return out}
+function segsWidth(x,segs,size,fontFor){let w=0;segs.forEach(g=>{x.font=fontFor(g,size);w+=x.measureText(g.t).width});return w}
+function drawSegs(x,segs,px,py,size,fontFor,colFor){segs.forEach(g=>{x.font=fontFor(g,size);x.fillStyle=colFor(g);x.textAlign='left';x.textBaseline='alphabetic';x.fillText(g.t,px,py);px+=x.measureText(g.t).width});return px}
 // ═══════════════ ESTILO 8 · TEK ÇİZGI: íconos y escena ═══════════════
 function iconWheel(){const cx=540,cy=HY-300,r=210,p=Pn().M(300,HY);
   p.S([[380,HY-4],[470,HY-30],[540,cy+r]],14);CIR(p,cx,cy,r,Math.PI/2);
@@ -65,14 +73,12 @@ function buildTekPaper(){const c=PAPERT.getContext('2d');c.fillStyle=TPAPER;c.fi
   const id=c.getImageData(0,0,W,H),d=id.data,r=rng(7);for(let k=0;k<d.length;k+=4){const n=(r()-.5)*10;d[k]+=n;d[k+1]+=n;d[k+2]+=n}c.putImageData(id,0,0)}
 // leyendas manuscritas de la línea, con *acento*
 function tekCaps(x,t,C){
+  const fontFor=(g,s)=>g.dig?`italic 700 ${s}px ${DIGITF.tek}`:`italic 500 ${s}px "Cormorant Garamond"`;
   C.forEach(c=>{
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
-    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.6)))*14);
+    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.6)))*(c.a<=.2?0:14));
     const size=c.s,lh=size*1.2,y0=Math.min(1250,1690-(c.l.length-1)*lh);
-    c.l.forEach((s,i)=>{
-      const parts=s.split(/(\*[^*]*\*)/).filter(Boolean),font=`italic 500 ${size}px "Cormorant Garamond"`;x.font=font;
-      const clean=pp=>pp.replace(/\*/g,''),w=parts.reduce((m,pp)=>m+x.measureText(clean(pp)).width,0);let px=W/2-w/2;
-      parts.forEach(pp=>{const acc=pp.startsWith('*'),tx=clean(pp);txt(x,tx,px,y0+i*lh,font,acc?TACC:TINK);px+=x.measureText(tx).width})});
+    c.l.forEach((s,i)=>{const sg=segsOf(s),w=segsWidth(x,sg,size,fontFor);drawSegs(x,sg,W/2-w/2,y0+i*lh,size,fontFor,g=>g.acc?TACC:TINK)});
     x.restore()});
 }
 // escena de línea. cfg.icons y cfg.morphAt (índices de leyenda donde cambia de ícono)

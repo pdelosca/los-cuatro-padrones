@@ -35,7 +35,7 @@ function txt(x,s,px,py,font,color,align='left',ls=0){
   if('letterSpacing' in x)x.letterSpacing=ls+'px';x.fillText(s,px,py);if('letterSpacing' in x)x.letterSpacing='0px';
 }
 // bloque de texto que aparece y se va
-function blockAlpha(t,a,b,fi=.5,fo=.4){return Math.min(eO(seg(t,a,a+fi)),1-seg(t,b-fo,b))}
+function blockAlpha(t,a,b,fi=.5,fo=.4){const fin=a<=.2?1:eO(seg(t,a,a+fi));return Math.min(fin,1-seg(t,b-fo,b))}
 
 // ═══════════════════ ESTILO 8 · TEK ÇİZGİ (una sola línea) ═══════════════════
 const TPAPER='#f3eee4',TINK='#1e1c19',TACC='#c4502f',HY=1040,TN=2600,X0=-80,X1=1160;
@@ -68,7 +68,9 @@ const CIR=(p,cx,cy,r,a0,turns=1)=>p.A(cx,cy,r,r,a0,a0+Math.PI*2*turns);
 // ═══════════════ LÍNEA DE TIEMPO (una sola fuente de verdad) ═══════════════
 const SCENES=[];
 const wc=lines=>lines.join(' ').split(/\s+/).filter(Boolean).length;
-const dwell=c=>Math.max(3.0,0.9+wc(c.l)/2.8);       // regla de lectura
+const READ={base:1.2,wps:2.2,min:3.6};              // regla de lectura (fundidos incluidos)
+const needOf=c=>Math.max(READ.min,READ.base+wc(c.l)/READ.wps);
+const dwell=needOf;
 const LINT=[];
 function fitSize(lines,size,maxW,font,minS,id){
   const m=mk(10,10).getContext('2d');let s=size;
@@ -86,8 +88,8 @@ function buildTimeline(){
     for(const c of sc.caps){
       const a=c.at??tt,d=c.hold??dwell(c);
       const fs=fitSize(c.l,c.s||48,CAPMAX[sc.style],CAPFONT[sc.style],CAPMIN[sc.style],sc.id);
-      sc.C.push({a,b:a+d,l:c.l,s:fs,words:wc(c.l),need:Math.max(3.0,0.9+wc(c.l)/2.8)});
-      if(d+1e-6<Math.max(3.0,0.9+wc(c.l)/2.8))LINT.push(`[${sc.id}] leyenda corta: ${d.toFixed(1)} s para ${wc(c.l)} palabras`);
+      sc.C.push({a,b:a+d,l:c.l,s:fs,words:wc(c.l),need:needOf(c)});
+      if(d+1e-6<needOf(c))LINT.push(`[${sc.id}] leyenda corta: ${d.toFixed(1)} s para ${wc(c.l)} palabras`);
       tt=a+d+0.12;
     }
     sc.dur=Math.max(sc.min||0,tt+(sc.tail??1.2));sc.a=T;sc.b=T+sc.dur;T+=sc.dur;
@@ -96,6 +98,12 @@ function buildTimeline(){
 }
 const sceneAtT=T=>SCENES.find(a=>T>=a.a&&T<a.b)||SCENES[SCENES.length-1];
 
+
+// texto con *acento* y cifras en una fuente de números alineados (las serif antiguas confunden 3 y 5, 3 y 8)
+const DIGITF={pc:'"Liberation Serif"',tek:'"Liberation Serif"'};
+function segsOf(s){const out=[];s.split(/(\*[^*]*\*)/).filter(Boolean).forEach(p=>{const acc=p.startsWith('*'),t=p.replace(/\*/g,'');t.split(/(\d[\d.,–h ]*\d|\d)/).filter(Boolean).forEach(q=>out.push({t:q,acc,dig:/^\d/.test(q)}))});return out}
+function segsWidth(x,segs,size,fontFor){let w=0;segs.forEach(g=>{x.font=fontFor(g,size);w+=x.measureText(g.t).width});return w}
+function drawSegs(x,segs,px,py,size,fontFor,colFor){segs.forEach(g=>{x.font=fontFor(g,size);x.fillStyle=colFor(g);x.textAlign='left';x.textBaseline='alphabetic';x.fillText(g.t,px,py);px+=x.measureText(g.t).width});return px}
 // ═══════════════ ESTILO 8 · TEK ÇİZGI: íconos y escena ═══════════════
 function iconWheel(){const cx=540,cy=HY-300,r=210,p=Pn().M(300,HY);
   p.S([[380,HY-4],[470,HY-30],[540,cy+r]],14);CIR(p,cx,cy,r,Math.PI/2);
@@ -131,14 +139,12 @@ function buildTekPaper(){const c=PAPERT.getContext('2d');c.fillStyle=TPAPER;c.fi
   const id=c.getImageData(0,0,W,H),d=id.data,r=rng(7);for(let k=0;k<d.length;k+=4){const n=(r()-.5)*10;d[k]+=n;d[k+1]+=n;d[k+2]+=n}c.putImageData(id,0,0)}
 // leyendas manuscritas de la línea, con *acento*
 function tekCaps(x,t,C){
+  const fontFor=(g,s)=>g.dig?`italic 700 ${s}px ${DIGITF.tek}`:`italic 500 ${s}px "Cormorant Garamond"`;
   C.forEach(c=>{
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
-    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.6)))*14);
+    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.6)))*(c.a<=.2?0:14));
     const size=c.s,lh=size*1.2,y0=Math.min(1250,1690-(c.l.length-1)*lh);
-    c.l.forEach((s,i)=>{
-      const parts=s.split(/(\*[^*]*\*)/).filter(Boolean),font=`italic 500 ${size}px "Cormorant Garamond"`;x.font=font;
-      const clean=pp=>pp.replace(/\*/g,''),w=parts.reduce((m,pp)=>m+x.measureText(clean(pp)).width,0);let px=W/2-w/2;
-      parts.forEach(pp=>{const acc=pp.startsWith('*'),tx=clean(pp);txt(x,tx,px,y0+i*lh,font,acc?TACC:TINK);px+=x.measureText(tx).width})});
+    c.l.forEach((s,i)=>{const sg=segsOf(s),w=segsWidth(x,sg,size,fontFor);drawSegs(x,sg,W/2-w/2,y0+i*lh,size,fontFor,g=>g.acc?TACC:TINK)});
     x.restore()});
 }
 // escena de línea. cfg.icons y cfg.morphAt (índices de leyenda donde cambia de ícono)
@@ -221,17 +227,20 @@ function label(x,t,chip,sub,caps){
 // ═══════════════ ESTILO 9 · KÂĞIT KESİK: escenas ═══════════════
 // cartel de papel con leyenda; tamaño ya ajustado en buildTimeline (nunca se sale de la tarjeta)
 function labelCard(x,t,sc){
-  const y0=1330,h=370;
-  x.save();x.translate(W/2,y0+h/2);x.rotate(-.008);x.translate(-W/2,-(y0+h/2));
+  const y0=1330,h=370,C=sc.C;
+  const v=Math.min(eO(seg(t,C[0].a-.6,C[0].a-.1)),1-seg(t,C[C.length-1].b-.05,C[C.length-1].b+.35));
+  if(v<=0.01)return;
+  const fontFor=(g,s)=>g.dig?`700 ${s}px ${DIGITF.pc}`:`700 ${s}px Fraunces`;
+  x.save();x.globalAlpha=v;x.translate(W/2,y0+h/2+(1-v)*60);x.rotate(-.008);x.translate(-W/2,-(y0+h/2));
   piece(x,rrect(54,y0,W-108,h,18),'#f6efdf');
   piece(x,rrect(54,y0-52,sc.chipW||700,64,12),'#b84a2c',{shadow:1});
   txt(x,sc.chip,78,y0-8,'700 30px Fraunces','#fff3df','left',3);
-  if(sc.sub)txt(x,sc.sub,78,y0+52,'700 32px Fraunces','#8f4f26','left',1);
-  sc.C.forEach(c=>{
+  if(sc.sub)txt(x,sc.sub,78,y0+54,'700 34px Fraunces','#6b3412','left',1);
+  C.forEach(c=>{
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
-    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.5)))*12);
-    const lh=c.s*1.26,top=y0+(sc.sub?104:78)+Math.max(0,(3-c.l.length))*lh*.3;
-    c.l.forEach((s,i)=>txt(x,s,78,top+c.s+i*lh,`700 ${c.s}px Fraunces`,'#2c2018'));
+    x.save();x.globalAlpha=v*al;x.translate(0,(1-eO(seg(t,c.a,c.a+.5)))*12);
+    const lh=c.s*1.26,top=y0+(sc.sub?108:80)+Math.max(0,(3-c.l.length))*lh*.3;
+    c.l.forEach((s,i)=>drawSegs(x,segsOf(s),78,top+c.s+i*lh,c.s,fontFor,()=>'#2c2018'));
     x.restore()});
   x.restore();
 }
@@ -240,8 +249,8 @@ const PCBAL='#b84a2c';
 function pcMiguel(x,t,dur,sc){
   const C=sc.C,u=t/dur;
   sky(x,'#2c4a7c','#f1b98a',1250);
-  const sun=eO(seg(t,.4,dur*.7));piece(x,circ(820,640-sun*220,88),'#fff1c9',{shadow:0});
-  cloud(x,200+Math.sin(t*.4)*30,330,1.1,'#ffe3cc');cloud(x,820+Math.sin(t*.3)*26,250,.8,'#ffe3cc');
+  const sun=eO(seg(t,.4,dur*.7));piece(x,circ(820,720-sun*250,88),'#fff1c9',{shadow:0});
+  cloud(x,200+Math.sin(t*.4)*30,400,1.1,'#ffe3cc');cloud(x,820+Math.sin(t*.3)*26,350,.8,'#ffe3cc');
   piece(x,hillPath(780,120,3,-t*6,false,80),'#527a62');piece(x,hillPath(850,70,9,t*5,false),'#3f6b52');
   for(let i=0;i<6;i++)pine(x,70+i*54,880-(i%2)*10,.7,'#2e5a40');
   house(x,230,880,.8,'#e8d9bd','#b6573a',false);
@@ -276,7 +285,7 @@ function pcCampo(x,t,dur,sc){
 // ── la plaza de Trinidad, 1830 (tarde dorada)
 function pcPlaza(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#86bde0','#f9dca0',1200);piece(x,circ(880,300,90),'#fff0b8',{shadow:0});cloud(x,260+Math.sin(t*.3)*25,300,1.1);cloud(x,700,200,.8);
+  sky(x,'#86bde0','#f9dca0',1200);piece(x,circ(880,420,90),'#fff0b8',{shadow:0});cloud(x,260+Math.sin(t*.3)*25,420,1.1);cloud(x,640,360,.8);
   [[120,'#efe1c4','#c4502f'],[330,'#f2cbb0','#8a4a38'],[560,'#d9e6c4','#b6573a'],[790,'#efe1c4','#a24432'],[990,'#f2cbb0','#c4502f']].forEach(([cx,b,r],i)=>{house(x,cx,820-(i%2)*14,.9,b,r,false)});
   piece(x,hillPath(860,25,4,0,false,120),'#9cbf6e');piece(x,rect(-40,860,W+80,520),'#d8b985');
   x.save();x.strokeStyle='#5a3b22';x.lineWidth=4;x.beginPath();x.moveTo(0,330);x.quadraticCurveTo(540,430,W,330);x.stroke();x.restore();
@@ -297,13 +306,13 @@ function pcFlores(x,t,dur,sc){
   sky(x,'#5f7bb4','#f9c98a',1250);
   piece(x,circ(540,1120-eO(seg(t,.2,3))*240,110),'#fff0c0',{shadow:0});
   for(let i=0;i<9;i++){const sx_=80+i*115,len=100+((i*53)%140),sw=Math.sin(t*1.5+i)*10;x.save();x.strokeStyle='rgba(255,240,200,.55)';x.lineWidth=2;x.beginPath();x.moveTo(sx_,0);x.lineTo(sx_+sw,len);x.stroke();piece(x,star(sx_+sw,len+30,26,Math.sin(t+i)*.2),'#ffd86a',{shadow:1});x.restore()}
-  piece(x,hillPath(1100,70,2,-t*4,false,100),'#c98a5a');piece(x,hillPath(1200,60,6,t*3,false),'#a8664a');
+  piece(x,hillPath(1130,70,2,-t*4,false,100),'#c98a5a');piece(x,hillPath(1230,60,6,t*3,false),'#a8664a');
   const fl=eBack(seg(t,.6,2.2),1.2),pts=P.flPts;let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;pts.forEach(([a,b])=>{mnx=Math.min(mnx,a);mxx=Math.max(mxx,a);mny=Math.min(mny,b);mxy=Math.max(mxy,b)});
   const sc2=540/(mxx-mnx),ox=W/2-(mnx+mxx)/2*sc2,oy=700-(mny+mxy)/2*sc2+(1-fl)*700;
   piece(x,x=>{pts.forEach(([a,b],i)=>i?x.lineTo(ox+a*sc2,oy+b*sc2):x.moveTo(ox+a*sc2,oy+b*sc2));x.closePath()},'#f2c14e');
   const ta=eO(seg(t,2.2,3.2));if(ta>0){x.save();x.globalAlpha=ta;txt(x,'FLORES',W/2,oy+(mny+mxy)/2*sc2+10,'700 96px Fraunces','#7a4a1c','center',6);txt(x,'1885',W/2,oy+(mny+mxy)/2*sc2+90,'700 56px Fraunces',PCBAL,'center',4);x.restore()}
-  for(let i=0;i<6;i++){const k=eBack(seg(t,C[1].a+i*.18,C[1].a+.8+i*.18));if(k>0){x.save();x.translate(0,(1-k)*200);const hl=i===2;person(x,170+i*148,1210,.9,hl?PCBAL:'#5b4a78',0,hl?'#f5c945':null);
-    if(hl)txt(x,'Sandalio',170+i*148,1232,'700 28px Fraunces','#fff3df','center');x.restore()}}
+  for(let i=0;i<6;i++){const k=eBack(seg(t,C[1].a+i*.18,C[1].a+.8+i*.18));if(k>0){x.save();x.translate(0,(1-k)*200);const hl=i===2;person(x,110+i*172,1190,1.5,hl?PCBAL:'#5b4a78',0,hl?'#f5c945':null);
+    if(hl)txt(x,'Sandalio',110+i*172,1236,'700 38px Fraunces','#fff3df','center');x.restore()}}
   labelCard(x,t,sc);
 }
 // ── Delmiro: la casa del Sarandí y los doce hijos (anochecer estable)
@@ -316,11 +325,13 @@ function pcDelmiro(x,t,dur,sc){
     x.save();x.strokeStyle='rgba(255,240,200,.45)';x.lineWidth=2;x.beginPath();x.moveTo(sx_,0);x.lineTo(sx_+sw,len);x.stroke();
     const k=eBack(seg(t,C[1].a+i*.14,C[1].a+.8+i*.14));x.translate(sx_+sw,len+34);x.scale(k,k);
     piece(x,star(0,0,eloy?36:28,Math.sin(t+i)*.15),mix(eloy?'#ffe27a':'#ffd86a','#8a8f9c',off),{shadow:1});x.restore()}
-  piece(x,hillPath(1000,100,2,-t*3,true,110),'#6c5a78');piece(x,hillPath(1100,70,5,t*3,false),'#4a5a78');
+  piece(x,hillPath(1010,100,2,-t*3,true,110),'#6c5a78');piece(x,hillPath(1110,70,5,t*3,false),'#4a5a78');
   piece(x,x=>{x.moveTo(-60,1160);for(let px=-60;px<=W+80;px+=40)x.lineTo(px,1150+Math.sin(t*1.2+px/80)*8);for(let px=W+80;px>=-60;px-=40)x.lineTo(px,1210+Math.sin(t*1.2+px/80)*8);x.closePath()},'#4a86b8');
   txt(x,'Sarandí',W-60,1250,'700 34px Fraunces','#cfe6f6','right',2);
-  house(x,540,1100,1.4,'#e6d4b4','#a24432',true);
-  for(let i=0;i<5;i++)pine(x,90+i*70,1110,.8,'#233a36');
+  for(let i=0;i<5;i++)pine(x,70+i*64,1150,1.0,'#233a36');
+  house(x,590,1160,2.0,'#e6d4b4','#a24432',true);
+  for(let i=0;i<5;i++){const ph=(t*.25+i/5)%1;x.save();x.globalAlpha=(1-ph)*.9;cloud(x,700+Math.sin(ph*6+i)*26+ph*60,860-ph*300,.35+ph*.5,'#e9e1d6');x.restore()}
+  for(let i=0;i<16;i++){const fx=(hash(i,1,1)*W+Math.sin(t*.6+i)*60+W)%W,fy=520+hash(i,2,2)*600+Math.cos(t*.8+i*2)*30,tw=.5+.5*Math.sin(t*3+i*1.7);x.save();x.globalAlpha=tw;x.shadowColor='#ffe27a';x.shadowBlur=22;x.fillStyle='#fff1a6';x.beginPath();x.arc(fx,fy,5,0,7);x.fill();x.restore()}
   labelCard(x,t,sc);
 }
 // ── el chofer (tarde cálida de ruta)
@@ -340,6 +351,8 @@ function car(x,cx,cy,s,t){
   piece(x,rect(-156,-34,312,12),'#2a1a1a',{shadow:0});
   piece(x,circ(194,-72,15),'#fff2c4',{shadow:0});piece(x,rrect(186,-56,24,44,8),'#d8d4cc',{shadow:0});
   for(let i=0;i<4;i++)piece(x,rect(150+i*8,-84,4,34),'#d8d4cc',{shadow:0});
+  // conductor: cabeza con gorra y manos al volante
+  x.save();x.fillStyle='#e2bc94';x.beginPath();x.arc(10,-132,17,0,7);x.fill();x.fillStyle='#26211d';x.beginPath();x.arc(10,-138,18,Math.PI,0);x.fill();x.fillRect(-9,-139,38,5);x.fillStyle='#3a5a8a';x.fillRect(-8,-118,36,22);x.restore();
   wheelDraw(x,-115,-42,42,-t*9);wheelDraw(x,120,-42,42,-t*9);
   x.restore()}
 function eucalyptus(x,cx,by,s,col){piece(x,rect(cx-5*s,by-210*s,10*s,210*s),'#6a4a30',{shadow:0});piece(x,x=>{x.ellipse(cx,by-250*s,38*s,104*s,0,0,7)},col)}
@@ -357,7 +370,7 @@ function pcChofer(x,t,dur,sc){
   const sg=((1500-t*130)%2100+2100)%2100-450;piece(x,rect(sg-5,820,10,170),'#4a3a2a',{shadow:0});piece(x,rrect(sg-130,760,260,78,10),'#2f6f8f');txt(x,'TRINIDAD',sg,816,'700 40px Fraunces','#fff','center',3);
   // polvo y auto
   for(let i=0;i<6;i++){const ph=(t*.8+i/6)%1;x.save();x.globalAlpha=(1-ph)*.8;cloud(x,260-ph*170,1120-ph*40,.3+ph*.6,'#efe3cf');x.restore()}
-  car(x,560,1150,1.5,t);
+  car(x,500,1150,1.5,t);
   labelCard(x,t,sc);
 }
 // ── Mosaicos Rivas y Cía.
@@ -443,7 +456,7 @@ function bike(x,cx,gy,s,t,rider=true){
   x.restore()}
 function pcCiclista(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#8ec9ea','#f1f0dc',1200);piece(x,circ(880,330,76),'#fff6c8',{shadow:0});cloud(x,300+Math.sin(t*.3)*30,300,1.1);cloud(x,760,230,.7);
+  sky(x,'#8ec9ea','#f1f0dc',1200);piece(x,circ(900,520,76),'#fff6c8',{shadow:0});cloud(x,300+Math.sin(t*.3)*30,540,1.1);cloud(x,760,470,.7);
   piece(x,hillPath(820,70,4,-t*10,false,110),'#a9cf8a');piece(x,hillPath(900,50,8,-t*18,false,120),'#86b873');
   for(let i=0;i<7;i++){const ex=((i*190-t*90)%1400+1400)%1400-160;eucalyptus(x,ex,980,.85,'#4f7a52')}
   piece(x,rect(-40,980,W+80,400),'#92b76a');
@@ -482,20 +495,40 @@ function naipe(x,cx,cy,w,h,rot,palo,n){
   x.restore()}
 function pcSotano(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#27386e','#5a6fae',1100);
-  for(let i=0;i<14;i++){const sx_=60+((i*83)%960),sy=80+((i*131)%420),tw=.5+.5*Math.sin(t*2+i);x.save();x.globalAlpha=.5+.5*tw;piece(x,star(sx_,sy,11),'#fff0b0',{shadow:0});x.restore()}
-  piece(x,circ(880,260,66),'#f4efe0',{shadow:0});
-  [[40,420,'#625584'],[250,520,'#6e5f8e'],[520,440,'#5f5380'],[760,560,'#6c5f8e']].forEach(([fx,fh,col],i)=>{piece(x,rect(fx,900-fh,230,fh+300),col);for(let r=0;r<Math.floor(fh/110);r++)for(let c=0;c<2;c++){const on=hash(i,r,c)>.45;piece(x,rect(fx+30+c*100,900-fh+34+r*100,64,56),on?'#ffd27a':'#2b2540',{shadow:0})}});
-  piece(x,rect(380,700,330,420),'#7d689e');piece(x,poly([[360,700],[545,610],[730,700]]),'#463a62');
-  piece(x,rect(420,760,70,80),'#ffd27a',{shadow:0});piece(x,rect(600,760,70,80),'#ffd27a',{shadow:0});
-  piece(x,rect(500,900,120,110),'#2b2540',{shadow:0});piece(x,rect(-40,1110,W+80,300),'#4c4166');
-  const pulse=.85+.15*Math.sin(t*6);piece(x,rect(440,1090,200,62),mix('#ffb454','#ff8a2a',pulse),{shadow:0});
-  x.save();x.globalCompositeOperation='screen';const g=x.createRadialGradient(540,1120,10,540,1120,360);g.addColorStop(0,`rgba(255,160,70,${.6*pulse})`);g.addColorStop(1,'rgba(255,160,70,0)');x.fillStyle=g;x.fillRect(100,820,880,560);x.restore();
-  for(let i=0;i<6;i++){const ph=(t*.35+i/6)%1,sx_=540+Math.sin(ph*7+i)*40+ph*160,sy=1090-ph*520;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.6);cloud(x,sx_,sy,.5+ph*.8,'#ece4d8');x.restore()}
-  const ca=eBack(seg(t,.8,1.6));if(ca>0){x.save();x.translate(180,980);x.scale(ca,ca);piece(x,rect(-6,0,12,200),'#2c2018');piece(x,rrect(-150,-40,300,56,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 28px Fraunces','#fff','center',1);x.restore()}
+  sky(x,'#27386e','#6f80be',900);
+  for(let i=0;i<12;i++){const sx_=60+((i*83)%960),sy=300+((i*131)%260),tw=.5+.5*Math.sin(t*2+i);x.save();x.globalAlpha=.5+.5*tw;piece(x,star(sx_,sy,11),'#fff0b0',{shadow:0});x.restore()}
+  piece(x,circ(900,420,64),'#f4efe0',{shadow:0});
+  // fachadas vecinas
+  [[20,330,'#625584'],[760,420,'#6e5f8e']].forEach(([fx,fh,col],i)=>{piece(x,rect(fx,880-fh,300,fh+40),col);for(let r=0;r<Math.floor(fh/110);r++)for(let c=0;c<2;c++){const on=hash(i,r,c)>.4;piece(x,rect(fx+50+c*130,880-fh+34+r*100,70,58),on?'#ffd27a':'#2b2540',{shadow:0})}});
+  // calle y vereda
+  piece(x,rect(-40,878,W+80,44),'#4c4166');
+  // la casa de la esquina
+  piece(x,rect(330,620,420,262),'#7d689e');piece(x,poly([[300,620],[540,520],[780,620]]),'#463a62');
+  piece(x,rect(380,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(620,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(500,740,80,142),'#3a2f50',{shadow:0});
+  // chimenea que baja hasta las brasas
+  piece(x,rect(346,520,34,640),'#5a4a68',{shadow:0});piece(x,rect(336,508,54,18),'#463a62',{shadow:0});
+  for(let i=0;i<6;i++){const ph=(t*.32+i/6)%1,sx_=363+Math.sin(ph*7+i)*30+ph*120,sy=500-ph*280;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.6);cloud(x,sx_,sy,.45+ph*.8,'#ece4d8');x.restore()}
+  // corte: bajo tierra
+  piece(x,rect(40,922,W-80,330),'#5b3f35');
+  piece(x,rect(110,960,860,262),'#946243');
+  for(let r=0;r<5;r++){x.strokeStyle='rgba(60,35,25,.35)';x.lineWidth=3;x.beginPath();x.moveTo(110,985+r*50);x.lineTo(970,985+r*50);x.stroke()}
+  piece(x,rect(110,1190,860,32),'#3f2d25',{shadow:0});
+  // escalera desde la puerta
+  for(let k=0;k<7;k++)piece(x,rect(520-k*34,960+k*34,70+k*34,34),'#b88a5a',{shadow:1});
+  // brasero con parrilla
+  const pulse=.8+.2*Math.sin(t*6);
+  piece(x,rrect(170,1150,230,44,8),'#3a2b24');piece(x,rrect(184,1158,202,28,6),mix('#ff9a3c','#ff6a1e',pulse),{shadow:0});
+  x.strokeStyle='#2a2320';x.lineWidth=5;for(let i=0;i<6;i++){x.beginPath();x.moveTo(190+i*36,1136);x.lineTo(190+i*36,1160);x.stroke()}x.beginPath();x.moveTo(184,1136);x.lineTo(388,1136);x.stroke();
+  x.save();x.globalCompositeOperation='screen';const g=x.createRadialGradient(285,1170,10,285,1170,320);g.addColorStop(0,`rgba(255,150,60,${.65*pulse})`);g.addColorStop(1,'rgba(255,150,60,0)');x.fillStyle=g;x.fillRect(60,940,620,300);x.restore();
+  // mesa con taburetes y cartas
+  piece(x,rect(560,1118,340,22),'#7a4e2a');piece(x,rect(580,1140,22,60),'#5e3a1f',{shadow:0});piece(x,rect(860,1140,22,60),'#5e3a1f',{shadow:0});
+  [[560,1170],[620,1176],[830,1176],[890,1170]].forEach(([sx_,sy])=>{piece(x,rrect(sx_-18,sy,36,16,6),'#6b4423',{shadow:0});piece(x,rect(sx_-4,sy+16,8,30),'#5e3a1f',{shadow:0})});
+  [[640,-.25],[700,0],[760,.25]].forEach(([cx,r])=>{x.save();x.translate(cx,1100);x.rotate(r);piece(x,rrect(-16,-30,32,48,4),'#fbf4e2',{shadow:0});x.restore()});
+  // cartel de calle
+  const ca=eBack(seg(t,.8,1.6));if(ca>0){x.save();x.translate(150,800);x.scale(ca,ca);piece(x,rect(-6,0,12,100),'#2c2018');piece(x,rrect(-150,-42,300,58,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 30px Fraunces','#fff','center',1);x.restore()}
   // las bravas del truco, en un cartel de papel
   const pa=C[1].a-.2,pb=C[1].b+.1,al=Math.min(eBack(seg(t,pa,pa+.8),1.3),1)*(1-seg(t,pb-.4,pb));
-  if(al>0.01){x.save();x.translate(W/2,660);x.scale(al,al);x.globalAlpha=Math.min(1,al*1.4);
+  if(al>0.01){x.save();x.translate(W/2,640);x.scale(al,al);x.globalAlpha=Math.min(1,al*1.4);
     piece(x,rrect(-440,-290,880,560,26),'#f2e7cf');txt(x,'LAS BRAVAS DEL TRUCO',0,-236,'700 34px Fraunces','#8f4f26','center',5);
     [['espadas',1],['bastos',1],['espadas',7],['oros',7]].forEach(([p,n],i)=>{const a=(i-1.5)*.17;naipe(x,(i-1.5)*188,18+Math.abs(i-1.5)*14,170,262,a,p,n)});
     x.restore()}
@@ -542,19 +575,19 @@ function lpCaps(g,t,C){
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
     const size=c.s,lh=size+16,y0=Math.min(1530,1690-(c.l.length-1)*lh);
     g.save();g.globalAlpha=al;
-    c.l.forEach((s,i)=>hand(g,s,W/2,y0+i*lh,size,seg(t,c.a+i*.3,c.a+i*.3+.7),'rgba(34,31,27,','center'));
+    c.l.forEach((s,i)=>{const u=c.a<=.2?1:seg(t,c.a+i*.3,c.a+i*.3+.7);hand(g,s,W/2,y0+i*lh,size,u,'rgba(30,27,23,','center');hand(g,s,W/2+.9,y0+i*lh,size,u,'rgba(30,27,23,','center')});
     g.restore()});
 }
 function lpEscritura(x,t,dur,sc){
   const C=sc.C;gx.clearRect(0,0,W,H);
-  docSheet(gx,W/2,770,820,980,seg(t,.2,2.2),3,t);
-  hand(gx,'ESCRITURA',W/2,400,76,seg(t,1.8,3.0),GRAPH,'center');
-  [[470,0],[540,1],[610,2]].forEach(([y,i])=>squiggle(gx,170,y,910,seg(t,2.4+i*.3,3.4+i*.3),i+5,t,5));
-  const m0=C[0].a+.6;
+  docSheet(gx,W/2,770,820,980,seg(t,.2,1.8),3,t);
+  hand(gx,'ESCRITURA',W/2,400,76,seg(t,.8,2.2),GRAPH,'center');
+  [[470,0],[540,1],[610,2]].forEach(([y,i])=>squiggle(gx,170,y,910,seg(t,1.2+i*.3,2.2+i*.3),i+5,t,5));
+  const m0=C[1].a;
   pencil(gx,rectPts(300,700,480,330),seg(t,m0,m0+1.6),3,.85,20,t);
-  hand(gx,'Yí',W/2,682,52,seg(t,m0+1.2,m0+1.9),RED_P,'center');hand(gx,'Sarandí',800,880,46,seg(t,m0+1.5,m0+2.3),RED_P,'left');hand(gx,'Marincho',280,880,44,seg(t,m0+1.8,m0+2.6),RED_P,'right');
-  hand(gx,'el campo de Miguel',W/2,880,56,seg(t,m0+2.2,m0+3.4),GRAPH,'center');
-  [['1810',300,0],['1815',540,1],['1821',780,2]].forEach(([y,cx,i])=>{const t0=C[1].a+.6+i*1.1,u=seg(t,t0,t0+.9);if(u<=0)return;hand(gx,y,cx,1190,70,seg(t,t0,t0+.5),RED_P,'center');circleHand(gx,cx,1170,72,eO(u),i*3+1,t)});
+  hand(gx,'Yí',W/2,682,52,seg(t,m0+1.0,m0+1.7),RED_P,'center');hand(gx,'Sarandí',800,880,46,seg(t,m0+1.3,m0+2.1),RED_P,'left');hand(gx,'Marincho',280,880,44,seg(t,m0+1.6,m0+2.4),RED_P,'right');
+  hand(gx,'el campo de Miguel',W/2,880,56,seg(t,m0+2.0,m0+3.2),GRAPH,'center');
+  [['1810',300,0],['1815',540,1],['1821',780,2]].forEach(([y,cx,i])=>{const t0=C[2].a+.6+i*1.2,u=seg(t,t0,t0+.9);if(u<=0)return;hand(gx,y,cx,1190,70,seg(t,t0,t0+.5),RED_P,'center');circleHand(gx,cx,1170,72,eO(u),i*3+1,t)});
   pencilFinish(x);lpCaps(x,t,C);
 }
 function lpPapeles(x,t,dur,sc){
@@ -563,13 +596,41 @@ function lpPapeles(x,t,dur,sc){
     {a:C[1].a-.4,b:C[1].b,title:'20 de mayo de 1840',key:'«la única autoridad»',mark:'ACTA'},
     {a:C[2].a-.4,b:C[3].b,title:'Agosto de 1864',key:'«respetar la vida»',mark:'FIRMADO'}];
   docs.forEach((d,i)=>{if(t<d.a||t>d.b+.4)return;const lt=t-d.a,fo=1-seg(t,d.b,d.b+.4);gx.save();gx.globalAlpha=fo;
-    docSheet(gx,W/2,760,820,860,seg(lt,0,1.2),10+i,t,(i%2?.015:-.015));
-    hand(gx,d.title,W/2,430,66,seg(lt,.8,1.8),RED_P,'center');
-    [[520,0],[590,1],[660,2],[730,3]].forEach(([y,k])=>squiggle(gx,190,y,890-k*60,seg(lt,1.2+k*.3,2.0+k*.3),30+i*5+k,t,5));
-    if(d.key)hand(gx,d.key,W/2,860,70,seg(lt,2.2,3.4),RED_P,'center');
-    if(d.mark){const u=seg(lt,3.0,3.7);if(u>0){gx.save();gx.translate(770,1090);gx.rotate(-.2);circleHand(gx,0,0,96,eO(u),i+20,t);hand(gx,d.mark,0,12,d.mark.length>4?38:56,seg(lt,3.1,3.8),RED_P,'center');gx.restore()}}
+    docSheet(gx,W/2,760,820,860,seg(lt,0,1.0),10+i,t,(i%2?.015:-.015));
+    [[520,0],[590,1],[660,2],[730,3]].forEach(([y,k])=>squiggle(gx,190,y,890-k*60,seg(lt,.8+k*.3,1.6+k*.3),30+i*5+k,t,5));
+    if(d.mark){const u=seg(lt,2.6,3.3);if(u>0){gx.save();gx.translate(770,1090);gx.rotate(-.2);circleHand(gx,0,0,96,eO(u),i+20,t);gx.restore()}}
     gx.restore()});
-  pencilFinish(x);lpCaps(x,t,C);
+  pencilFinish(x);
+  // títulos y frases clave, en tinta firme (no se pierden en el grano del lápiz)
+  docs.forEach((d,i)=>{if(t<d.a||t>d.b+.4)return;const lt=t-d.a,fo=1-seg(t,d.b,d.b+.4);x.save();x.globalAlpha=fo;
+    hand(x,d.title,W/2,430,70,seg(lt,.5,1.4),'rgba(140,36,24,','center');hand(x,d.title,W/2+.9,430,70,seg(lt,.5,1.4),'rgba(140,36,24,','center');
+    if(d.key){hand(x,d.key,W/2,860,74,seg(lt,1.6,2.8),'rgba(140,36,24,','center');hand(x,d.key,W/2+.9,860,74,seg(lt,1.6,2.8),'rgba(140,36,24,','center')}
+    if(d.mark){const u=seg(lt,2.7,3.4);if(u>0){x.save();x.translate(770,1090);x.rotate(-.2);hand(x,d.mark,0,12,d.mark.length>4?40:58,u,'rgba(140,36,24,','center');x.restore()}}
+    x.restore()});
+  lpCaps(x,t,C);
+}
+// ── el puente: la escritura de 1810 y el acta de 1946 llevan el mismo apellido
+function lpPuente(x,t,dur,sc){
+  const C=sc.C;gx.clearRect(0,0,W,H);
+  docSheet(gx,290,640,440,520,seg(t,.2,1.4),61,t,-.03);docSheet(gx,790,640,440,520,seg(t,.8,2.0),62,t,.03);
+  [[560,0],[620,1],[680,2]].forEach(([y,k])=>{squiggle(gx,100,y,470-k*40,seg(t,1.0+k*.3,1.8+k*.3),70+k,t,4);squiggle(gx,610,y,980-k*40,seg(t,1.6+k*.3,2.4+k*.3),80+k,t,4)});
+  // la cadena de cinco generaciones entre los dos papeles
+  const names=['Miguel','Felipe','Sandalio','Delmiro','Eloy'],cx0=120,cx1=960,cy=1060;
+  const t3=C[2].a;
+  for(let i=0;i<4;i++){const u=seg(t,t3+i*.45,t3+i*.45+.5);if(u>0)pencil(gx,lin([cx0+i*(cx1-cx0)/4+34,cy],[cx0+(i+1)*(cx1-cx0)/4-34,cy],14),u,3.6,.85,90+i,t)}
+  names.forEach((n,i)=>{const u=seg(t,t3+i*.45-.2,t3+i*.45+.5);if(u>0)circleHand(gx,cx0+i*(cx1-cx0)/4,cy,i===4?44:34,eO(u),100+i,t,i===4?RED_P:GRAPH)});
+  // el papel de la izquierda se conecta con Miguel y el de la derecha con Eloy
+  pencil(gx,bezPts([290,910],[cx0,cy-44],[170,980],30),seg(t,t3-.4,t3+.4),3,.7,120,t,RED_P);
+  pencil(gx,bezPts([790,910],[cx1,cy-52],[900,990],30),seg(t,t3+1.6,t3+2.6),3,.7,121,t,RED_P);
+  pencilFinish(x);
+  const A=C[0].a-.2;
+  x.save();
+  const ink=(s,px,py,sz,u,col,al='center')=>{hand(x,s,px,py,sz,u,col,al);hand(x,s,px+.9,py,sz,u,col,al)};
+  ink('ESCRITURA · 1810',290,430,46,seg(t,.8,1.8),'rgba(30,27,23,');ink('ACTA DE BODA · 1946',790,430,46,seg(t,1.4,2.4),'rgba(30,27,23,');
+  ink('de los Campos',290,650,56,seg(t,C[0].a,C[0].a+1.0),'rgba(140,36,24,');ink('chofer',790,650,64,seg(t,C[1].a,C[1].a+1.0),'rgba(140,36,24,');
+  names.forEach((n,i)=>ink(n,cx0+i*(cx1-cx0)/4,cy+92,i===4?50:44,seg(t,t3+i*.45,t3+i*.45+.6),i===4?'rgba(140,36,24,':'rgba(30,27,23,'));
+  x.restore();
+  lpCaps(x,t,C);
 }
 function lpRuta(x,t,dur,sc){
   const C=sc.C;gx.clearRect(0,0,W,H);
@@ -591,95 +652,98 @@ const CHAIN=[['Miguel','trastatarabuelo de Mario','1753'],['Felipe Pascual','tat
 function lpArbol(x,t,dur,sc){
   const C=sc.C;gx.clearRect(0,0,W,H);
   const y0=340,gap=150,pos=CHAIN.map((_,i)=>[i%2?490:250,y0+i*gap]);
-  for(let i=0;i<7;i++){const tt=1.0+i*1.25,u=seg(t,tt+.6,tt+1.2);if(u>0)pencil(gx,lin([pos[i][0],pos[i][1]+18],[pos[i+1][0],pos[i+1][1]-48],20),u,3.4,.85,40+i,t)}
-  CHAIN.forEach(([n,rel,yr],i)=>{const tt=1.0+i*1.25,u=seg(t,tt,tt+.9);if(u<=0)return;const [px,py]=pos[i];
-    const mario=i===5;circleHand(gx,px,py-22,mario?78:62,eO(u),i+3,t,mario?RED_P:GRAPH);
-    hand(gx,n,px+96,py-8,mario?78:64,seg(t,tt+.1,tt+1.0),mario?RED_P:GRAPH,'left');
-    if(rel)hand(gx,rel,px+96,py+34,40,seg(t,tt+.4,tt+1.3),GRAPH,'left');
-    if(yr)hand(gx,yr,px-96,py-8,46,seg(t,tt+.3,tt+1.1),RED_P,'right')});
-  pencilFinish(x);lpCaps(x,t,C);
-  const ta=C[0].b+.3,a=eO(seg(t,ta,ta+1.2));
-  if(a>0){x.save();x.globalAlpha=a;x.fillStyle='rgba(238,235,227,.96)';x.fillRect(0,0,W,H);
-    txt(x,'LOS DE LOS CAMPOS',W/2+4,740,'600 36px "Cormorant Garamond"','#b84a2c','center',10);
+  for(let i=0;i<7;i++){const tt=1.0+i*1.25,u=seg(t,tt+.6,tt+1.2);if(u>0)pencil(gx,lin([pos[i][0],pos[i][1]+18],[pos[i+1][0],pos[i+1][1]-48],20),u,3.6,.9,40+i,t)}
+  CHAIN.forEach(([n,rel,yr],i)=>{const tt=1.0+i*1.25,u=seg(t,tt,tt+.9);if(u<=0)return;circleHand(gx,pos[i][0],pos[i][1]-22,i===5?78:62,eO(u),i+3,t,i===5?RED_P:GRAPH)});
+  pencilFinish(x);
+  const ink=(s,px,py,sz,u,col,al)=>{hand(x,s,px,py,sz,u,col,al);hand(x,s,px+.8,py,sz,u,col,al)};
+  CHAIN.forEach(([n,rel,yr],i)=>{const tt=1.0+i*1.25,[px,py]=pos[i],mario=i===5,K=mario?'rgba(140,36,24,':'rgba(30,27,23,';if(t<tt)return;
+    ink(n,px+96,py-8,mario?80:66,seg(t,tt+.1,tt+.9),K,'left');
+    if(rel)ink(rel,px+96,py+36,42,seg(t,tt+.3,tt+1.1),'rgba(70,40,20,','left');
+    if(yr)ink(yr,px-96,py-8,46,seg(t,tt+.2,tt+.9),'rgba(140,36,24,','right')});
+  lpCaps(x,t,C);
+  const ta=C[0].b+.1,a=eO(seg(t,ta,ta+.6));
+  if(a>0){x.save();x.globalAlpha=a;x.fillStyle='#eeebe3';x.fillRect(0,0,W,H);
+    txt(x,'LOS DE LOS CAMPOS',W/2+4,740,'600 38px "Cormorant Garamond"','#b84a2c','center',10);
     txt(x,'De Miguel a Mario',W/2,860,'900 96px Fraunces','#2c2018','center');
-    txt(x,'y a los que siguen.',W/2,970,'italic 500 80px "Cormorant Garamond"','#2c2018','center');
+    txt(x,'y a los que siguen.',W/2,970,'italic 500 82px "Cormorant Garamond"','#2c2018','center');
     x.fillStyle='#b84a2c';x.fillRect(W/2-120,1030,240,6);
-    txt(x,'Para Mario y toda la familia.',W/2,1150,'italic 500 58px "Cormorant Garamond"','#2c2018','center');
-    txt(x,'pdelosca.github.io/los-cuatro-padrones',W/2,1240,'500 32px "Cormorant Garamond"','rgba(44,32,24,.75)','center',2);x.restore()}
+    txt(x,'Para Mario y toda la familia.',W/2,1150,'italic 500 60px "Cormorant Garamond"','#2c2018','center');
+    txt(x,'pdelosca.github.io/los-cuatro-padrones',W/2,1240,'500 34px "Cormorant Garamond"','rgba(44,32,24,.8)','center',2);x.restore()}
 }
 // ═══════════════ definición de las escenas (texto = lo único que se escribe) ═══════════════
 const chip=(s,w)=>({chip:s,chipW:w});
 SCENES.push(
- {id:'linea-apertura',style:'tek',link:-1,lead:2.0,tail:2.4,cfg:{icons:['wheel','mojon'],morphAt:[2]},draw:tekDraw,
-  caps:[{l:['Para Mario','y su familia.'],s:70},{l:['Eloy de los Campos,','el padre de Mario,','*fue chofer.*'],s:70},{l:['Su apellido ya figuraba','en una *escritura de campo*','de 1810.'],s:66},{l:['Esta es la cadena','que las une.'],s:76}]},
- {id:'miguel-mar',style:'pc',link:0,lead:1.2,tail:1.2,...chip('MIGUEL DE LOS CAMPOS',560),sub:'trastatarabuelo de Mario',draw:pcMiguel,
-  caps:[{l:['1753. Nace en Las Carreras,','una aldea de Vizcaya.'],s:50},{l:['Cruza el océano.'],s:60},{l:['Se casa en Las Piedras','con Clara Chavarría.'],s:52}]},
- {id:'miguel-campo',style:'pc',link:0,lead:1.2,tail:1.0,...chip('MIGUEL DE LOS CAMPOS',560),sub:'trastatarabuelo de Mario',draw:pcCampo,
-  caps:[{l:['Consigue un campo','en lo que hoy es Flores.'],s:50},{l:['Entre el Sarandí,','el Marincho y el Yí.'],s:54}]},
- {id:'escritura',style:'lp',link:0,lead:1.6,tail:1.2,draw:lpEscritura,
-  caps:[{l:['La escritura de campo','de Miguel.'],s:66},{l:['Tres gobiernos distintos','se la ratifican:','1810, 1815 y 1821.'],s:62}]},
- {id:'felipe-plaza',style:'pc',link:1,lead:1.2,tail:1.0,...chip('FELIPE PASCUAL DE LOS CAMPOS',720),sub:'tatarabuelo de Mario',draw:pcPlaza,
-  caps:[{l:['1830. Trinidad jura','la Constitución.'],s:56},{l:['Felipe, juez de paz,','les toma juramento.'],s:52},{l:['Ese año lo eligen diputado.'],s:50}]},
- {id:'felipe-papeles',style:'lp',link:1,lead:1.6,tail:1.2,draw:lpPapeles,
-  caps:[{l:['1840. Dos Flores entran','armados al Juzgado.','Según Felipe, le apuntaron.'],s:62},{l:['Dos semanas después firman:','Pascual es «la única autoridad».'],s:60},{l:['1864. Trinidad, sitiada.','Felipe negocia y consigue','un papel firmado.'],s:62},{l:['La familia lo guarda','49 años.'],s:66}]},
- {id:'sandalio-flores',style:'pc',link:2,lead:1.2,tail:1.0,...chip('SANDALIO DE LOS CAMPOS',600),sub:'bisabuelo de Mario',draw:pcFlores,
-  caps:[{l:['1885. Nace el departamento','de Flores, con el apellido','de Venancio Flores.'],s:48},{l:['Sandalio es uno de los seis','que lo gobiernan al principio.'],s:48},{l:['Su hermano Rolando','es el primer jefe político.'],s:50}]},
- {id:'delmiro',style:'pc',link:3,lead:1.2,tail:1.2,...chip('DELMIRO DE LOS CAMPOS',600),sub:'abuelo de Mario',draw:pcDelmiro,
-  caps:[{l:['Delmiro vuelve al campo:','el Sarandí, el mismo río','de la escritura.'],s:48},{l:['En 1896 se casa con Luisa Soma.','Tienen doce hijos.'],s:48},{l:['Al menos siete mueren','antes que Eloy.'],s:54}]},
- {id:'ruta-villa-colon',style:'lp',link:3,lead:1.6,tail:1.2,draw:lpRuta,
+ {id:'linea-apertura',style:'tek',link:-1,lead:2.0,tail:1.0,cfg:{icons:['wheel','mojon'],morphAt:[2],in0:-3.0,in1:3.0},draw:tekDraw,
+  caps:[{l:['Para Mario','y su familia.'],s:76,at:0},{l:['Eloy de los Campos,','el padre de Mario,','*fue chofer.*'],s:72},{l:['Su apellido ya figuraba','en una *escritura de campo*','de 1810.'],s:68},{l:['Esta es la cadena','que las une.'],s:78}]},
+ {id:'miguel-mar',style:'pc',link:0,lead:.8,tail:.6,...chip('MIGUEL DE LOS CAMPOS',560),sub:'trastatarabuelo de Mario',draw:pcMiguel,
+  caps:[{l:['1753. Nace en Las Carreras,','una aldea de Vizcaya.'],s:52},{l:['Cruza el océano.'],s:62},{l:['Se casa en Las Piedras','con Clara Chavarría.'],s:54}]},
+ {id:'escritura',style:'lp',link:0,lead:.8,tail:.6,draw:lpEscritura,
+  caps:[{l:['Consigue un campo,','en lo que hoy es Flores.'],s:66},{l:['Entre el Sarandí,','el Marincho y el Yí.'],s:68},{l:['Tres gobiernos distintos','se lo ratifican:','1810, 1815 y 1821.'],s:64}]},
+ {id:'felipe-plaza',style:'pc',link:1,lead:.8,tail:.6,...chip('FELIPE PASCUAL DE LOS CAMPOS',720),sub:'tatarabuelo de Mario',draw:pcPlaza,
+  caps:[{l:['1830. Trinidad jura','la Constitución.'],s:58},{l:['Felipe, juez de paz,','les toma juramento.'],s:54},{l:['Ese año lo eligen diputado.'],s:52}]},
+ {id:'felipe-papeles',style:'lp',link:1,lead:.8,tail:.6,draw:lpPapeles,
+  caps:[{l:['1840. Dos Flores entran','armados al Juzgado.','Según Felipe, le apuntaron.'],s:62},{l:['Dos semanas después firman:','Pascual es «la única autoridad».'],s:62},{l:['1864. Trinidad, sitiada.','Felipe negocia y consigue','un papel firmado.'],s:62},{l:['La familia lo guarda','49 años.'],s:68}]},
+ {id:'sandalio-flores',style:'pc',link:2,lead:.8,tail:.6,...chip('SANDALIO DE LOS CAMPOS',600),sub:'bisabuelo de Mario',draw:pcFlores,
+  caps:[{l:['1885. Nace el departamento','de Flores, con el apellido','de Venancio Flores.'],s:48},{l:['Sandalio es uno de los seis','que lo gobiernan al principio.'],s:50},{l:['Su hermano Rolando','es el primer jefe político.'],s:52}]},
+ {id:'delmiro',style:'pc',link:3,lead:.8,tail:.8,...chip('DELMIRO DE LOS CAMPOS',600),sub:'abuelo de Mario',draw:pcDelmiro,
+  caps:[{l:['Delmiro vuelve al campo:','el Sarandí, el mismo río','de la escritura.'],s:48},{l:['En 1896 se casa con Luisa Soma.','Tienen doce hijos.'],s:50},{l:['Al menos siete mueren','antes que Eloy.'],s:56}]},
+ {id:'ruta-villa-colon',style:'lp',link:3,lead:.8,tail:.7,draw:lpRuta,
   caps:[{l:['Del Sarandí a Trinidad,','Durazno y Villa Colón:','la chacra que Felipe vendió en 1848.'],s:58}]},
- {id:'eloy-nace',style:'tek',link:4,lead:2.0,tail:2.0,cfg:{icons:['house']},draw:tekDraw,
-  caps:[{l:['Eloy nace en Trinidad,','el 9 de enero de 1920.'],s:70},{l:['Según la familia, a los ocho','dejó la escuela y trabajó','en un hotel de Durazno.'],s:62}]},
- {id:'eloy-chofer',style:'pc',link:4,lead:1.2,tail:1.2,...chip('ELOY',200),sub:'padre de Mario',draw:pcChofer,
-  caps:[{l:['De grande fue chofer.'],s:60},{l:['En el acta de su boda','figura así: chofer, de Trinidad.'],s:50}]},
- {id:'eloy-mosaicos',style:'pc',link:4,lead:1.4,tail:1.2,...chip('ELOY',200),sub:'padre de Mario',draw:pcMosaicos,
-  caps:[{l:['También trabajó en','Mosaicos Rivas y Cía.'],s:56},{l:['Una fábrica de baldosas y pisos','de imitación mármol, con aviso','en la prensa de la época.'],s:46}]},
- {id:'eloy-ciclista',style:'pc',link:4,lead:1.4,tail:1.2,...chip('ELOY',200),sub:'padre de Mario',draw:pcCiclista,
-  caps:[{l:['Y corrió en bicicleta','para el Club Olimpia, en Colón.'],s:50},{l:['El club ganaba carreras','y campeonatos de ciclismo.'],s:52}]},
- {id:'eloy-boda',style:'tek',link:4,lead:2.0,tail:2.2,cfg:{icons:['rings']},draw:tekDraw,
-  caps:[{l:['*26 de enero de 1946.*','Eloy se casa con Reina,','la muchacha de Fraile Muerto.'],s:60},{l:['Tienen dos hijos:','Walter y *Mario.*'],s:72}]},
- {id:'eloy-sotano',style:'pc',link:4,lead:1.2,tail:1.2,...chip('ELOY',200),sub:'padre de Mario',draw:pcSotano,
-  caps:[{l:['Magallanes 1973. Los viernes,','Eloy se juntaba con amigos','en un sótano de la esquina.'],s:46},{l:['Asado con carbón bajo tierra.','Truco, sí. Tute cabrero, no.'],s:48},{l:['Así lo cuenta la familia.'],s:54}]},
- {id:'eloy-final',style:'tek',link:4,lead:2.0,tail:2.4,cfg:{icons:['candle']},draw:tekDraw,
-  caps:[{l:['Eloy muere el *9 de enero de 2000,*','el día que cumplía ochenta años.'],s:60}]},
- {id:'arbol',style:'lp',link:7,lead:11.0,tail:7.2,draw:lpArbol,
-  caps:[{l:['Una cadena de padres a hijos,','de un vizcaíno a Facundo y Camila.'],s:60,at:11.0}]}
+ {id:'eloy-nace',style:'tek',link:4,lead:1.4,tail:1.0,cfg:{icons:['house']},draw:tekDraw,
+  caps:[{l:['Eloy nace en Trinidad,','el 9 de enero de 1920.'],s:72},{l:['Según la familia, a los ocho','dejó la escuela y trabajó','en un hotel de Durazno.'],s:64}]},
+ {id:'eloy-chofer',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcChofer,
+  caps:[{l:['De grande fue chofer.'],s:62},{l:['En el acta de su boda','figura así: chofer, de Trinidad.'],s:52}]},
+ {id:'eloy-mosaicos',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcMosaicos,
+  caps:[{l:['También trabajó en','Mosaicos Rivas y Cía.'],s:58},{l:['Una fábrica de baldosas y pisos','de imitación mármol, con aviso','en la prensa de la época.'],s:46}]},
+ {id:'eloy-ciclista',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcCiclista,
+  caps:[{l:['Y corrió en bicicleta','para el Club Olimpia, en Colón.'],s:52},{l:['El club ganaba carreras','y campeonatos de ciclismo.'],s:54}]},
+ {id:'eloy-boda',style:'tek',link:4,lead:1.2,tail:1.0,cfg:{icons:['rings']},draw:tekDraw,
+  caps:[{l:['*26 de enero de 1946.*','Eloy se casa con Reina,','la muchacha de Fraile Muerto.'],s:62},{l:['Tienen dos hijos:','Walter y *Mario.*'],s:74}]},
+ {id:'eloy-sotano',style:'pc',link:4,lead:.8,tail:.6,...chip('ELOY DE LOS CAMPOS',560),sub:'padre de Mario',draw:pcSotano,
+  caps:[{l:['Magallanes 1973. Los viernes,','Eloy se juntaba con amigos','en un sótano de la esquina.'],s:46},{l:['Asado con carbón bajo tierra.','Truco, sí. Tute cabrero, no.'],s:50},{l:['Así lo cuenta la familia.'],s:56}]},
+ {id:'eloy-final',style:'tek',link:4,lead:1.2,tail:1.2,cfg:{icons:['candle']},draw:tekDraw,
+  caps:[{l:['Eloy muere el *9 de enero de 2000,*','el día que cumplía ochenta años.'],s:62}]},
+ {id:'puente',style:'lp',link:4,lead:.8,tail:.8,draw:lpPuente,
+  caps:[{l:['En 1810, el apellido estaba','en una escritura de campo.'],s:62},{l:['En 1946, en el acta de boda','de un chofer.'],s:62},{l:['En el medio, cinco generaciones','de padres a hijos.'],s:60}]},
+ {id:'arbol',style:'lp',link:7,lead:10.4,tail:6.4,draw:lpArbol,
+  caps:[{l:['Una cadena de padres a hijos,','de un vizcaíno a Facundo y Camila.'],s:60,at:10.4}]}
 );
 const LINKROLE=SCENES;
 // ═══════════════ indicador de la cadena (siempre visible) ═══════════════
 function chainBar(x,T,sc){
-  const cur=sc.link;if(T<1.2)return;
-  const a=eO(seg(T,1.0,2.0));
-  const nodes=CHAIN.map((_,i)=>[110+i*(W-220)/7,138]);
+  const cur=sc.link;
+  const a=1;
+  const nodes=CHAIN.map((_,i)=>[104+i*(W-208)/7,134]);
   x.save();x.globalAlpha=a;
-  x.fillStyle='rgba(247,240,224,.9)';x.beginPath();x.roundRect(36,86,W-72,172,24);x.fill();
-  x.strokeStyle='rgba(60,45,30,.25)';x.lineWidth=2;x.stroke();
+  x.fillStyle='rgba(247,240,224,.93)';x.beginPath();x.roundRect(30,82,W-60,190,24);x.fill();
+  x.strokeStyle='rgba(60,45,30,.3)';x.lineWidth=2;x.stroke();
   x.lineCap='round';
-  for(let i=0;i<7;i++){x.strokeStyle='rgba(60,45,30,.35)';x.lineWidth=4;x.beginPath();x.moveTo(nodes[i][0]+16,138);x.lineTo(nodes[i+1][0]-16,138);x.stroke();
-    if(cur>i||cur===7){x.strokeStyle='#b84a2c';x.lineWidth=5;x.beginPath();x.moveTo(nodes[i][0]+16,138);x.lineTo(nodes[i+1][0]-16,138);x.stroke()}}
+  for(let i=0;i<7;i++){x.strokeStyle='rgba(60,45,30,.35)';x.lineWidth=4;x.beginPath();x.moveTo(nodes[i][0]+16,134);x.lineTo(nodes[i+1][0]-16,134);x.stroke();
+    if(cur>i||cur===7){x.strokeStyle='#b84a2c';x.lineWidth=5;x.beginPath();x.moveTo(nodes[i][0]+16,134);x.lineTo(nodes[i+1][0]-16,134);x.stroke()}}
   nodes.forEach(([px,py],i)=>{const on=cur===7||i<=cur,now=i===cur||(cur===7&&i===5);
-    x.beginPath();x.arc(px,py,now?17:12,0,7);x.fillStyle=on?'#b84a2c':'#f7f0e0';x.fill();x.strokeStyle='#3c2d1e';x.lineWidth=3;x.stroke();
-    if(now){x.strokeStyle='rgba(184,74,44,.5)';x.lineWidth=3;x.beginPath();x.arc(px,py,26+(T*1.2%1)*10,0,7);x.stroke()}});
-  const names=['Miguel','Felipe','Sandalio','Delmiro','Eloy','Mario','Pablo','F. y C.'];
-  nodes.forEach(([px],i)=>{const on=cur===7||i<=cur,now=i===cur||(cur===7&&i===5);x.globalAlpha=a*(on?1:.55);txt(x,names[i],px,196,`${now?800:700} ${now?33:30}px "Cormorant Garamond"`,'#2c2018','center')});
-  // línea de relación del eslabón actual
-  const rel=cur===7?'Mario, Pablo, Facundo y Camila':(cur>=0?`${CHAIN[cur][0]} · ${CHAIN[cur][1]}`:'');
-  if(rel){x.globalAlpha=a;txt(x,rel,W/2,238,'italic 600 32px "Cormorant Garamond"','#8f4f26','center')}
+    x.beginPath();x.arc(px,py,now?18:13,0,7);x.fillStyle=on?'#b84a2c':'#f7f0e0';x.fill();x.strokeStyle='#3c2d1e';x.lineWidth=3;x.stroke();
+    if(now){x.strokeStyle='rgba(184,74,44,.5)';x.lineWidth=3;x.beginPath();x.arc(px,py,27+(T*1.2%1)*10,0,7);x.stroke()}});
+  const names=['Miguel','Felipe','Sandalio','Delmiro','Eloy','Mario','Pablo','Nietos'];
+  nodes.forEach(([px],i)=>{const on=cur===7||i<=cur,now=i===cur||(cur===7&&i===5);x.globalAlpha=a*(on?1:.62);txt(x,names[i],px,196,`800 ${now?35:33}px "Cormorant Garamond"`,'#2c2018','center')});
+  const rel=cur===7?'Mario, Pablo, Facundo y Camila':(cur>=0?`${CHAIN[cur][0]} · ${CHAIN[cur][1]}`:'Cada punto es un padre y su hijo');
+  x.globalAlpha=a;txt(x,rel,W/2,250,'italic 700 37px "Cormorant Garamond"','#5a2f12','center');
   x.restore();
 }
 // ═══════════════ render ═══════════════
 function drawScene(x,sc,t){x.save();x.globalAlpha=1;x.globalCompositeOperation='source-over';sc.draw(x,t,sc.dur,sc);
   if(sc.style==='pc'){x.globalCompositeOperation='multiply';x.globalAlpha=.3;x.fillStyle='#fff1dc';x.fillRect(0,0,W,H)}x.restore()}
+const pushZ=(sc,local)=>1+.035*clamp(local/sc.dur);
+function drawPush(c2,img,z){c2.save();c2.translate(W/2,H/2);c2.scale(z,z);c2.translate(-W/2,-H/2);c2.drawImage(img,0,0);c2.restore()}
 function render(T){
   const sc=sceneAtT(T),local=T-sc.a,idx=SCENES.indexOf(sc);
   if(idx>0&&local<.6){
     const prev=SCENES[idx-1];sx2.clearRect(0,0,W,H);drawScene(sx2,prev,prev.dur-.001);
     sx.clearRect(0,0,W,H);drawScene(sx,sc,local);
     const u=eIO(local/.6),off=(1-u)*W;
-    ctx.drawImage(S2,0,0);ctx.save();ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=40;ctx.shadowOffsetX=-12;ctx.drawImage(S,off,0);ctx.restore();
-  } else {sx.clearRect(0,0,W,H);drawScene(sx,sc,local);ctx.drawImage(S,0,0)}
+    drawPush(ctx,S2,pushZ(prev,prev.dur));ctx.save();ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=40;ctx.shadowOffsetX=-12;ctx.drawImage(S,off,0);ctx.restore();
+  } else {sx.clearRect(0,0,W,H);drawScene(sx,sc,local);drawPush(ctx,S,pushZ(sc,local))}
   chainBar(ctx,T,sc);
-  const fi=1-eO(T/.6),fo=eO((T-(DUR-.8))/.8),f=Math.max(fi,fo);if(f>0){ctx.fillStyle=`rgba(238,235,227,${f})`;ctx.fillRect(0,0,W,H)}
+  const fo=eO((T-(DUR-.8))/.8),f=fo;if(f>0){ctx.fillStyle=`rgba(238,235,227,${f})`;ctx.fillRect(0,0,W,H)}
 }
 window.render=render;
 // auditoría: línea de tiempo, lectura, márgenes y color

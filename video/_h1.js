@@ -26,5 +26,5 @@ function txt(x,s,px,py,font,color,align='left',ls=0){
   if('letterSpacing' in x)x.letterSpacing=ls+'px';x.fillText(s,px,py);if('letterSpacing' in x)x.letterSpacing='0px';
 }
 // bloque de texto que aparece y se va
-function blockAlpha(t,a,b,fi=.5,fo=.4){return Math.min(eO(seg(t,a,a+fi)),1-seg(t,b-fo,b))}
+function blockAlpha(t,a,b,fi=.5,fo=.4){const fin=a<=.2?1:eO(seg(t,a,a+fi));return Math.min(fin,1-seg(t,b-fo,b))}
 

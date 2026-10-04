@@ -166,7 +166,6 @@ def scene_at(t):
 ROLE = {
  'linea-apertura':  dict(pad=.5, pmel=.75),
  'miguel-mar':      dict(guit=.8, cello=.55, pad=.45, sea=.5),
- 'miguel-campo':    dict(guit=.8, pmel=.45, cel=.3, pad=.4),
  'escritura':       dict(guit=.85, cello=.3, pad=.45),
  'felipe-plaza':    dict(guit=.75, cmel=.7, brush=.5, pad=.4),
  'felipe-papeles':  dict(guit=.75, cello=.6, pad=.5),
@@ -180,6 +179,7 @@ ROLE = {
  'eloy-boda':       dict(strings=.8, pmel=.8, cel=.5, guit=.5),
  'eloy-sotano':     dict(guit=.8, bass=.6, brush=.5, bombo=.4, pad=.5),
  'eloy-final':      dict(pmel=.7, pad=.55),
+ 'puente':          dict(guit=.8, pmel=.7, cello=.4, pad=.5),
  'arbol':           dict(),   # se arma por capas más abajo
 }
 def jit(): return rs.uniform(-.012, .012)

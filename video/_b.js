@@ -2,17 +2,20 @@
 // ═══════════════ ESTILO 9 · KÂĞIT KESİK: escenas ═══════════════
 // cartel de papel con leyenda; tamaño ya ajustado en buildTimeline (nunca se sale de la tarjeta)
 function labelCard(x,t,sc){
-  const y0=1330,h=370;
-  x.save();x.translate(W/2,y0+h/2);x.rotate(-.008);x.translate(-W/2,-(y0+h/2));
+  const y0=1330,h=370,C=sc.C;
+  const v=Math.min(eO(seg(t,C[0].a-.6,C[0].a-.1)),1-seg(t,C[C.length-1].b-.05,C[C.length-1].b+.35));
+  if(v<=0.01)return;
+  const fontFor=(g,s)=>g.dig?`700 ${s}px ${DIGITF.pc}`:`700 ${s}px Fraunces`;
+  x.save();x.globalAlpha=v;x.translate(W/2,y0+h/2+(1-v)*60);x.rotate(-.008);x.translate(-W/2,-(y0+h/2));
   piece(x,rrect(54,y0,W-108,h,18),'#f6efdf');
   piece(x,rrect(54,y0-52,sc.chipW||700,64,12),'#b84a2c',{shadow:1});
   txt(x,sc.chip,78,y0-8,'700 30px Fraunces','#fff3df','left',3);
-  if(sc.sub)txt(x,sc.sub,78,y0+52,'700 32px Fraunces','#8f4f26','left',1);
-  sc.C.forEach(c=>{
+  if(sc.sub)txt(x,sc.sub,78,y0+54,'700 34px Fraunces','#6b3412','left',1);
+  C.forEach(c=>{
     const al=blockAlpha(t,c.a,c.b);if(al<=0)return;
-    x.save();x.globalAlpha=al;x.translate(0,(1-eO(seg(t,c.a,c.a+.5)))*12);
-    const lh=c.s*1.26,top=y0+(sc.sub?104:78)+Math.max(0,(3-c.l.length))*lh*.3;
-    c.l.forEach((s,i)=>txt(x,s,78,top+c.s+i*lh,`700 ${c.s}px Fraunces`,'#2c2018'));
+    x.save();x.globalAlpha=v*al;x.translate(0,(1-eO(seg(t,c.a,c.a+.5)))*12);
+    const lh=c.s*1.26,top=y0+(sc.sub?108:80)+Math.max(0,(3-c.l.length))*lh*.3;
+    c.l.forEach((s,i)=>drawSegs(x,segsOf(s),78,top+c.s+i*lh,c.s,fontFor,()=>'#2c2018'));
     x.restore()});
   x.restore();
 }
@@ -21,8 +24,8 @@ const PCBAL='#b84a2c';
 function pcMiguel(x,t,dur,sc){
   const C=sc.C,u=t/dur;
   sky(x,'#2c4a7c','#f1b98a',1250);
-  const sun=eO(seg(t,.4,dur*.7));piece(x,circ(820,640-sun*220,88),'#fff1c9',{shadow:0});
-  cloud(x,200+Math.sin(t*.4)*30,330,1.1,'#ffe3cc');cloud(x,820+Math.sin(t*.3)*26,250,.8,'#ffe3cc');
+  const sun=eO(seg(t,.4,dur*.7));piece(x,circ(820,720-sun*250,88),'#fff1c9',{shadow:0});
+  cloud(x,200+Math.sin(t*.4)*30,400,1.1,'#ffe3cc');cloud(x,820+Math.sin(t*.3)*26,350,.8,'#ffe3cc');
   piece(x,hillPath(780,120,3,-t*6,false,80),'#527a62');piece(x,hillPath(850,70,9,t*5,false),'#3f6b52');
   for(let i=0;i<6;i++)pine(x,70+i*54,880-(i%2)*10,.7,'#2e5a40');
   house(x,230,880,.8,'#e8d9bd','#b6573a',false);
@@ -57,7 +60,7 @@ function pcCampo(x,t,dur,sc){
 // ── la plaza de Trinidad, 1830 (tarde dorada)
 function pcPlaza(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#86bde0','#f9dca0',1200);piece(x,circ(880,300,90),'#fff0b8',{shadow:0});cloud(x,260+Math.sin(t*.3)*25,300,1.1);cloud(x,700,200,.8);
+  sky(x,'#86bde0','#f9dca0',1200);piece(x,circ(880,420,90),'#fff0b8',{shadow:0});cloud(x,260+Math.sin(t*.3)*25,420,1.1);cloud(x,640,360,.8);
   [[120,'#efe1c4','#c4502f'],[330,'#f2cbb0','#8a4a38'],[560,'#d9e6c4','#b6573a'],[790,'#efe1c4','#a24432'],[990,'#f2cbb0','#c4502f']].forEach(([cx,b,r],i)=>{house(x,cx,820-(i%2)*14,.9,b,r,false)});
   piece(x,hillPath(860,25,4,0,false,120),'#9cbf6e');piece(x,rect(-40,860,W+80,520),'#d8b985');
   x.save();x.strokeStyle='#5a3b22';x.lineWidth=4;x.beginPath();x.moveTo(0,330);x.quadraticCurveTo(540,430,W,330);x.stroke();x.restore();
@@ -78,13 +81,13 @@ function pcFlores(x,t,dur,sc){
   sky(x,'#5f7bb4','#f9c98a',1250);
   piece(x,circ(540,1120-eO(seg(t,.2,3))*240,110),'#fff0c0',{shadow:0});
   for(let i=0;i<9;i++){const sx_=80+i*115,len=100+((i*53)%140),sw=Math.sin(t*1.5+i)*10;x.save();x.strokeStyle='rgba(255,240,200,.55)';x.lineWidth=2;x.beginPath();x.moveTo(sx_,0);x.lineTo(sx_+sw,len);x.stroke();piece(x,star(sx_+sw,len+30,26,Math.sin(t+i)*.2),'#ffd86a',{shadow:1});x.restore()}
-  piece(x,hillPath(1100,70,2,-t*4,false,100),'#c98a5a');piece(x,hillPath(1200,60,6,t*3,false),'#a8664a');
+  piece(x,hillPath(1130,70,2,-t*4,false,100),'#c98a5a');piece(x,hillPath(1230,60,6,t*3,false),'#a8664a');
   const fl=eBack(seg(t,.6,2.2),1.2),pts=P.flPts;let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;pts.forEach(([a,b])=>{mnx=Math.min(mnx,a);mxx=Math.max(mxx,a);mny=Math.min(mny,b);mxy=Math.max(mxy,b)});
   const sc2=540/(mxx-mnx),ox=W/2-(mnx+mxx)/2*sc2,oy=700-(mny+mxy)/2*sc2+(1-fl)*700;
   piece(x,x=>{pts.forEach(([a,b],i)=>i?x.lineTo(ox+a*sc2,oy+b*sc2):x.moveTo(ox+a*sc2,oy+b*sc2));x.closePath()},'#f2c14e');
   const ta=eO(seg(t,2.2,3.2));if(ta>0){x.save();x.globalAlpha=ta;txt(x,'FLORES',W/2,oy+(mny+mxy)/2*sc2+10,'700 96px Fraunces','#7a4a1c','center',6);txt(x,'1885',W/2,oy+(mny+mxy)/2*sc2+90,'700 56px Fraunces',PCBAL,'center',4);x.restore()}
-  for(let i=0;i<6;i++){const k=eBack(seg(t,C[1].a+i*.18,C[1].a+.8+i*.18));if(k>0){x.save();x.translate(0,(1-k)*200);const hl=i===2;person(x,170+i*148,1210,.9,hl?PCBAL:'#5b4a78',0,hl?'#f5c945':null);
-    if(hl)txt(x,'Sandalio',170+i*148,1232,'700 28px Fraunces','#fff3df','center');x.restore()}}
+  for(let i=0;i<6;i++){const k=eBack(seg(t,C[1].a+i*.18,C[1].a+.8+i*.18));if(k>0){x.save();x.translate(0,(1-k)*200);const hl=i===2;person(x,110+i*172,1190,1.5,hl?PCBAL:'#5b4a78',0,hl?'#f5c945':null);
+    if(hl)txt(x,'Sandalio',110+i*172,1236,'700 38px Fraunces','#fff3df','center');x.restore()}}
   labelCard(x,t,sc);
 }
 // ── Delmiro: la casa del Sarandí y los doce hijos (anochecer estable)
@@ -97,11 +100,13 @@ function pcDelmiro(x,t,dur,sc){
     x.save();x.strokeStyle='rgba(255,240,200,.45)';x.lineWidth=2;x.beginPath();x.moveTo(sx_,0);x.lineTo(sx_+sw,len);x.stroke();
     const k=eBack(seg(t,C[1].a+i*.14,C[1].a+.8+i*.14));x.translate(sx_+sw,len+34);x.scale(k,k);
     piece(x,star(0,0,eloy?36:28,Math.sin(t+i)*.15),mix(eloy?'#ffe27a':'#ffd86a','#8a8f9c',off),{shadow:1});x.restore()}
-  piece(x,hillPath(1000,100,2,-t*3,true,110),'#6c5a78');piece(x,hillPath(1100,70,5,t*3,false),'#4a5a78');
+  piece(x,hillPath(1010,100,2,-t*3,true,110),'#6c5a78');piece(x,hillPath(1110,70,5,t*3,false),'#4a5a78');
   piece(x,x=>{x.moveTo(-60,1160);for(let px=-60;px<=W+80;px+=40)x.lineTo(px,1150+Math.sin(t*1.2+px/80)*8);for(let px=W+80;px>=-60;px-=40)x.lineTo(px,1210+Math.sin(t*1.2+px/80)*8);x.closePath()},'#4a86b8');
   txt(x,'Sarandí',W-60,1250,'700 34px Fraunces','#cfe6f6','right',2);
-  house(x,540,1100,1.4,'#e6d4b4','#a24432',true);
-  for(let i=0;i<5;i++)pine(x,90+i*70,1110,.8,'#233a36');
+  for(let i=0;i<5;i++)pine(x,70+i*64,1150,1.0,'#233a36');
+  house(x,590,1160,2.0,'#e6d4b4','#a24432',true);
+  for(let i=0;i<5;i++){const ph=(t*.25+i/5)%1;x.save();x.globalAlpha=(1-ph)*.9;cloud(x,700+Math.sin(ph*6+i)*26+ph*60,860-ph*300,.35+ph*.5,'#e9e1d6');x.restore()}
+  for(let i=0;i<16;i++){const fx=(hash(i,1,1)*W+Math.sin(t*.6+i)*60+W)%W,fy=520+hash(i,2,2)*600+Math.cos(t*.8+i*2)*30,tw=.5+.5*Math.sin(t*3+i*1.7);x.save();x.globalAlpha=tw;x.shadowColor='#ffe27a';x.shadowBlur=22;x.fillStyle='#fff1a6';x.beginPath();x.arc(fx,fy,5,0,7);x.fill();x.restore()}
   labelCard(x,t,sc);
 }
 // ── el chofer (tarde cálida de ruta)
@@ -121,6 +126,8 @@ function car(x,cx,cy,s,t){
   piece(x,rect(-156,-34,312,12),'#2a1a1a',{shadow:0});
   piece(x,circ(194,-72,15),'#fff2c4',{shadow:0});piece(x,rrect(186,-56,24,44,8),'#d8d4cc',{shadow:0});
   for(let i=0;i<4;i++)piece(x,rect(150+i*8,-84,4,34),'#d8d4cc',{shadow:0});
+  // conductor: cabeza con gorra y manos al volante
+  x.save();x.fillStyle='#e2bc94';x.beginPath();x.arc(10,-132,17,0,7);x.fill();x.fillStyle='#26211d';x.beginPath();x.arc(10,-138,18,Math.PI,0);x.fill();x.fillRect(-9,-139,38,5);x.fillStyle='#3a5a8a';x.fillRect(-8,-118,36,22);x.restore();
   wheelDraw(x,-115,-42,42,-t*9);wheelDraw(x,120,-42,42,-t*9);
   x.restore()}
 function eucalyptus(x,cx,by,s,col){piece(x,rect(cx-5*s,by-210*s,10*s,210*s),'#6a4a30',{shadow:0});piece(x,x=>{x.ellipse(cx,by-250*s,38*s,104*s,0,0,7)},col)}
@@ -138,7 +145,7 @@ function pcChofer(x,t,dur,sc){
   const sg=((1500-t*130)%2100+2100)%2100-450;piece(x,rect(sg-5,820,10,170),'#4a3a2a',{shadow:0});piece(x,rrect(sg-130,760,260,78,10),'#2f6f8f');txt(x,'TRINIDAD',sg,816,'700 40px Fraunces','#fff','center',3);
   // polvo y auto
   for(let i=0;i<6;i++){const ph=(t*.8+i/6)%1;x.save();x.globalAlpha=(1-ph)*.8;cloud(x,260-ph*170,1120-ph*40,.3+ph*.6,'#efe3cf');x.restore()}
-  car(x,560,1150,1.5,t);
+  car(x,500,1150,1.5,t);
   labelCard(x,t,sc);
 }
 // ── Mosaicos Rivas y Cía.
@@ -224,7 +231,7 @@ function bike(x,cx,gy,s,t,rider=true){
   x.restore()}
 function pcCiclista(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#8ec9ea','#f1f0dc',1200);piece(x,circ(880,330,76),'#fff6c8',{shadow:0});cloud(x,300+Math.sin(t*.3)*30,300,1.1);cloud(x,760,230,.7);
+  sky(x,'#8ec9ea','#f1f0dc',1200);piece(x,circ(900,520,76),'#fff6c8',{shadow:0});cloud(x,300+Math.sin(t*.3)*30,540,1.1);cloud(x,760,470,.7);
   piece(x,hillPath(820,70,4,-t*10,false,110),'#a9cf8a');piece(x,hillPath(900,50,8,-t*18,false,120),'#86b873');
   for(let i=0;i<7;i++){const ex=((i*190-t*90)%1400+1400)%1400-160;eucalyptus(x,ex,980,.85,'#4f7a52')}
   piece(x,rect(-40,980,W+80,400),'#92b76a');
@@ -263,20 +270,40 @@ function naipe(x,cx,cy,w,h,rot,palo,n){
   x.restore()}
 function pcSotano(x,t,dur,sc){
   const C=sc.C;
-  sky(x,'#27386e','#5a6fae',1100);
-  for(let i=0;i<14;i++){const sx_=60+((i*83)%960),sy=80+((i*131)%420),tw=.5+.5*Math.sin(t*2+i);x.save();x.globalAlpha=.5+.5*tw;piece(x,star(sx_,sy,11),'#fff0b0',{shadow:0});x.restore()}
-  piece(x,circ(880,260,66),'#f4efe0',{shadow:0});
-  [[40,420,'#625584'],[250,520,'#6e5f8e'],[520,440,'#5f5380'],[760,560,'#6c5f8e']].forEach(([fx,fh,col],i)=>{piece(x,rect(fx,900-fh,230,fh+300),col);for(let r=0;r<Math.floor(fh/110);r++)for(let c=0;c<2;c++){const on=hash(i,r,c)>.45;piece(x,rect(fx+30+c*100,900-fh+34+r*100,64,56),on?'#ffd27a':'#2b2540',{shadow:0})}});
-  piece(x,rect(380,700,330,420),'#7d689e');piece(x,poly([[360,700],[545,610],[730,700]]),'#463a62');
-  piece(x,rect(420,760,70,80),'#ffd27a',{shadow:0});piece(x,rect(600,760,70,80),'#ffd27a',{shadow:0});
-  piece(x,rect(500,900,120,110),'#2b2540',{shadow:0});piece(x,rect(-40,1110,W+80,300),'#4c4166');
-  const pulse=.85+.15*Math.sin(t*6);piece(x,rect(440,1090,200,62),mix('#ffb454','#ff8a2a',pulse),{shadow:0});
-  x.save();x.globalCompositeOperation='screen';const g=x.createRadialGradient(540,1120,10,540,1120,360);g.addColorStop(0,`rgba(255,160,70,${.6*pulse})`);g.addColorStop(1,'rgba(255,160,70,0)');x.fillStyle=g;x.fillRect(100,820,880,560);x.restore();
-  for(let i=0;i<6;i++){const ph=(t*.35+i/6)%1,sx_=540+Math.sin(ph*7+i)*40+ph*160,sy=1090-ph*520;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.6);cloud(x,sx_,sy,.5+ph*.8,'#ece4d8');x.restore()}
-  const ca=eBack(seg(t,.8,1.6));if(ca>0){x.save();x.translate(180,980);x.scale(ca,ca);piece(x,rect(-6,0,12,200),'#2c2018');piece(x,rrect(-150,-40,300,56,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 28px Fraunces','#fff','center',1);x.restore()}
+  sky(x,'#27386e','#6f80be',900);
+  for(let i=0;i<12;i++){const sx_=60+((i*83)%960),sy=300+((i*131)%260),tw=.5+.5*Math.sin(t*2+i);x.save();x.globalAlpha=.5+.5*tw;piece(x,star(sx_,sy,11),'#fff0b0',{shadow:0});x.restore()}
+  piece(x,circ(900,420,64),'#f4efe0',{shadow:0});
+  // fachadas vecinas
+  [[20,330,'#625584'],[760,420,'#6e5f8e']].forEach(([fx,fh,col],i)=>{piece(x,rect(fx,880-fh,300,fh+40),col);for(let r=0;r<Math.floor(fh/110);r++)for(let c=0;c<2;c++){const on=hash(i,r,c)>.4;piece(x,rect(fx+50+c*130,880-fh+34+r*100,70,58),on?'#ffd27a':'#2b2540',{shadow:0})}});
+  // calle y vereda
+  piece(x,rect(-40,878,W+80,44),'#4c4166');
+  // la casa de la esquina
+  piece(x,rect(330,620,420,262),'#7d689e');piece(x,poly([[300,620],[540,520],[780,620]]),'#463a62');
+  piece(x,rect(380,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(620,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(500,740,80,142),'#3a2f50',{shadow:0});
+  // chimenea que baja hasta las brasas
+  piece(x,rect(346,520,34,640),'#5a4a68',{shadow:0});piece(x,rect(336,508,54,18),'#463a62',{shadow:0});
+  for(let i=0;i<6;i++){const ph=(t*.32+i/6)%1,sx_=363+Math.sin(ph*7+i)*30+ph*120,sy=500-ph*280;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.6);cloud(x,sx_,sy,.45+ph*.8,'#ece4d8');x.restore()}
+  // corte: bajo tierra
+  piece(x,rect(40,922,W-80,330),'#5b3f35');
+  piece(x,rect(110,960,860,262),'#946243');
+  for(let r=0;r<5;r++){x.strokeStyle='rgba(60,35,25,.35)';x.lineWidth=3;x.beginPath();x.moveTo(110,985+r*50);x.lineTo(970,985+r*50);x.stroke()}
+  piece(x,rect(110,1190,860,32),'#3f2d25',{shadow:0});
+  // escalera desde la puerta
+  for(let k=0;k<7;k++)piece(x,rect(520-k*34,960+k*34,70+k*34,34),'#b88a5a',{shadow:1});
+  // brasero con parrilla
+  const pulse=.8+.2*Math.sin(t*6);
+  piece(x,rrect(170,1150,230,44,8),'#3a2b24');piece(x,rrect(184,1158,202,28,6),mix('#ff9a3c','#ff6a1e',pulse),{shadow:0});
+  x.strokeStyle='#2a2320';x.lineWidth=5;for(let i=0;i<6;i++){x.beginPath();x.moveTo(190+i*36,1136);x.lineTo(190+i*36,1160);x.stroke()}x.beginPath();x.moveTo(184,1136);x.lineTo(388,1136);x.stroke();
+  x.save();x.globalCompositeOperation='screen';const g=x.createRadialGradient(285,1170,10,285,1170,320);g.addColorStop(0,`rgba(255,150,60,${.65*pulse})`);g.addColorStop(1,'rgba(255,150,60,0)');x.fillStyle=g;x.fillRect(60,940,620,300);x.restore();
+  // mesa con taburetes y cartas
+  piece(x,rect(560,1118,340,22),'#7a4e2a');piece(x,rect(580,1140,22,60),'#5e3a1f',{shadow:0});piece(x,rect(860,1140,22,60),'#5e3a1f',{shadow:0});
+  [[560,1170],[620,1176],[830,1176],[890,1170]].forEach(([sx_,sy])=>{piece(x,rrect(sx_-18,sy,36,16,6),'#6b4423',{shadow:0});piece(x,rect(sx_-4,sy+16,8,30),'#5e3a1f',{shadow:0})});
+  [[640,-.25],[700,0],[760,.25]].forEach(([cx,r])=>{x.save();x.translate(cx,1100);x.rotate(r);piece(x,rrect(-16,-30,32,48,4),'#fbf4e2',{shadow:0});x.restore()});
+  // cartel de calle
+  const ca=eBack(seg(t,.8,1.6));if(ca>0){x.save();x.translate(150,800);x.scale(ca,ca);piece(x,rect(-6,0,12,100),'#2c2018');piece(x,rrect(-150,-42,300,58,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 30px Fraunces','#fff','center',1);x.restore()}
   // las bravas del truco, en un cartel de papel
   const pa=C[1].a-.2,pb=C[1].b+.1,al=Math.min(eBack(seg(t,pa,pa+.8),1.3),1)*(1-seg(t,pb-.4,pb));
-  if(al>0.01){x.save();x.translate(W/2,660);x.scale(al,al);x.globalAlpha=Math.min(1,al*1.4);
+  if(al>0.01){x.save();x.translate(W/2,640);x.scale(al,al);x.globalAlpha=Math.min(1,al*1.4);
     piece(x,rrect(-440,-290,880,560,26),'#f2e7cf');txt(x,'LAS BRAVAS DEL TRUCO',0,-236,'700 34px Fraunces','#8f4f26','center',5);
     [['espadas',1],['bastos',1],['espadas',7],['oros',7]].forEach(([p,n],i)=>{const a=(i-1.5)*.17;naipe(x,(i-1.5)*188,18+Math.abs(i-1.5)*14,170,262,a,p,n)});
     x.restore()}
