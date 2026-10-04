@@ -2,7 +2,7 @@
 // ═══════════════ LÍNEA DE TIEMPO (una sola fuente de verdad) ═══════════════
 const SCENES=[];
 const wc=lines=>lines.join(' ').split(/\s+/).filter(Boolean).length;
-const READ={base:1.2,wps:2.2,min:3.6};              // regla de lectura (fundidos incluidos)
+const READ={base:1.2,wps:2.2,min:4.0};              // regla de lectura (fundidos incluidos)
 const needOf=c=>Math.max(READ.min,READ.base+wc(c.l)/READ.wps);
 const dwell=needOf;
 const LINT=[];

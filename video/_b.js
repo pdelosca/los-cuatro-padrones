@@ -3,7 +3,7 @@
 // cartel de papel con leyenda; tamaño ya ajustado en buildTimeline (nunca se sale de la tarjeta)
 function labelCard(x,t,sc){
   const y0=1330,h=370,C=sc.C;
-  const v=Math.min(eO(seg(t,C[0].a-.6,C[0].a-.1)),1-seg(t,C[C.length-1].b-.05,C[C.length-1].b+.35));
+  const v=Math.min(eO(seg(t,C[0].a-.35,C[0].a-.02)),1-seg(t,C[C.length-1].b-.05,C[C.length-1].b+.35));
   if(v<=0.01)return;
   const fontFor=(g,s)=>g.dig?`700 ${s}px ${DIGITF.pc}`:`700 ${s}px Fraunces`;
   x.save();x.globalAlpha=v;x.translate(W/2,y0+h/2+(1-v)*60);x.rotate(-.008);x.translate(-W/2,-(y0+h/2));
@@ -264,15 +264,16 @@ function naipe(x,cx,cy,w,h,rot,palo,n){
     x.fillStyle='#3f8a46';[[-22,-30,-.6],[24,-10,.7],[-24,30,-.5],[22,50,.6],[0,-100,0]].forEach(([lx,ly,lr])=>{x.save();x.translate(lx,ly);x.rotate(lr);x.beginPath();x.ellipse(0,-12,10,22,0,0,7);x.fill();x.restore()});
     x.fillStyle='#f0e0b8';[[-3,-40],[3,10],[-3,50]].forEach(([kx,ky])=>{x.beginPath();x.arc(kx,ky,4,0,7);x.fill()});x.restore()};
   if(palo==='espadas'&&n===1)sword(0,-6,1.1,0);
-  if(palo==='espadas'&&n===7){[[-48,-34],[48,-34],[0,78]].forEach(([px,py])=>{sword(px,py,.6,-.55);sword(px,py,.6,.55)});sword(0,-14,.62,0)}
+  if(palo==='espadas'&&n===7){[-60,-40,-20,0,20,40,60].forEach((px,i)=>sword(px,(i%2?-6:12),.58,0))}
   if(palo==='bastos'&&n===1)club(0,-4,1.1,.12);
   if(palo==='oros'&&n===7)[[-48,-92],[48,-92],[-52,-8],[0,-8],[52,-8],[-48,76],[48,76]].forEach(([a,b])=>coin(a,b+10,27));
   x.restore()}
+const al0=(t,C)=>{const pa=C[1].a-.2,pb=C[1].b+.1;return Math.min(Math.min(1,Math.max(0,(t-pa)/.8)),1-Math.min(1,Math.max(0,(t-(pb-.4))/.4)))};
 function pcSotano(x,t,dur,sc){
   const C=sc.C;
   sky(x,'#27386e','#6f80be',900);
   for(let i=0;i<12;i++){const sx_=60+((i*83)%960),sy=300+((i*131)%260),tw=.5+.5*Math.sin(t*2+i);x.save();x.globalAlpha=.5+.5*tw;piece(x,star(sx_,sy,11),'#fff0b0',{shadow:0});x.restore()}
-  piece(x,circ(900,420,64),'#f4efe0',{shadow:0});
+  piece(x,circ(560,380,58),'#f4efe0',{shadow:0});
   // fachadas vecinas
   [[20,330,'#625584'],[760,420,'#6e5f8e']].forEach(([fx,fh,col],i)=>{piece(x,rect(fx,880-fh,300,fh+40),col);for(let r=0;r<Math.floor(fh/110);r++)for(let c=0;c<2;c++){const on=hash(i,r,c)>.4;piece(x,rect(fx+50+c*130,880-fh+34+r*100,70,58),on?'#ffd27a':'#2b2540',{shadow:0})}});
   // calle y vereda
@@ -282,7 +283,7 @@ function pcSotano(x,t,dur,sc){
   piece(x,rect(380,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(620,690,80,90),'#ffd27a',{shadow:0});piece(x,rect(500,740,80,142),'#3a2f50',{shadow:0});
   // chimenea que baja hasta las brasas
   piece(x,rect(346,520,34,640),'#5a4a68',{shadow:0});piece(x,rect(336,508,54,18),'#463a62',{shadow:0});
-  for(let i=0;i<6;i++){const ph=(t*.32+i/6)%1,sx_=363+Math.sin(ph*7+i)*30+ph*120,sy=500-ph*280;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.6);cloud(x,sx_,sy,.45+ph*.8,'#ece4d8');x.restore()}
+  for(let i=0;i<5;i++){const ph=(t*.32+i/5)%1,sx_=363+Math.sin(ph*7+i)*26+ph*90,sy=500-ph*170;x.save();x.globalAlpha=Math.min(1,(1-ph)*1.7);cloud(x,sx_,sy,.4+ph*.55,'#ece4d8');x.restore()}
   // corte: bajo tierra
   piece(x,rect(40,922,W-80,330),'#5b3f35');
   piece(x,rect(110,960,860,262),'#946243');
@@ -300,7 +301,7 @@ function pcSotano(x,t,dur,sc){
   [[560,1170],[620,1176],[830,1176],[890,1170]].forEach(([sx_,sy])=>{piece(x,rrect(sx_-18,sy,36,16,6),'#6b4423',{shadow:0});piece(x,rect(sx_-4,sy+16,8,30),'#5e3a1f',{shadow:0})});
   [[640,-.25],[700,0],[760,.25]].forEach(([cx,r])=>{x.save();x.translate(cx,1100);x.rotate(r);piece(x,rrect(-16,-30,32,48,4),'#fbf4e2',{shadow:0});x.restore()});
   // cartel de calle
-  const ca=eBack(seg(t,.8,1.6));if(ca>0){x.save();x.translate(150,800);x.scale(ca,ca);piece(x,rect(-6,0,12,100),'#2c2018');piece(x,rrect(-150,-42,300,58,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 30px Fraunces','#fff','center',1);x.restore()}
+  const ca=eBack(seg(t,.8,1.6))*(1-Math.min(1,Math.max(0,al0(t,C))));if(ca>0){x.save();x.translate(150,800);x.scale(ca,ca);piece(x,rect(-6,0,12,100),'#2c2018');piece(x,rrect(-150,-42,300,58,8),'#2f6f8f');txt(x,'Magallanes y Lima',0,0,'700 30px Fraunces','#fff','center',1);x.restore()}
   // las bravas del truco, en un cartel de papel
   const pa=C[1].a-.2,pb=C[1].b+.1,al=Math.min(eBack(seg(t,pa,pa+.8),1.3),1)*(1-seg(t,pb-.4,pb));
   if(al>0.01){x.save();x.translate(W/2,640);x.scale(al,al);x.globalAlpha=Math.min(1,al*1.4);

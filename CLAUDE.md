@@ -20,7 +20,7 @@ Escena en HTML+canvas, un cuadro por vez con Chromium (Playwright), unido con ff
 4. `SCENE=cadena2.html NOMBRE=... DUR=<seg> FPS=30 OUT=<carpeta> FF=<ffmpeg> node frames.js render` (o `frames.js probe t1 t2 …` para cuadros sueltos). FPS=10 sirve de ensayo.
 5. Mezcla: `ffmpeg -i mudo.mp4 -i musica.wav -c:v copy -c:a aac …`; versión liviana 720×1280 CRF 27 para poder enviarla (límite de envío: 30 MB).
 
-Entorno: ffmpeg completo con `libx264` está en `/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/` (instalar `imageio-ffmpeg`); el ffmpeg de Playwright solo tiene VP8. Hacen falta `scipy` y `matplotlib` para la música y el espectrograma. Render ≈ 9–12 cuadros/s en un solo proceso (4 núcleos disponibles).
+Entorno: ffmpeg completo con `libx264` está en `/usr/local/lib/python3.11/dist-packages/imageio_ffmpeg/binaries/` (instalar `imageio-ffmpeg`); el ffmpeg de Playwright solo tiene VP8. Hacen falta `scipy` y `matplotlib` para la música y el espectrograma. Render ≈ 9–12 cuadros/s con `frames.js` (un proceso); `frames-paralelo.js` (WORKERS=4, JPEG + ffmpeg) llega a ~24 cuadros/s: el video de 4:39 salió en ~8 min. Para el ensayo de revisión usar FPS=10.
 
 ## Red de la sesión (lo que anda y lo que no)
 
@@ -28,8 +28,13 @@ Entorno: ffmpeg completo con `libx264` está en `/usr/local/lib/python3.11/dist-
 - **Anda**: GitHub (clonado anónimo de repos públicos tras `add_repo`) y también las descargas de *release assets* (HEAD 200 por `release-assets.githubusercontent.com`); PyPI.
 - No hay voz sintética disponible hoy (edge-tts y Hugging Face bloqueados). Ver `video/referencias-utiles.md` para la vía de Kokoro.
 
+## Estado
+
+Última versión: `video/la-cadena-v3.mp4` (4:39) y `la-cadena-v3-liviano.mp4` (720×1280, 15 MB). Guion en `guion-cadena-v2.md` (los textos exactos están en `_c.js`), plan en `plan-pulido.md`, críticas en `registro-criticas.md`. Pendientes: el décimo repo de la lista de Pablo (`opus-video-skills`, sin enlace); decidir si se suma narración (Kokoro) o muestras reales de instrumentos.
+
 ## Lecciones
 
+- El bucle de crítica funciona: un revisor nuevo (Agent) sobre un ensayo a 10 cuadros por segundo, y otro que verifica. Encontraron cosas que yo no vi (cuadro 0 vacío, 3 y 5 confundidos en cifras antiguas, falta de puente narrativo).
 - Las auditorías automáticas atraparon errores reales antes del render (leyendas inexistentes, orden cronológico, choques de armonía). Correrlas siempre.
 - El audio solo se puede medir, no escuchar: decirlo.
 - Un solo cambio de duración mueve la música: regenerar `linea-de-tiempo.json` y `musica2.py` antes del render final.
