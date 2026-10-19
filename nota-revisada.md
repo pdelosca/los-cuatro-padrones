@@ -26,7 +26,7 @@ Si el producto ya no muestra el aprendizaje, hay que mirar el proceso, como prop
 
 ## Un andamio no levanta la pared
 
-En una obra, el andamio no levanta la pared. Deja que la levante el albañil, y se quita cuando la pared se sostiene sola. En educación, la idea parte del psicólogo ruso Lev Vygotsky, que ya citamos en esta serie. El término lo propusieron en 1976 los psicólogos David Wood, Jerome Bruner y Gail Ross para describir la ayuda que un adulto le da a un niño mientras la necesita.
+En una obra, el andamio no levanta la pared. Deja que la levante el albañil, y se quita cuando la pared se sostiene sola. En educación, la idea parte del psicólogo ruso Lev Vygotsky, que ya citamos en esta serie. El término lo propusieron en 1976 los investigadores David Wood, Jerome Bruner y Gail Ross para describir la ayuda que un adulto le da a un niño mientras la necesita.
 
 Poner un andamio no es bajar la exigencia. Es sostener a quien todavía no puede hacer la tarea solo, para poder pedirle más de lo que lograría sin ayuda. Y hay que retirarlo a tiempo, porque lo que ayuda a quien empieza estorba a quien ya sabe.
 
@@ -38,7 +38,7 @@ Un andamio de verdad conserva la fricción que enseña, que es intentar antes de
 
 Pero no alcanza con que un andamio digital esté disponible. Pedir ayuda sigue siendo una decisión, y un estudiante que no sabe lo que no sabe rara vez la toma. Funciona mejor cuando hay una persona atenta del otro lado. En un [ensayo con tutores de escuelas de bajos recursos](https://arxiv.org/abs/2410.03017), una herramienta de IA que les sugería cómo guiar a cada estudiante mejoró los aprendizajes. La mejora fue pequeña, pero se notó más con los tutores menos experimentados. La IA no hizo el trabajo por ellos. Los ayudó a hacerlo mejor.
 
-Por eso creemos que un andamio rinde más dentro de un dispositivo que suelto. Con dispositivo no nos referimos a un aparato. La usamos en el sentido de la pedagoga argentina Marta Souto, como un conjunto de piezas distintas que se arman para provocar aprendizajes. En nuestro caso, las piezas son la tarea, la herramienta, el tiempo y un docente que ve el proceso y sabe cuándo intervenir. Bien armado, se acerca a lo que hace un buen tutor con un solo estudiante, que es ofrecerle un camino a su medida. Un docente con trescientos estudiantes no puede ser el tutor de cada uno, pero con un dispositivo puede acercarse un poco más.
+Por eso creemos que un andamio rinde más dentro de un dispositivo que suelto. Con dispositivo no nos referimos a un aparato. Usamos la palabra en el sentido de la pedagoga argentina Marta Souto, como un conjunto de piezas distintas que se arman para provocar aprendizajes. En nuestro caso, las piezas son la tarea, la herramienta, el tiempo y un docente que ve el proceso y sabe cuándo intervenir. Bien armado, se acerca a lo que hace un buen tutor con un solo estudiante, que es ofrecerle un camino a su medida. Un docente con trescientos estudiantes no puede ser el tutor de cada uno, pero con un dispositivo puede acercarse un poco más.
 
 ## Tres experiencias uruguayas
 
