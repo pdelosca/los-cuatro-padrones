@@ -66,7 +66,7 @@ El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede
 
 Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro o el sistema, puede hacerse cinco preguntas, las mismas que intentan responder las tres experiencias que contamos:
 
-- ¿Resuelve un problema real del aula, o es una tecnología buscando dónde aplicarse?
+- ¿Qué problema real del aula resuelve?
 - ¿Hace que el estudiante piense más, o piensa por él?
 - ¿Le muestra al docente cómo trabajó cada estudiante, o solo el resultado final?
 - Cuando el estudiante se traba, ¿hay una persona que lo acompañe, o queda solo con la herramienta?
