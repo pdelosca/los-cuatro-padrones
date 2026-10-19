@@ -72,7 +72,7 @@ Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro 
 - Cuando el estudiante no sabe cómo seguir, ¿hay una persona que lo acompañe, o queda solo con la herramienta?
 - ¿Ayuda también a los que más lo necesitan, o sobre todo a los que ya van bien?
 
-Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; eso, como el juicio profesional y el acompañamiento, no se delega. Si ese acompañamiento queda solo para quienes pueden pagarlo, aprender con una persona al lado se vuelve un lujo. Y la brecha que en la primera nota describimos como identitaria se vuelve también cognitiva, entre quienes aprenden a pensar y quienes no.
+Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; eso, como el juicio profesional y el acompañamiento, no se delega. La IA comercial acelera al que ya sabe, pero al que recién empieza le da respuestas en lugar del andamio que necesita. Si el novato queda solo con ella, mientras otros aprenden con andamios y con una persona al lado, muchas veces porque pueden pagarla, la distancia crece. Es lo que mostraba el estudio de programación. Y la brecha que en la primera nota describimos como identitaria se vuelve también cognitiva, entre quienes aprenden a pensar y quienes no.
 
 Volvamos a ese domingo, porque ahí se juega gran parte del partido. Con andamios y un dispositivo que lo respalde, ese profesor ya no recibiría solo treinta textos terminados. Vería también cómo llegó cada estudiante hasta ahí, quién dudó, quién reescribió, quién se atascó y dónde. Y el lunes sabría a quién acercarse. Su criterio es el mismo de siempre; lo que cambia es que ahora tiene algo que mirar.
 
