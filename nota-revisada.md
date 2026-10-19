@@ -64,7 +64,7 @@ El [marco para la IA en el aula](https://ladiaria.com.uy/educacion/articulo/2023
 
 El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede llenarse con más trabajo. Tampoco hay que prometerle que todo será más fácil, porque será distinto. Y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto el criterio docente para decidir qué entra al aula y qué no.
 
-Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro o el sistema, puede hacerse cinco preguntas:
+Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro o el sistema, puede hacerse cinco preguntas, las mismas que intentan responder las tres experiencias que contamos:
 
 - ¿Resuelve un problema real del aula, o es una tecnología buscando dónde aplicarse?
 - ¿Hace que el estudiante piense más, o piensa por él?
@@ -72,10 +72,8 @@ Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro 
 - Cuando el estudiante se traba, ¿hay una persona que lo acompañe, o queda solo con la herramienta?
 - ¿Ayuda también a los que más lo necesitan, o sobre todo a los que ya van bien?
 
-En el fondo, son las preguntas que intentan responder las tres experiencias que contamos.
+La última es la que más nos preocupa. Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; eso, como el juicio profesional y el acompañamiento, no se delega. Si ese trabajo no se cuida, aprender con alguien al lado termina siendo un lujo de pocos. Y la brecha que en la primera nota describimos como identitaria se vuelve también cognitiva, entre quienes aprenden a pensar y quienes no.
 
-Volvamos a ese domingo, porque ahí se juega gran parte del partido. Ese profesor sabe leer a sus estudiantes, pero no puede leer un camino que no le llega. Los treinta textos perfectos no le dicen quién aprendió, porque los borradores, las dudas y las decisiones de cada uno quedaron fuera de la hoja. Recuperar ese camino importa porque hay cosas que no se delegan, como el juicio profesional y el acompañamiento. Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; para eso hace falta una persona adulta en el aula.
-
-Si eso no se cuida, aprender con alguien al lado termina siendo un lujo. La brecha que planteamos en la primera nota, que ya no es digital sino identitaria, suma otra cara, y la distancia se abre entre quienes aprenden a pensar y quienes no. Para evitarlo, los docentes ya ponen el criterio. Lo que necesitan es tiempo, formación, andamios y el respaldo de su institución para cuidar el camino.
+Volvamos a ese domingo, porque ahí se juega gran parte del partido. Con andamios y un dispositivo que lo respalde, ese profesor ya no recibiría solo treinta textos terminados. Vería también cómo llegó cada estudiante hasta ahí, quién dudó, quién reescribió, quién se trabó y en qué parte. Y el lunes sabría a quién acercarse. Su criterio es el mismo de siempre; lo que cambia es que ahora tiene algo que mirar.
 
 En la nota anterior dijimos que las cicatrices son la prueba de que alguien estuvo ahí. Si nadie las ve, es como si no existieran. En tiempos de IA, hacerlas visibles se puede, y en algunas aulas uruguayas ya se está intentando.
