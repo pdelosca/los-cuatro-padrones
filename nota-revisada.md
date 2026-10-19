@@ -32,7 +32,7 @@ Poner un andamio no es bajar la exigencia. Es sostener a quien todavía no puede
 
 La idea ya tuvo una vida digital. A mediados de los noventa, cuando internet llegó a las escuelas y sobraba información, nacieron los WebQuest, tareas en pasos con recursos elegidos por el docente. Con los años [se vaciaron](https://www.ascd.org/el/articles/the-learning-power-of-webquests) hasta quedar en una lista de enlaces para copiar y resumir. Quedó la forma y se perdió el andamio.
 
-Hoy el problema se dio vuelta. Ya no sobra información; ahora la IA hace la tarea sola. Y el error se repite. Agregar a la consigna un "no le pidan la respuesta a ChatGPT" es comprensible cuando no hay tiempo para más. Pero si la tarea queda igual, ese aviso es la versión actual de la lista de enlaces. Es la prohibición que discutimos en la segunda nota, y funciona más como un "yo avisé" que como una ayuda, porque deja toda la responsabilidad del lado del estudiante.
+Hoy el problema es otro. Ya no se trata de encontrar información, porque la IA hace la tarea sola. Agregar a la consigna un "no le pidan la respuesta a ChatGPT" es comprensible cuando no hay tiempo para más. Pero si la tarea queda igual, pasa lo mismo que con los WebQuest, y queda la forma sin el andamio. Es la prohibición que discutimos en la segunda nota, y funciona más como un "yo avisé" que como una ayuda, porque deja toda la responsabilidad del lado del estudiante.
 
 Un andamio de verdad conserva la fricción que enseña, que es intentar antes de pedir ayuda. Y hace dos cosas a la vez. Sostiene al estudiante mientras recorre el camino y, como ordena el trabajo en pasos, deja ese camino a la vista del docente.
 
@@ -48,7 +48,7 @@ La primera, EscribeLab, de Ceibal ([video](https://www.youtube.com/watch?v=bhATb
 
 La segunda la estamos probando en la Escuela Integral para enseñar a programar en Python en el último año de bachillerato. Lo hacemos en un mundo que se plegó al vibe coding, la costumbre de pedirle todo el código a la IA. El estudiante recibe una tarea exigente, programar un clásico de los videojuegos de los años ochenta, con partes que puede modificar y partes que no puede tocar. Lo acompaña un chatbot que orienta sin resolver, un modelo comercial metido en una página con nuestro diseño y nuestras reglas. A medida que el estudiante avanza, la ayuda baja y los desafíos se vuelven más complejos, de modo que el andamio se retira a tiempo y el ciclo vuelve a empezar un escalón más arriba.
 
-Del otro lado, el docente tiene un panel que le muestra cómo trabajó cada estudiante, qué pidió y dónde se atascó. Con eso sabe a quién acercarse y qué preparar para la próxima clase.
+Mientras tanto, el docente tiene un panel que le muestra cómo trabajó cada estudiante, qué pidió y dónde se atascó. Con eso sabe a quién acercarse y qué preparar para la próxima clase.
 
 La tercera, [Maestro Virtual](https://maestro-virtual.com/), mira del otro lado del escritorio. Busca devolverle tiempo al docente, que también es una condición del dispositivo, y lo ayuda a planificar, armar boletines y evaluar. Para eso encapsula un modelo comercial y lo nutre con los programas oficiales.
 
@@ -58,15 +58,15 @@ Ninguna de estas experiencias trae garantías, como tampoco las traía el redise
 
 Hay que evitar que el peso de todo esto recaiga en los docentes, con la culpa incluida si algo sale mal. Armar un dispositivo no puede ser tarea de cada profesor un domingo a la noche; las tres experiencias que contamos las sostienen equipos e instituciones.
 
-Hoy, en buena medida, los docentes están solos. Según un [análisis de Ceibal](https://ladiaria.com.uy/educacion/articulo/2026/5/tres-de-cada-cuatro-docentes-uruguayos-usan-ia-en-sus-practicas-educativas-segun-estudio-de-ceibal/) basado en la Encuesta Nacional Docente, tres de cada cuatro docentes ya usan IA en su trabajo. La usan por la misma razón que los estudiantes, porque les sirve. Pero muchas veces lo hacen desde cuentas personales, sin las protecciones de una cuenta institucional y sin un acompañamiento que los ayude a sopesar riesgos y beneficios.
+Hoy, en buena medida, los docentes están solos. Según un [análisis de Ceibal](https://ladiaria.com.uy/educacion/articulo/2026/5/tres-de-cada-cuatro-docentes-uruguayos-usan-ia-en-sus-practicas-educativas-segun-estudio-de-ceibal/) basado en la Encuesta Nacional Docente, tres de cada cuatro docentes ya usan IA en su trabajo. La usan por la misma razón que los estudiantes, porque les sirve. Pero muchas veces lo hacen desde cuentas personales, sin las protecciones de una institucional y sin que el sistema les ofrezca un espacio para discutir riesgos y beneficios.
 
-Este año, Ceibal y la ANEP les dieron [acceso gratuito a Gemini y NotebookLM](https://ladiaria.com.uy/educacion/articulo/2026/6/docentes-de-anep-ya-pueden-acceder-de-forma-gratuita-a-dos-herramientas-de-ia-desarrolladas-por-google/), dos herramientas de Google, dentro de cuentas institucionales que resguardan los datos. Eso ayuda, pero falta formación. Y a la velocidad con que cambian estas tecnologías, una formación que solo enseñe a usar herramientas llega siempre tarde. Tiene que servir para entender qué es una IA y qué no, y a reconocer en ella algo que los docentes ya saben hacer, que es distinguir una ayuda que enseña de una que reemplaza.
+Este año, Ceibal y la ANEP les dieron [acceso gratuito a Gemini y NotebookLM](https://ladiaria.com.uy/educacion/articulo/2026/6/docentes-de-anep-ya-pueden-acceder-de-forma-gratuita-a-dos-herramientas-de-ia-desarrolladas-por-google/), dos herramientas de Google, dentro de cuentas institucionales que resguardan los datos. Eso ayuda, pero falta formación. Y a la velocidad con que cambian estas tecnologías, una formación que solo enseñe a usar herramientas llega siempre tarde. Tiene que servir para entender qué es una IA y qué no, y para aplicarle algo que los docentes ya saben hacer, que es distinguir una ayuda que enseña de una que reemplaza.
 
 El [marco para la IA en el aula](https://ladiaria.com.uy/educacion/articulo/2023/10/ceibal-presento-documento-que-orienta-el-abordaje-de-la-inteligencia-artificial-en-el-aula/) de Ceibal va en esa dirección y es un buen paso. Pero un marco orienta a los docentes, no al estudiante. A quien recién empieza en un tema no le alcanza con eso. Necesita andamios y una IA con andariveles, como en EscribeLab o en nuestro curso de Python.
 
 El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede llenarse con más trabajo. Y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto el criterio docente para decidir qué entra al aula y qué no.
 
-Antes de sumar cualquier herramienta, el sistema, un centro o un docente pueden hacerse cinco preguntas, las mismas que intentan responder las tres experiencias que contamos. También le sirven a una familia que quiera saber qué se usa en el aula.
+Antes de sumar cualquier herramienta, el sistema, un centro o un docente pueden hacerse cinco preguntas, las mismas que, cada una a su modo, intentan responder las tres experiencias que contamos. También le sirven a una familia que quiera saber qué se usa en el aula.
 
 - ¿Qué problema real del aula resuelve?
 - ¿Hace que el estudiante piense más, o piensa por él?
