@@ -10,7 +10,7 @@ En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026
 
 No es un fenómeno marginal. [Más de 800 millones de personas usan ChatGPT cada semana](https://techcrunch.com/2025/10/06/sam-altman-says-chatgpt-has-hit-800m-weekly-active-users/), según OpenAI, y casi nadie lo hace por obligación. Les resulta útil, y a los estudiantes también.
 
-El problema está en qué entendemos por útil. Casi siempre que usamos una herramienta queremos un resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza, en cambio, el texto es apenas la excusa; lo que importa es lo que le pasa a quien lo escribe. Una herramienta hecha para entregar resultados puede resolver la tarea sin enseñar nada. Para que enseñe, tiene que estar al servicio de una propuesta didáctica. Antes de ver cómo se diseña esa propuesta, conviene mirar qué se pierde sin ella.
+El problema está en qué entendemos por útil. Casi siempre que usamos una herramienta queremos un resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza, en cambio, el texto es apenas la excusa; lo que importa es lo que le pasa a quien lo escribe. Una herramienta hecha para entregar resultados puede resolver la tarea sin enseñar nada. Para que enseñe, alguien tiene que haberla pensado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde si no.
 
 ## El costo que no se ve a tiempo
 
@@ -26,7 +26,7 @@ Si el producto ya no muestra el aprendizaje, hay que mirar el proceso, como prop
 
 ## Un andamio no levanta la pared
 
-En una obra, el andamio no levanta la pared. Deja que la levante el albañil, y se quita cuando la pared se sostiene sola. En educación, la idea parte de Vygotsky, que ya citamos. El término lo propusieron en 1976 los psicólogos David Wood, Jerome Bruner y Gail Ross para describir la ayuda que un adulto le da a un niño mientras la necesita.
+En una obra, el andamio no levanta la pared. Deja que la levante el albañil, y se quita cuando la pared se sostiene sola. En educación, la idea parte del psicólogo ruso Lev Vygotsky, que ya citamos en esta serie. El término lo propusieron en 1976 los psicólogos David Wood, Jerome Bruner y Gail Ross para describir la ayuda que un adulto le da a un niño mientras la necesita.
 
 Poner un andamio no es bajar la exigencia: es sostener a quien todavía no puede hacer la tarea solo, para poder pedirle más de lo que lograría sin ayuda. Y hay que retirarlo a tiempo, porque lo que ayuda a quien empieza estorba a quien ya sabe.
 
@@ -38,7 +38,7 @@ Un andamio de verdad conserva la fricción que enseña, que es intentar antes de
 
 Pero no alcanza con que un andamio digital esté disponible. Pedir ayuda sigue siendo una decisión, y un estudiante que no sabe lo que no sabe rara vez la toma. Funciona mejor cuando hay una persona atenta del otro lado. En un [ensayo con tutores de escuelas de bajos recursos](https://arxiv.org/abs/2410.03017), una herramienta de IA que les sugería cómo guiar a cada estudiante mejoró los aprendizajes. La mejora fue pequeña, pero se notó más con los tutores menos experimentados. La IA no hizo el trabajo por ellos: los ayudó a hacerlo mejor.
 
-Por eso creemos que un andamio rinde más dentro de un dispositivo que suelto. Llamamos dispositivo al conjunto formado por la tarea, la herramienta, el tiempo y un docente que ve el proceso y sabe cuándo intervenir. Bien armado, se acerca a lo que hace un buen tutor con un solo estudiante: un camino hecho a la medida de cada uno. Un docente con trescientos estudiantes no puede ser el tutor de cada uno, pero con un dispositivo puede acercarse un poco más.
+Por eso creemos que un andamio rinde más dentro de un dispositivo que suelto. Con dispositivo no nos referimos a un aparato, sino al conjunto formado por la tarea, la herramienta, el tiempo y un docente que ve el proceso y sabe cuándo intervenir. Bien armado, se acerca a lo que hace un buen tutor con un solo estudiante: un camino hecho a la medida de cada uno. Un docente con trescientos estudiantes no puede ser el tutor de cada uno, pero con un dispositivo puede acercarse un poco más.
 
 ## Tres experiencias uruguayas
 
@@ -46,9 +46,9 @@ Esa combinación de herramienta y personas es la que intentan tres experiencias 
 
 Hay una ventaja más. Como lo valioso está en los andariveles, si mañana se cambia la IA que está debajo del capó, las secuencias didácticas siguen sirviendo y las huellas del proceso que ve el docente se conservan.
 
-La primera, EscribeLab, de Ceibal ([video](https://www.youtube.com/watch?v=bhATb908VyU)), acompaña a estudiantes de noveno año a escribir un texto argumentativo en tres etapas: planificar, textualizar y revisar. Por dentro hay un modelo de lenguaje al que el equipo de Ceibal le marcó qué puede hacer y qué no. No escribe por ellos, los guía, y el docente ve en qué etapa está cada uno. Ceibal no evaluó la herramienta sola, sino la propuesta completa, con formación docente y secuencias didácticas. En su [presentación](https://www.youtube.com/watch?v=hJ2nLtEKqms), Ceibal informó resultados positivos.
+La primera, EscribeLab, de Ceibal ([video](https://www.youtube.com/watch?v=bhATb908VyU)), acompaña a estudiantes de noveno año a escribir un texto argumentativo en tres etapas: planificar, escribir y revisar. Por dentro hay un modelo de lenguaje al que el equipo de Ceibal le marcó qué puede hacer y qué no. No escribe por ellos, los guía, y el docente ve en qué etapa está cada uno. Ceibal no evaluó la herramienta sola, sino la propuesta completa, con formación docente y secuencias didácticas. En su [presentación](https://www.youtube.com/watch?v=hJ2nLtEKqms), Ceibal informó resultados positivos.
 
-La segunda la estamos probando en la Escuela Integral para enseñar Python en el último año de bachillerato. El estudiante recibe una tarea exigente, programar un clásico de los videojuegos de los años ochenta, con partes que puede modificar y partes que no puede tocar. Lo acompañan el docente y un chatbot que orienta sin resolver: un modelo comercial metido en una página con nuestro diseño y nuestras reglas. Detrás, un panel le muestra al docente lo que el profesor del domingo no podía ver: qué hizo cada estudiante. También le avisa cuando alguien pega mucho texto de golpe o usa recursos que no se vieron en el curso. No es para sancionar, sino para saber a quién acercarse.
+La segunda la estamos probando en la Escuela Integral para enseñar Python en el último año de bachillerato. El estudiante recibe una tarea exigente, programar un clásico de los videojuegos de los años ochenta, con partes que puede modificar y partes que no puede tocar. Lo acompañan el docente y un chatbot que orienta sin resolver: un modelo comercial metido en una página con nuestro diseño y nuestras reglas. Detrás, un panel le muestra al docente lo que el profesor del domingo no podía ver: qué hizo cada estudiante. También le avisa cuando alguien pega mucho texto de golpe o usa funciones que no se vieron en el curso. No es para sancionar, sino para saber a quién acercarse.
 
 La tercera, [Maestro Virtual](https://maestro-virtual.com/), mira del otro lado del escritorio. Pone un modelo comercial a trabajar dentro de los programas oficiales para ayudar al docente a planificar, armar boletines y evaluar. Busca devolverle tiempo, que también es una condición del dispositivo. Es, si se quiere, un andamio para quien enseña.
 
@@ -56,7 +56,7 @@ Ninguna de estas experiencias trae garantías, como tampoco las traía el redise
 
 ## Quién cuida el camino
 
-Queda un riesgo por evitar: que el peso de todo esto recaiga en los docentes, con la culpa incluida si algo sale mal. Y en buena medida ya están solos. Según un [análisis de Ceibal](https://ladiaria.com.uy/educacion/articulo/2026/5/tres-de-cada-cuatro-docentes-uruguayos-usan-ia-en-sus-practicas-educativas-segun-estudio-de-ceibal/) basado en la Encuesta Nacional Docente, tres de cada cuatro docentes ya usan IA en su trabajo. La usan por la misma razón que los estudiantes: porque les sirve. Pero muchas veces lo hacen desde cuentas personales, sin las protecciones de una cuenta institucional y sin un acompañamiento que los ayude a sopesar riesgos y beneficios.
+Queda un riesgo por evitar: que el peso de todo esto recaiga en los docentes, con la culpa incluida si algo sale mal. Armar un dispositivo no puede ser tarea de cada profesor un domingo a la noche; las tres experiencias que contamos las sostienen equipos e instituciones. Hoy, en buena medida, los docentes están solos. Según un [análisis de Ceibal](https://ladiaria.com.uy/educacion/articulo/2026/5/tres-de-cada-cuatro-docentes-uruguayos-usan-ia-en-sus-practicas-educativas-segun-estudio-de-ceibal/) basado en la Encuesta Nacional Docente, tres de cada cuatro docentes ya usan IA en su trabajo. La usan por la misma razón que los estudiantes: porque les sirve. Pero muchas veces lo hacen desde cuentas personales, sin las protecciones de una cuenta institucional y sin un acompañamiento que los ayude a sopesar riesgos y beneficios.
 
 Este año, Ceibal y la ANEP les dieron [acceso gratuito a Gemini y NotebookLM](https://ladiaria.com.uy/educacion/articulo/2026/6/docentes-de-anep-ya-pueden-acceder-de-forma-gratuita-a-dos-herramientas-de-ia-desarrolladas-por-google/), dos herramientas de Google, dentro de cuentas institucionales que resguardan los datos. Es un paso, pero falta formación. Y a la velocidad con que cambian estas tecnologías, una formación que solo enseñe a usar herramientas llega siempre tarde. Tiene que ayudar a entender qué es una IA y qué no, y a reconocer en ella algo que los docentes ya saben hacer: distinguir una ayuda que enseña de una que reemplaza.
 
@@ -72,7 +72,7 @@ Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro 
 - Cuando el estudiante no sabe cómo seguir, ¿hay una persona que lo acompañe, o queda solo con la herramienta?
 - ¿Ayuda también a los que más lo necesitan, o sobre todo a los que ya van bien?
 
-Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; eso, como el juicio profesional y el acompañamiento, no se delega. La IA comercial acelera al que ya sabe, pero al que recién empieza le da respuestas en lugar del andamio que necesita. Si el novato queda solo con ella, mientras otros aprenden con andamios y con una persona al lado, muchas veces porque pueden pagarla, la distancia crece. Es lo que mostraba el estudio de programación. Y la brecha que en la primera nota describimos como identitaria se vuelve también cognitiva, entre quienes aprenden a pensar y quienes no.
+Una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda; eso, como el juicio profesional y el acompañamiento, no se delega. Si el novato queda solo con la IA mientras otros aprenden con andamios y con una persona al lado, la brecha deja de ser de acceso a la tecnología y pasa a estar entre quienes aprenden a pensar y quienes no.
 
 Volvamos a ese domingo, porque ahí se juega gran parte del partido. Con andamios y un dispositivo que lo respalde, ese profesor ya no recibiría solo treinta textos terminados. Vería también cómo llegó cada estudiante hasta ahí, quién dudó, quién reescribió, quién se atascó y dónde. Y el lunes sabría a quién acercarse. Su criterio es el mismo de siempre; lo que cambia es que ahora tiene algo que mirar.
 
