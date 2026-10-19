@@ -28,8 +28,6 @@ La idea ya tuvo una vida digital. Cuando internet llegó a las escuelas sobraba 
 
 Hoy el problema se dio vuelta: ya no sobra información, la herramienta hace la tarea sola. Y se repite el error de quedarse con la forma y perder la estructura. Agregar a la consigna un "no le pidan la respuesta a ChatGPT" y dejar la tarea igual es la versión actual de la lista de enlaces; es, en el fondo, la prohibición que discutimos en la segunda nota. Un andamio de verdad conserva la fricción que enseña, que es intentar antes de pedir ayuda. Y hace dos cosas a la vez: sostiene al estudiante mientras recorre el camino y, como ordena el trabajo en pasos, deja ese camino a la vista del docente.
 
-## El diseño cambia el resultado
-
 Pero no alcanza con que un andamio digital esté disponible. Pedir ayuda sigue siendo una decisión, y un estudiante que no sabe lo que no sabe rara vez la toma. Funciona mejor cuando hay una persona que decide cuándo intervenir. En un [ensayo con tutores de escuelas de bajos recursos](https://arxiv.org/abs/2410.03017), una herramienta de IA que les sugería cómo guiar a cada estudiante mejoró los aprendizajes. La mejora fue pequeña, pero se notó más con los tutores menos experimentados: la IA no hizo el trabajo por ellos, los ayudó a hacerlo mejor. Por eso creemos que un andamio rinde más dentro de un dispositivo que suelto. Llamamos dispositivo al conjunto formado por la tarea, la herramienta, el tiempo y un docente que ve el proceso y sabe cuándo intervenir. Bien armado, se acerca a lo que hace un buen tutor con un solo estudiante: un camino hecho a la medida de cada uno. Un docente con trescientos estudiantes no puede ser el tutor de cada uno, pero con un dispositivo puede acercarse bastante.
 
 ## Tres experiencias uruguayas
