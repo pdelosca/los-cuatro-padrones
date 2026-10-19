@@ -42,7 +42,7 @@ Por eso creemos que un andamio rinde más cuando no anda suelto, sino dentro de 
 
 ## Tres experiencias uruguayas
 
-Esa combinación de herramienta y personas es la que intentan tres experiencias uruguayas, hechas acá y con problemas de acá. Las tres parten de una misma idea. No hace falta inventar otra IA. Se puede aprovechar la potencia de un modelo comercial y ponerle andariveles, es decir, límites que fijan quienes enseñan y dentro de los cuales funciona el andamio. Como lo valioso está en los andariveles y no en el modelo, si mañana cambia la IA que usan, el trabajo pedagógico se conserva.
+Esa combinación de herramienta y personas es la que intentan tres experiencias uruguayas, hechas acá y con problemas de acá. Las tres parten de una misma idea. No hace falta inventar otra IA. Se puede aprovechar la potencia de un modelo comercial de inteligencia artificial, como los que funcionan detrás de ChatGPT o Gemini, y ponerle andariveles, es decir, límites que fijan quienes enseñan y dentro de los cuales funciona el andamio. Como lo valioso está en los andariveles y no en el modelo, si mañana cambia la IA que usan, el trabajo pedagógico se conserva.
 
 La primera, EscribeLab, de Ceibal ([video](https://www.youtube.com/watch?v=bhATb908VyU)), acompaña a estudiantes de noveno año a planificar, escribir y revisar un texto argumentativo. Por dentro hay un modelo de lenguaje al que el equipo de Ceibal le marcó qué puede hacer y qué no. No escribe por ellos, los guía, y el docente ve en qué etapa está cada uno. Ceibal no evaluó la herramienta sola, sino la propuesta completa, con formación docente y secuencias didácticas. Según la propia Ceibal, en su [presentación](https://www.youtube.com/watch?v=hJ2nLtEKqms), los resultados fueron positivos.
 
