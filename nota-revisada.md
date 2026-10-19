@@ -66,14 +66,14 @@ El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede
 
 Antes de sumar cualquier herramienta, quien la elija, sea un docente, un centro o el sistema, puede hacerse cinco preguntas:
 
-- ¿Qué problema real resuelve, o es una tecnología buscando dónde aplicarse?
-- ¿Apoya el esfuerzo del estudiante o lo reemplaza?
-- ¿Qué parte del proceso deja a la vista?
-- ¿Quién acompaña al estudiante cuando no sabe cómo seguir?
-- ¿Cierra brechas o las agranda?
+- ¿Resuelve un problema real del aula, o es una tecnología buscando dónde aplicarse?
+- ¿Hace que el estudiante piense más, o piensa por él?
+- ¿Le muestra al docente cómo trabajó cada estudiante, o solo el resultado final?
+- Cuando el estudiante se traba, ¿hay una persona que lo acompañe, o queda solo con la herramienta?
+- ¿Ayuda también a los que más lo necesitan, o sobre todo a los que ya van bien?
 
 En el fondo, son las preguntas que intentan responder las tres experiencias que contamos.
 
 Hay cosas que no se delegan, como el juicio profesional y el acompañamiento. En el aula tiene que haber una persona adulta, porque una máquina puede producir el texto, pero no se hace cargo de que alguien aprenda. Si eso no se cuida, la brecha que planteamos en la primera nota, que ya no es digital sino identitaria, suma otra cara: aprender con una persona al lado termina siendo un lujo. Y la distancia se abre entre quienes aprenden a pensar y quienes no.
 
-Volvamos a ese domingo, porque ahí se juega gran parte del partido. Ese profesor puede terminar la tarde con treinta textos perfectos o con treinta estudiantes que aprendieron, y la diferencia no está en los textos. Está en lo que pudo ver antes de que llegaran a su mesa, en los borradores, las dudas y las decisiones de cada uno. Para eso sirven los andamios, y para eso hace falta un docente con tiempo, formación y respaldo. En la nota anterior dijimos que las cicatrices son la prueba de que alguien estuvo ahí. Lo que falta es que haya alguien ahí para verlas.
+Volvamos a ese domingo, porque ahí se juega gran parte del partido. Ese profesor puede terminar la tarde con treinta textos perfectos sin saber si tiene treinta estudiantes que aprendieron. No es por falta de oficio. Lo que no le llega es el camino, con sus borradores, sus dudas y las decisiones de cada estudiante. Para verlo no le alcanza con su esfuerzo; necesita andamios, un dispositivo y una institución que lo respalde. En la nota anterior dijimos que las cicatrices son la prueba de que alguien estuvo ahí. Pero si nadie las ve, es como si no existieran.
