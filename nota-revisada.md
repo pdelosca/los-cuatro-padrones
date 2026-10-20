@@ -10,7 +10,7 @@ En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026
 
 No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
-El problema está en qué entendemos por útil. Cuando le pedimos a ChatGPT un mail o un resumen, queremos el resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza pasa lo contrario. El texto es apenas la excusa; lo que importa es lo que le pasa por la cabeza a quien lo escribe. Una herramienta hecha para entregar resultados puede resolver la tarea sin enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde sin ese diseño.
+El problema está en qué entendemos por útil. Casi siempre que usamos una herramienta queremos un resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza pasa lo contrario. El texto es apenas la excusa; lo que importa es lo que le pasa por la cabeza a quien lo escribe. Una herramienta hecha para entregar resultados puede funcionar perfecto y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde sin ese diseño.
 
 ## El costo que no se ve a tiempo
 
