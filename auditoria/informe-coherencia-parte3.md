@@ -2,7 +2,7 @@
 
 Texto auditado: `nota-revisada.md` (sin modificar). Numeración: **B** es la bajada; **§1 a §32** son los párrafos del cuerpo en orden, sin contar títulos ni la lista de preguntas (que va dentro de §29).
 
-Esta versión del informe incorpora tres aportes de una segunda auditoría: el reordenamiento de «Quién cuida el camino», el cierre «el aprendizaje que el atajo se saltea» (§8) y el enlace del §10 con el título de su sección. Están marcados en las intervenciones 1, 5 y 6.
+Esta versión del informe incorpora tres aportes de una segunda auditoría: el reordenamiento de «Quién cuida el camino», el cierre «el aprendizaje que el atajo se saltea» (§8) y el enlace del §10 con el título de su sección. Están marcados en las intervenciones 1, 5 y 6. Después de una revisión de los autores se agregaron tres cambios más: en §1 se eliminó la oración que repetía §2, §4 pasó a «No es que los estudiantes de ahora sean más tramposos que los de antes», y en §5 «sirvió» pasó a «el GPS cumplió», para que el sujeto quede claro.
 
 ---
 
@@ -126,9 +126,9 @@ Quedan los contrastes que sostienen el argumento: «no anda suelto» (§17), «e
 > Ninguno tiene cicatrices, dudas ni frases torpes de alguien que piensa mientras escribe. […] Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas marcas muestran el camino de alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
 **Propuesta:**
-> Ninguno tiene las dudas ni las frases torpes de alguien que piensa mientras escribe. […] Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas torceduras son las cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
+> Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución. […] Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas torceduras son las cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
-Con esto el cierre (§32) funciona aunque no se haya leído la nota anterior, y §1 deja de enumerar lo mismo que §2.
+Con esto el cierre (§32) funciona aunque no se haya leído la nota anterior. §1 ya no dice qué les falta a los textos; muestra que son iguales y deja para §2 la explicación. Se pierde el eco entre las «dudas» de §1 y el «quién dudó» de §31, pero el cierre sigue enganchado por las cicatrices.
 
 *Alternativa descartada.* Dejar «cicatrices» en §1 y definirlas en §32. El cierre tendría que explicar en vez de resolver.
 
@@ -241,15 +241,15 @@ El paralelo «sobraba información / sobran las respuestas» toma la última ima
 
 *Si el texto ya no alcanza como evidencia de aprendizaje, hay que mirar el proceso. Pablo de los Campos y Jennifer Silva proponen andamios para hacerlo visible y revisan tres experiencias uruguayas que lo intentan.*
 
-Un domingo a la noche, un profesor corrige deberes en su casa. Treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Ninguno tiene las dudas ni las frases torpes de alguien que piensa mientras escribe. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
+Un domingo a la noche, un profesor corrige deberes en su casa. Treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
 
 En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a textos como estos, escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas torceduras son las cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
 Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Uno hecho en casa ya no lo garantiza, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
 
-No es que los estudiantes quieran hacer trampa. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
+No es que los estudiantes de ahora sean más tramposos que los de antes. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
-El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar, y si llegamos rápido y sin perdernos, sirvió. En la enseñanza es al revés. Importa menos llegar que lo que el estudiante aprende en el camino. El texto es apenas la excusa; lo valioso es lo que le pasa por la cabeza mientras lo escribe. Por eso una herramienta hecha para llevarnos rápido al resultado puede funcionar perfecto y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
+El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar, y si llegamos rápido y sin perdernos, el GPS cumplió. En la enseñanza es al revés. Importa menos llegar que lo que el estudiante aprende en el camino. El texto es apenas la excusa; lo valioso es lo que le pasa por la cabeza mientras lo escribe. Por eso una herramienta hecha para llevarnos rápido al resultado puede funcionar perfecto y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
 
 ## El costo que no se ve a tiempo
 
@@ -323,7 +323,7 @@ En la nota anterior dijimos que las cicatrices son la prueba de que alguien estu
 
 - **Título, bajada y títulos de sección.** Funcionan, y «Un andamio no levanta la pared» es de lo mejor del texto. Lo arreglé cambiando la primera oración del párrafo y no el título.
 - **El orden de los autores en la bajada** (Pablo de los Campos y Jennifer Silva). El prompt los nombra al revés, pero la firma es decisión de los autores.
-- **La escena del domingo** (§1 y §31). Solo le saqué «cicatrices» a §1 para pasarlas a §2, y en §31 corregí el tiempo verbal y la frase del partido.
+- **La escena del domingo** (§1 y §31). En §1 solo saqué la oración sobre lo que les falta a los textos, que repetía §2, y en §31 corregí el tiempo verbal y la frase del partido.
 - **Las cinco preguntas.** Están igual. El paralelismo con «o» es propio de una lista de control y ahí no suena mecánico.
 - **«El texto es apenas la excusa; lo valioso es…»** (§5) y **«Quedó la forma y se perdió el andamio»** (§13). Son remates, pero con peso propio. Saqué los que los rodeaban para que estos sí peguen.
 - **«Lo que ayuda a quien empieza estorba a quien ya sabe»** (§12). Refleja a propósito el acelerador y el estorbo de §7.
