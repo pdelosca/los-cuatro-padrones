@@ -14,13 +14,13 @@ El problema está en qué entendemos por útil. Cuando le pedimos a ChatGPT un m
 
 ## El costo que no se ve a tiempo
 
-Usada para entregar resultados, la IA es un atajo. El atajo llega antes, pero el costo se paga después. Un [estudio](https://cepr.org/publications/DP21577) siguió durante dos años y medio a casi 27.000 estudiantes chinos de secundaria. Los que adoptaron la IA hicieron los deberes más rápido y con mejores notas. Pero rindieron peor en los exámenes sin ella, y en las pruebas de ingreso al bachillerato y a la universidad el daño terminó de verse recién a los dos años.
+Usada para entregar resultados, la IA es un atajo. El atajo llega antes, pero deja una deuda. En las notas anteriores la llamamos deuda cognitiva. El esfuerzo que hoy se ahorra no desaparece, queda pendiente, y se cobra cuando el estudiante tiene que hacer solo lo que nunca practicó. Un [estudio](https://cepr.org/publications/DP21577) lo muestra con claridad. Siguió durante dos años y medio a casi 27.000 estudiantes chinos de secundaria. Los que adoptaron la IA hicieron los deberes más rápido y con mejores notas. Pero rindieron peor en los exámenes sin ella, y en las pruebas de ingreso al bachillerato y a la universidad el daño terminó de verse recién a los dos años.
 
 Ese costo no es igual para todos. Los asistentes comerciales como ChatGPT están hechos para resolver rápido y para agradar. Contestan con aplomo y [tienden a darle la razón a quien pregunta](https://arxiv.org/abs/2510.01395). Para alguien que ya sabe, que reconoce un error y sabe qué pedir, son un acelerador. A quien recién aprende le estorban más de lo que lo ayudan. Le resuelven justo lo que necesitaba practicar, y un novato todavía no distingue una respuesta buena de una que solo suena bien.
 
 El novato, además, puede quedarse con la sensación de que entendió. En un [estudio con estudiantes de programación](https://arxiv.org/abs/2405.17739), los que ya sabían usaron la IA para escribir más rápido lo que tenían pensado. Los que tenían dificultades terminaron el ejercicio convencidos de que les había ido mejor de lo que les fue. Lo que se resiente ahí es la metacognición, que es saber qué se entendió y qué no.
 
-Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje. Saltearlo genera lo que en las notas anteriores llamamos deuda cognitiva, un ahorro de esfuerzo hoy que se paga más adelante.
+Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje. Por eso la deuda pesa más sobre quien recién empieza.
 
 Si el producto ya no muestra el aprendizaje, hay que mirar el proceso, como propusimos en la segunda nota. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista. Ahí entra el andamio.
 
