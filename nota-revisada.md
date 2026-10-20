@@ -10,7 +10,7 @@ Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de ap
 
 No es que los estudiantes de ahora sean más tramposos que los de antes. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
-El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar a un destino, y si llegamos rápido y sin perdernos, la herramienta nos fue útil. En la enseñanza es al revés. El destino importa menos que lo que el estudiante aprende en el camino. El texto es apenas la excusa; lo valioso es lo que le pasa por la cabeza mientras escribe. Por eso una herramienta hecha para llevarnos rápido al resultado puede ser muy útil y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
+El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar a un destino, y si llegamos rápido y sin perdernos, la herramienta nos fue útil. En la enseñanza es al revés. El destino importa menos que lo que el estudiante aprende en el camino. Lo valioso es lo que le pasa por la cabeza mientras escribe, y el texto es apenas la excusa para que eso pase. Por eso una herramienta hecha para llevarnos rápido al resultado puede ser muy útil y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
 
 ## El costo que no se ve a tiempo
 
