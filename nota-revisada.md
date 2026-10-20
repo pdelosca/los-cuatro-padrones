@@ -6,7 +6,7 @@ Un domingo cualquiera, un profesor corrige deberes en su casa. Treinta textos so
 
 Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Hoy un texto hecho en casa ya no alcanza para saberlo, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
 
-En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a estos textos escritos con inteligencia artificial. Como una pared sin rugosidades, no muestran el camino que recorrió la mano que los hizo.
+En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a estos textos escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas marcas cuentan el camino de alguien que pensó. Sin ellas, el texto llega sin historia.
 
 No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, como cualquiera.
 
