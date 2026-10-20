@@ -66,7 +66,7 @@ El [marco para la IA en el aula](https://ladiaria.com.uy/educacion/articulo/2023
 
 El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede llenarse con más trabajo. Y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto el criterio docente para decidir qué entra al aula y qué no.
 
-Antes de sumar cualquier herramienta, el sistema, un centro o un docente pueden hacerse cinco preguntas, las mismas que, cada una a su modo, intentan responder las tres experiencias que contamos. También le sirven a una familia que quiera saber qué se usa en el aula.
+Antes de sumar una herramienta nueva, el sistema, un centro o un docente pueden hacerse cinco preguntas, las mismas que, cada una a su modo, intentan responder las tres experiencias que contamos. También le sirven a una familia que quiera saber qué se usa en el aula.
 
 - ¿Qué problema real del aula resuelve?
 - ¿Hace que el estudiante piense más, o piensa por él?
