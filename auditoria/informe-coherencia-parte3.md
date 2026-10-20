@@ -2,6 +2,8 @@
 
 Texto auditado: `nota-revisada.md` (sin modificar). Numeración: **B** es la bajada; **§1 a §32** son los párrafos del cuerpo en orden, sin contar títulos ni la lista de preguntas (que va dentro de §29).
 
+Esta versión del informe incorpora tres aportes de una segunda auditoría: el reordenamiento de «Quién cuida el camino», el cierre «el aprendizaje que el atajo se saltea» (§8) y el enlace del §10 con el título de su sección. Están marcados en las intervenciones 1, 5 y 6.
+
 ---
 
 ## 1. Diagnóstico general
@@ -10,7 +12,7 @@ El argumento está bien armado y avanza sin huecos grandes. Va de la escena del 
 
 Los problemas son de acabado, no de estructura. La tesis («si el producto no muestra el aprendizaje, hay que mirar el proceso») se repite casi igual tres veces (B, §3, §10). Hay unas quince construcciones de contraste «no X, sino Y» o «no X. Es Y». Muchos párrafos cierran con un remate corto («Ahí entra el andamio», «Los ayudó a hacerlo mejor»). Tres tics más, «X, que es Y», «qué… y qué no» y los arranques con «Y» o «Pero», le dan a la prosa un pulso de plantilla.
 
-En cohesión, el cierre se apoya en la nota anterior: las «cicatrices» aparecen en §1 sin quedar atadas a las «torceduras» de §2. Además, §23 remite a un «rediseño de consignas que propusimos antes» que esta nota nunca menciona. Para quien no leyó las partes 1 y 2 son las dos trabas más serias.
+En cohesión, el cierre se apoya en la nota anterior: las «cicatrices» aparecen en §1 sin quedar atadas a las «torceduras» de §2. Además, §23 remite a un «rediseño de consignas que propusimos antes» que esta nota nunca menciona. Para quien no leyó las partes 1 y 2 son las dos trabas más serias. En la sección final, además, el orden de los párrafos obliga a ir del tiempo docente a la formación y volver al tiempo.
 
 ---
 
@@ -52,7 +54,7 @@ En cohesión, el cierre se apoya en la nota anterior: las «cicatrices» aparece
 | 31 | Vuelta al domingo, con un dispositivo el profesor vería los procesos. |
 | 32 | Las cicatrices prueban que alguien estuvo ahí; hacerlas visibles ya se intenta. |
 
-**Lectura del esquema.** La progresión es lineal y ningún bloque está fuera de lugar. Hay tres vueltas atrás: §9 repite §7, §10 repite B y §3, y §14 recicla el remate de §13. El único salto sin marcar está entre §27 (el estudiante) y §28 (el tiempo del docente).
+**Lectura del esquema.** La progresión es lineal y ningún bloque está fuera de lugar. Hay tres vueltas atrás: §9 repite §7, §10 repite B y §3, y §14 recicla el remate de §13. En la sección final, §28 vuelve al tiempo docente después de pasar por la formación (§26) y el marco (§27), y queda desconectado de lo que lo rodea.
 
 ---
 
@@ -80,7 +82,7 @@ En cohesión, el cierre se apoya en la nota anterior: las «cicatrices» aparece
 | 18 | Global | Arranques con «Y» o «Pero»: «Y no se trata…» (§4), «Pero rindieron…» (§6), «Pero el profesor…» (§10), «Y hay que retirarlo…» (§12), «Pero si la tarea…» (§14), «Y hace dos cosas…» (§15), «Pero no alcanza…» (§16), «Pero muchas veces…» (§25), «Y a la velocidad…» (§26), «Pero un marco…» (§27), «Y si hay que elegir…» (§28), «Y el lunes…» (§31) | Mecanicidad | Media | Hay doce arranques de este tipo. Uno o dos dan oralidad; doce son un tic. |
 | 19 | Título de sección, 11, 12 | «Un andamio no levanta la pared» / «En una obra, el andamio no levanta la pared.» / «lo que todavía no puede hacer solo» (§11) y «a quien todavía no puede hacer la tarea solo» (§12) | Cohesión (repetición) | Media | La primera oración copia el título y la frase sobre lo que no puede hacer solo se repite en dos párrafos seguidos. |
 | 20 | 24 | «Hay que evitar que el peso de todo esto recaiga en los docentes» | Coherencia (referencia) | Media | «Todo esto», justo después de un título nuevo, no tiene un antecedente claro. |
-| 21 | 27–28 | «…como en EscribeLab o en nuestro curso de Python.» → «El tiempo que herramientas como Maestro Virtual…» | Cohesión | Media | El texto pasa del estudiante al tiempo del docente sin avisar. |
+| 21 | 26–28 | Orden de la sección: formación (§26) → marco y estudiante (§27) → «El tiempo que herramientas como Maestro Virtual…» (§28) | Coherencia / cohesión | Media | El texto pasa del estudiante al tiempo del docente sin avisar, y el tiempo vuelve después de que la sección ya pasó a la formación. El lector tiene que reacomodarse. |
 | 22 | 3, 14, 25 | «Hoy un texto…», «Hoy el problema es otro.», «Hoy, en buena medida…» | Mecanicidad | Baja | Tres arranques con «Hoy». |
 | 23 | 15 | «Y hace dos cosas a la vez.» | Coherencia | Baja | El párrafo nombra tres cosas (conservar la fricción, sostener, mostrar), y el lector cuenta. |
 | 24 | 17 | «se acerca a lo que hace un buen tutor…» / «puede acercarse un poco más» | Cohesión | Baja | El verbo se repite en dos oraciones seguidas. |
@@ -99,10 +101,10 @@ En cohesión, el cierre se apoya en la nota anterior: las «cicatrices» aparece
 **Original (§10):**
 > Si el producto ya no muestra el aprendizaje, hay que mirar el proceso, como propusimos en la segunda nota. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista. Ahí entra el andamio.
 
-**Propuesta:**
-> En la segunda nota propusimos correr la mirada del texto terminado al proceso que lo produjo. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista, y para eso sirve un andamio.
+**Propuesta** (el enlace con el título de la sección viene de la segunda auditoría):
+> Como ese costo no se ve en el texto terminado, hay que buscarlo en el proceso que lo produjo, como propusimos en la segunda nota. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista, y para eso sirve un andamio.
 
-*Alternativa descartada.* Eliminar la primera oración y empezar por Tabárez. Así se pierde el puente con la Parte 2 y la cita queda sin preparación. También mejoré §3 («Uno hecho en casa ya no lo garantiza»), que repetía «ya no alcanza como evidencia» de la bajada.
+La oración nueva retoma «El costo que no se ve a tiempo», así que la conclusión sale de la sección, y no repite las palabras de la bajada. *Alternativa descartada.* Eliminar la primera oración y empezar por Tabárez. Así se pierde el puente con la Parte 2 y la cita queda sin preparación. También mejoré §3 («Uno hecho en casa ya no lo garantiza»), que repetía «ya no alcanza como evidencia» de la bajada.
 
 ### 2. Bajar los contrastes «no X, sino Y» de quince a cinco (problema 2)
 
@@ -147,22 +149,29 @@ Con esto el cierre (§32) funciona aunque no se haya leído la nota anterior, y 
 **Original (§9):**
 > Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje. Por eso la deuda pesa más sobre quien recién empieza.
 
-**Propuesta (al final de §8):**
-> Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje. Quien recién empieza es quien más esfuerzo puede ahorrarse con la IA, y por eso es también quien más deuda acumula.
+**Propuesta (al final de §8; «que el atajo se saltea» viene de la segunda auditoría):**
+> Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje que el atajo se saltea. Como quien recién empieza es quien más camino tiene por delante, es también quien más deuda acumula.
 
-*Alternativa descartada.* Borrar §9. Se pierde la idea, clave para el docente lector, de que el esfuerzo es el aprendizaje.
+«Que el atajo se saltea» retoma la imagen que abre la sección, y la última oración explica el «por eso» con la cadena del camino. *Alternativa descartada.* Borrar §9. Se pierde la idea, clave para el docente lector, de que el esfuerzo es el aprendizaje.
 
-### 6. Quitar la transición de manual de §5 (problema 5)
+### 6. Reordenar «Quién cuida el camino» (problema 21; idea de la segunda auditoría)
 
-**Original (final de §5):**
-> Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde sin ese diseño.
+**Orden original:** peso institucional (§24) → docentes solos (§25) → Gemini y formación (§26) → marco y estudiante (§27) → tiempo e inversión en docentes (§28) → preguntas (§29).
 
-**Propuesta:**
-> Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
+**Orden propuesto:** peso institucional → docentes solos → tiempo e inversión en docentes → Gemini y formación → marco y estudiante → preguntas.
 
-El título «El costo que no se ve a tiempo» y el «Sin ese diseño» de §6 ya hacen la transición.
+**Original (§28):**
+> El tiempo que herramientas como Maestro Virtual le devuelven al docente no puede llenarse con más trabajo. Y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto el criterio docente para decidir qué entra al aula y qué no.
 
-*Alternativa descartada.* «Sin ese diseño, se pierde algo que tarda en verse.» Sigue siendo un anuncio y además pisa el título.
+**Propuesta (ahora después de «los docentes están solos»):**
+> Respaldarlos empieza por el tiempo. El que les devuelven herramientas como Maestro Virtual no puede llenarse con más trabajo, y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto su criterio para decidir qué entra al aula.
+
+**Nueva entrada a las preguntas (§29):**
+> Para distinguir una herramienta así de una que solo resuelve, el sistema, un centro o un docente pueden hacerse cinco preguntas antes de sumarla.
+
+Con este orden, «invertir en docentes» prepara «Eso ayuda, pero falta formación», y el marco, que termina en una IA con andariveles, lleva a las preguntas. El reordenamiento tenía un costo, porque «Nunca se necesitó tanto el criterio…» era el puente hacia las preguntas. Ese papel lo toma ahora la primera oración de §29, que retoma «una IA con andariveles» del párrafo anterior y «orienta sin resolver» del curso de Python.
+
+*Alternativa descartada.* Mantener el orden y unir con un conector («Del lado de los docentes…», mi primera versión). Disimula el salto, pero el tiempo sigue apareciendo dos veces en lugares distintos de la nota.
 
 ### 7. Cerrar §16 con el espejo del novato (problema 13)
 
@@ -222,7 +231,7 @@ El paralelo «sobraba información / sobran las respuestas» toma la última ima
 - **18 (arranques con «Y» o «Pero»).** Quedan dos («Pero el profesor del domingo…», que contrasta con Tabárez, y «Pero si la tarea queda igual…»). Los demás se integraron a la oración anterior o pasaron a «Igual», «Eso sí», «sin embargo» y «además».
 - **19 (§11–§12).** A: «el andamio no pone un solo ladrillo» (elegida, porque conserva la imagen sin copiar el título). B: cambiar el título a «Lo que hace un andamio» (pierde fuerza el título, que es bueno).
 - **20 (§24).** A: «Avanzar así lleva trabajo, y hay que evitar que ese peso caiga entero sobre los docentes» (elegida, porque toma «avanzar despacio» de §23). B: «Hay que evitar que el peso de armar dispositivos…» (anticipa la oración siguiente).
-- **21 (§27–§28).** A: «Del lado de los docentes, el tiempo que les devuelven…» (elegida). B: «Volviendo a Maestro Virtual…» (es una transición de manual).
+- **5 (§5).** Se elimina «Antes de ver cómo se logra, conviene mirar qué se pierde sin ese diseño», porque el título «El costo que no se ve a tiempo» y el «Sin ese diseño» de §6 ya hacen la transición. Alternativa descartada: «Sin ese diseño, se pierde algo que tarda en verse», que sigue siendo un anuncio y pisa el título.
 
 ---
 
@@ -248,9 +257,9 @@ Sin ese diseño, la IA funciona como un atajo. Llega antes, pero deja lo que en 
 
 Ese costo no es igual para todos. Los asistentes comerciales como ChatGPT están hechos para resolver rápido y para agradar. Contestan con aplomo y [tienden a darle la razón a quien pregunta](https://arxiv.org/abs/2510.01395). Para alguien que ya sabe, que reconoce un error y tiene claro qué pedir, son un acelerador. A quien recién aprende, en cambio, le pueden jugar en contra. Le resuelven justo lo que necesitaba practicar, y un novato todavía no distingue una respuesta buena de una que solo suena bien.
 
-El novato, además, puede quedarse con la sensación de que entendió. En un [estudio con estudiantes de programación](https://arxiv.org/abs/2405.17739), los que ya sabían usaron la IA para escribir más rápido lo que tenían pensado. Los que tenían dificultades terminaron el ejercicio convencidos de que les había ido mejor de lo que les fue. Lo que se resiente en esos casos es la metacognición, la capacidad de darse cuenta de cuánto entendió uno realmente. Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje. Quien recién empieza es quien más esfuerzo puede ahorrarse con la IA, y por eso es también quien más deuda acumula.
+El novato, además, puede quedarse con la sensación de que entendió. En un [estudio con estudiantes de programación](https://arxiv.org/abs/2405.17739), los que ya sabían usaron la IA para escribir más rápido lo que tenían pensado. Los que tenían dificultades terminaron el ejercicio convencidos de que les había ido mejor de lo que les fue. Lo que se resiente en esos casos es la metacognición, la capacidad de darse cuenta de cuánto entendió uno realmente. Pasar de novato a experto cuesta, y ese esfuerzo es, precisamente, el aprendizaje que el atajo se saltea. Como quien recién empieza es quien más camino tiene por delante, es también quien más deuda acumula.
 
-En la segunda nota propusimos correr la mirada del texto terminado al proceso que lo produjo. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista, y para eso sirve un andamio.
+Como ese costo no se ve en el texto terminado, hay que buscarlo en el proceso que lo produjo, como propusimos en la segunda nota. Decía el maestro Tabárez que el camino es la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que el camino quede a la vista, y para eso sirve un andamio.
 
 ## Un andamio no levanta la pared
 
@@ -288,13 +297,13 @@ Avanzar así lleva trabajo, y hay que evitar que ese peso caiga entero sobre los
 
 Fuera de experiencias como esas, los docentes están, en buena medida, solos. Según un [análisis de Ceibal](https://ladiaria.com.uy/educacion/articulo/2026/5/tres-de-cada-cuatro-docentes-uruguayos-usan-ia-en-sus-practicas-educativas-segun-estudio-de-ceibal/) basado en la Encuesta Nacional Docente, tres de cada cuatro docentes ya usan IA en su trabajo. La usan por la misma razón que los estudiantes, porque les sirve. Muchas veces, además, lo hacen desde cuentas personales, sin las protecciones de una institucional y sin que el sistema les ofrezca un espacio para discutir riesgos y beneficios.
 
+Respaldarlos empieza por el tiempo. El que les devuelven herramientas como Maestro Virtual no puede llenarse con más trabajo, y si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto su criterio para decidir qué entra al aula.
+
 Este año, Ceibal y la ANEP les dieron [acceso gratuito a Gemini y NotebookLM](https://ladiaria.com.uy/educacion/articulo/2026/6/docentes-de-anep-ya-pueden-acceder-de-forma-gratuita-a-dos-herramientas-de-ia-desarrolladas-por-google/), dos herramientas de Google, dentro de cuentas institucionales que resguardan los datos. Eso ayuda, pero falta formación, y a la velocidad con que cambian estas tecnologías, una formación que solo enseñe a usar herramientas llega siempre tarde. Tiene que servir para entender qué es una IA y cómo funciona, y para aplicarle un criterio que los docentes ya tienen, el de distinguir una ayuda que enseña de una que reemplaza.
 
 El [marco para la IA en el aula](https://ladiaria.com.uy/educacion/articulo/2023/10/ceibal-presento-documento-que-orienta-el-abordaje-de-la-inteligencia-artificial-en-el-aula/) de Ceibal va en ese sentido y es un buen paso. Un marco, sin embargo, orienta a los docentes, y a quien recién empieza en un tema eso no le alcanza. Necesita andamios y una IA con andariveles, como en EscribeLab o en nuestro curso de Python.
 
-Del lado de los docentes, el tiempo que les devuelven herramientas como Maestro Virtual no puede llenarse con más trabajo. Si hay que elegir dónde poner los recursos, conviene invertir más en docentes que en herramientas. Nunca se necesitó tanto el criterio docente para decidir qué entra al aula.
-
-Antes de sumar una herramienta nueva, el sistema, un centro o un docente pueden hacerse cinco preguntas. También le sirven a una familia que quiera saber qué se usa en el aula, y son las mismas que intentan responder, cada una a su manera, las tres experiencias que contamos:
+Para distinguir una herramienta así de una que solo resuelve, el sistema, un centro o un docente pueden hacerse cinco preguntas antes de sumarla. También le sirven a una familia que quiera saber qué se usa en el aula, y son las mismas que intentan responder, cada una a su manera, las tres experiencias que contamos:
 
 - ¿Qué problema real del aula resuelve?
 - ¿Hace que el estudiante piense más, o piensa por él?
@@ -318,7 +327,7 @@ En la nota anterior dijimos que las cicatrices son la prueba de que alguien estu
 - **Las cinco preguntas.** Están igual. El paralelismo con «o» es propio de una lista de control y ahí no suena mecánico.
 - **«El texto es apenas la excusa; lo valioso es…»** (§5) y **«Quedó la forma y se perdió el andamio»** (§13). Son remates, pero con peso propio. Saqué los que los rodeaban para que estos sí peguen.
 - **«Lo que ayuda a quien empieza estorba a quien ya sabe»** (§12). Refleja a propósito el acelerador y el estorbo de §7.
-- **«Nunca se necesitó tanto el criterio docente…»** (§28). Es el puente natural hacia las preguntas y respalda la pericia docente, así que solo le saqué el «y qué no».
+- **«Nunca se necesitó tanto el criterio docente…»** (§28). Respalda la pericia docente. Se queda como cierre del párrafo del tiempo, ahora reubicado, sin el «y qué no» y con «su criterio» en lugar de «el criterio docente» para no repetir «docentes».
 - **Tabárez, Vygotsky, Wood, Bruner y Ross, Souto, Biesta, el GPS, la deuda cognitiva, el estudio chino, el ensayo sin cifras, los WebQuest, el «yo avisé», las tres experiencias, el vibe coding con la ayuda que baja, el cierre alentador.** Se quedan por restricción y también porque sostienen el argumento. Solo los pulí.
 - **Datos y enlaces.** Los catorce enlaces se conservan con el mismo destino. No agregué cifras, datos ni temas. El «espejo» de §16 interpreta un resultado que ya estaba en el texto.
 - **Dos puntos.** En el cuerpo solo quedan los de la frase que presenta la lista. Los punto y coma de §5 y §24 se quedan, porque el autor no los excluyó y ordenan bien la oración.
