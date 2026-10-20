@@ -2,13 +2,13 @@
 
 *Si el texto ya no alcanza como evidencia de aprendizaje, hay que mirar el proceso. Pablo de los Campos y Jennifer Silva proponen andamios para hacerlo visible y revisan tres experiencias uruguayas que lo intentan.*
 
-Un domingo cualquiera, un profesor corrige deberes en su casa. Treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Ninguno tiene cicatrices, dudas ni frases torpes de alguien que piensa mientras escribe. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
+Un domingo a la noche, un profesor corrige deberes en su casa. Treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Ninguno tiene cicatrices, dudas ni frases torpes de alguien que piensa mientras escribe. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
 
 Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Hoy un texto hecho en casa ya no alcanza para saberlo, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
 
 En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a estos textos escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas marcas muestran el camino de alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
-No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, como cualquiera.
+No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, como a todos.
 
 El problema está en qué entendemos por útil. Casi siempre que usamos una herramienta queremos un resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza, en cambio, el texto es apenas la excusa; lo que importa es lo que le pasa a quien lo escribe. Una herramienta hecha para entregar resultados puede resolver la tarea sin enseñar nada. Para que enseñe, alguien tiene que haberla diseñado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde cuando falta ese diseño.
 
