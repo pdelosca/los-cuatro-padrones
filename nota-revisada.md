@@ -8,7 +8,7 @@ Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de ap
 
 En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a estos textos escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas marcas muestran el camino de alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
-No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana recurrimos a ChatGPT.
+No es un asunto de estudiantes que quieren hacer trampa. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
 El problema está en qué entendemos por útil. Casi siempre que usamos una herramienta queremos un resultado, y si llega rápido y sin esfuerzo, funcionó. En la enseñanza, en cambio, el texto es apenas la excusa; lo que importa es lo que le pasa a quien lo escribe. Una herramienta hecha para entregar resultados puede resolver la tarea sin enseñar nada. Para que enseñe, alguien tiene que haberla diseñado para eso. Antes de ver cómo se logra, conviene mirar qué se pierde cuando falta ese diseño.
 
