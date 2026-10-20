@@ -2,7 +2,7 @@
 
 Texto auditado: `nota-revisada.md` (sin modificar). Numeración: **B** es la bajada; **§1 a §32** son los párrafos del cuerpo en orden, sin contar títulos ni la lista de preguntas (que va dentro de §29).
 
-Esta versión del informe incorpora tres aportes de una segunda auditoría: el reordenamiento de «Quién cuida el camino», el cierre «el aprendizaje que el atajo se saltea» (§8) y el enlace del §10 con el título de su sección. Están marcados en las intervenciones 1, 5 y 6. Después de una revisión de los autores se agregaron tres cambios más: en §1 se eliminó la oración que repetía §2, §4 pasó a «No es que los estudiantes de ahora sean más tramposos que los de antes», y en §5 «sirvió» pasó a «el GPS cumplió», para que el sujeto quede claro.
+Esta versión del informe incorpora tres aportes de una segunda auditoría: el reordenamiento de «Quién cuida el camino», el cierre «el aprendizaje que el atajo se saltea» (§8) y el enlace del §10 con el título de su sección. Están marcados en las intervenciones 1, 5 y 6. Después de una revisión de los autores se agregaron tres cambios más: en §1 se eliminó la oración que repetía §2, §4 pasó a «No es que los estudiantes de ahora sean más tramposos que los de antes», y en §5 «sirvió» pasó a «nos fue útil», que deja claro de qué se habla y retoma el «útil» que el párrafo está definiendo.
 
 ---
 
@@ -249,7 +249,7 @@ Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de ap
 
 No es que los estudiantes de ahora sean más tramposos que los de antes. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
-El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar, y si llegamos rápido y sin perdernos, el GPS cumplió. En la enseñanza es al revés. Importa menos llegar que lo que el estudiante aprende en el camino. El texto es apenas la excusa; lo valioso es lo que le pasa por la cabeza mientras lo escribe. Por eso una herramienta hecha para llevarnos rápido al resultado puede funcionar perfecto y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
+El problema está en qué entendemos por útil. Cuando usamos un GPS queremos llegar, y si llegamos rápido y sin perdernos, nos fue útil. En la enseñanza es al revés. Importa menos llegar que lo que el estudiante aprende en el camino. El texto es apenas la excusa; lo valioso es lo que le pasa por la cabeza mientras lo escribe. Por eso una herramienta hecha para llevarnos rápido al resultado puede funcionar perfecto y, aun así, no enseñar nada. Para que enseñe, alguien con oficio docente tiene que haberla diseñado para eso.
 
 ## El costo que no se ve a tiempo
 
