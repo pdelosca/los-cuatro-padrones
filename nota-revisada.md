@@ -26,7 +26,7 @@ En una obra, el andamio no pone un solo ladrillo. Le da al albañil dónde parar
 
 Esa ayuda no baja la exigencia. Al sostener al estudiante mientras intenta la tarea, permite pedirle más de lo que lograría sin ella. Y, como en la obra, hay que retirarla a tiempo, porque lo que ayuda a quien empieza estorba a quien ya sabe.
 
-El andamio ya tuvo una vida digital. A mediados de los noventa, cuando internet llegó a las escuelas y sobraba información, nacieron los WebQuest, tareas en pasos con recursos elegidos por el docente. Con los años [se vaciaron](https://www.ascd.org/el/articles/the-learning-power-of-webquests) hasta quedar en una lista de enlaces para copiar y resumir. Quedó la forma y se perdió el andamio.
+El andamio ya tuvo una vida digital. Cuando internet empezó a llegar a las escuelas, a fines de los noventa, se popularizaron los WebQuest, tareas en pasos con recursos elegidos por el docente para que los estudiantes no se perdieran entre tanta información. Con los años [se vaciaron](https://www.ascd.org/el/articles/the-learning-power-of-webquests) hasta quedar en una lista de enlaces para copiar y resumir. Quedó la forma y se perdió el andamio.
 
 Ahora el problema es otro. Si en los noventa sobraba información, hoy sobran las respuestas, porque la IA hace la tarea entera. Agregar a la consigna un "no le pidan la respuesta a ChatGPT" es comprensible cuando no hay tiempo para más. Pero si la tarea queda igual, la advertencia no cambia lo que el estudiante tiene que hacer ni le da en qué apoyarse. Esa advertencia es la prohibición que discutimos en la segunda nota, y funciona más como un "yo avisé" que como una ayuda, porque deja toda la responsabilidad del lado del estudiante.
 
