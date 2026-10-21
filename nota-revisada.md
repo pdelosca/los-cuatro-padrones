@@ -18,7 +18,7 @@ Esa deuda no pesa igual sobre todos. Los asistentes comerciales como ChatGPT est
 
 El novato, además, puede quedarse con la sensación de que entendió. En un [estudio con estudiantes de programación](https://arxiv.org/abs/2405.17739), los que ya sabían usaron la IA para escribir más rápido lo que tenían pensado. Los que tenían dificultades terminaron el ejercicio convencidos de que les había ido mejor de lo que les fue. Lo que se resiente en esos casos es la metacognición, la capacidad de darse cuenta de cuánto entendió uno realmente. Pasar de novato a experto cuesta, y ese esfuerzo es el aprendizaje que el atajo se saltea. Como quien recién empieza es quien más camino tiene por delante, es también quien más deuda acumula.
 
-Esa deuda no se ve en el texto terminado. Por eso, como propusimos en la segunda nota, hay que mirar el proceso, ese camino que Óscar Tabárez llamaba la recompensa. Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que esos caminos queden a la vista, y para eso sirve un andamio.
+Esa deuda no se ve en el texto terminado. Por eso, como propusimos en la segunda nota, hay que mirar el proceso. Óscar Tabárez lo resumía en una frase, "el camino es la recompensa". Pero el profesor del domingo no puede seguir treinta caminos a la vez, y menos los trescientos de todos sus grupos. Necesita que esos caminos queden a la vista, y para eso sirve un andamio.
 
 ## Un andamio no levanta la pared
 
