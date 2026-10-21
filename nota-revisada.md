@@ -2,9 +2,9 @@
 
 *Si el texto ya no alcanza como evidencia de aprendizaje, hay que mirar el proceso. Pablo de los Campos y Jennifer Silva proponen andamios para hacerlo visible y revisan tres experiencias uruguayas que lo intentan.*
 
-Un domingo a la noche, un profesor corrige deberes en su casa. Treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
+Un domingo a la noche, un profesor corrige en su casa treinta textos sobre la misma consigna. Todos prolijos, sin una falta, con su introducción, su desarrollo y su cierre. Conoce a sus estudiantes, sabe cómo escribe cada uno y hasta dónde llega. Pero en ninguno de esos textos hay una frase que ensaye un camino y lo abandone, ni un argumento con la huella de haberse reescrito tres veces. Si no fuera por los nombres, podría corregir uno solo y fotocopiar la devolución.
 
-En dos notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a textos como estos, escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el párrafo que da vueltas sobre sí mismo. Esas torceduras son las cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
+En las notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)) llamamos superficie lisa a esta supuesta perfección. Son textos escritos con inteligencia artificial. Les faltan las torceduras de quien escribe de verdad, esas cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
 Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Un texto hecho en casa ya no alcanza como evidencia, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
 
