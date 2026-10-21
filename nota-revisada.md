@@ -22,9 +22,9 @@ Esa deuda no se ve en el texto terminado. Por eso, como propusimos en la segunda
 
 ## Un andamio no levanta la pared
 
-En una obra, el andamio no pone un solo ladrillo. Le da al albañil dónde pararse mientras levanta la pared, y se retira cuando la pared ya se sostiene sola. En educación, la idea viene del psicólogo ruso Lev Vygotsky, que estudió cómo un niño logra con ayuda lo que todavía no puede hacer solo. La palabra andamio la usaron en 1976 David Wood, Jerome Bruner y Gail Ross para nombrar esa ayuda que un adulto da mientras hace falta.
+En una obra, el andamio no pone un solo ladrillo. Le da al albañil dónde pararse mientras levanta la pared, y se retira cuando la pared ya se sostiene sola. En educación, la idea viene del psicólogo ruso Lev Vygotsky, que estudió cómo un niño logra con ayuda lo que todavía no puede hacer solo. La palabra andamio la propusieron en 1976 tres investigadores, entre ellos Jerome Bruner, para nombrar esa ayuda que un adulto da mientras hace falta.
 
-Esa ayuda no baja la exigencia. Como sostiene al estudiante mientras intenta la tarea, permite pedirle más de lo que lograría sin ella. Eso sí, hay que retirarla a tiempo, porque lo que ayuda a quien empieza estorba a quien ya sabe.
+Esa ayuda no baja la exigencia. Como sostiene al estudiante mientras intenta la tarea, permite pedirle más de lo que lograría sin ella. Y, como en la obra, hay que retirarla a tiempo, porque lo que ayuda a quien empieza estorba a quien ya sabe.
 
 El andamio ya tuvo una vida digital. A mediados de los noventa, cuando internet llegó a las escuelas y sobraba información, nacieron los WebQuest, tareas en pasos con recursos elegidos por el docente. Con los años [se vaciaron](https://www.ascd.org/el/articles/the-learning-power-of-webquests) hasta quedar en una lista de enlaces para copiar y resumir. Quedó la forma y se perdió el andamio.
 
