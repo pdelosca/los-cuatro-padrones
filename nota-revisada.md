@@ -4,7 +4,7 @@ Un domingo a la noche, un profesor corrige deberes en su casa. Treinta textos so
 
 A textos así, escritos con inteligencia artificial, los llamamos "superficie lisa" en las notas anteriores ([Parte 1](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-1-la-superficie-lisa/) y [Parte 2](https://ladiaria.com.uy/ciencia/articulo/2026/4/quien-aprende-cuando-escribe-la-ia-parte-2-lo-que-el-atajo-no-construye/)). Les faltan las torceduras de quien escribe de verdad, como la frase que se prueba y se abandona o el argumento que se reescribe tres veces. Esas torceduras son las cicatrices que deja alguien que pensó. Sin ellas, el texto podría ser de cualquiera.
 
-Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Si puede ser de cualquiera, ya no lo es, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
+Durante décadas, un texto bien escrito y entregado a tiempo fue evidencia de aprendizaje. Hoy, un texto que podría ser de cualquiera ya no dice nada de quien lo entrega, porque hacer la tarea dejó de ser lo mismo que aprender de ella.
 
 Eso no quiere decir que los estudiantes de ahora sean más tramposos que los de antes. Usan la IA porque les resulta útil, igual que a los [más de mil millones](https://www.engadget.com/2271985/openai-dev-day-live-blog-chatgpt-news/) que cada semana usamos ChatGPT.
 
